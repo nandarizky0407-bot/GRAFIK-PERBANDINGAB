@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Perbandingan - Petualangan Matematika</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg: #060912;
+    --bg-2: #0d1326;
+    --card: rgba(255,255,255,0.04);
+    --card-h: rgba(255,255,255,0.08);
+    --border: rgba(0,240,255,0.18);
+    --border-h: rgba(0,240,255,0.4);
+    --fg: #e8eef7;
+    --muted: #8497b8;
+    --cyan: #00f0ff;
+    --orange: #ff6b35;
+    --green: #00ff88;
+    --red: #ff3366;
+    --yellow: #ffcc00;
+    --purple: #b14aff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; font-family:'Outfit',sans-serif; background:var(--bg); color:var(--fg); height:100vh; overflow:hidden; }
+  .display-font { font-family:'Space Grotesk',sans-serif; letter-spacing:-0.02em; }
+  
+  .bg-grid { position:fixed; inset:0; z-index:-3;
+    background-image: linear-gradient(rgba(0,240,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.04) 1px,transparent 1px);
+    background-size:60px 60px; mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%); }
+  .bg-glow { position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background: radial-gradient(circle at 15% 20%,rgba(0,240,255,0.18) 0%,transparent 35%),
+                radial-gradient(circle at 85% 75%,rgba(255,107,53,0.16) 0%,transparent 35%),
+                radial-gradient(circle at 50% 110%,rgba(177,74,255,0.12) 0%,transparent 50%);
+    animation: bgPulse 10s ease-in-out infinite; }
+  @keyframes bgPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.6;transform:scale(1.05);} }
+  
+  .particle { position:fixed; width:3px; height:3px; border-radius:50%; background:var(--cyan); pointer-events:none; z-index:-1; opacity:0.5; box-shadow:0 0 10px var(--cyan); animation: float 15s linear infinite; }
+  @keyframes float { 0%{transform:translateY(110vh) translateX(0);opacity:0;} 10%{opacity:0.6;} 90%{opacity:0.6;} 100%{transform:translateY(-10vh) translateX(40px);opacity:0;} }
+  
+  .slides-container { position:relative; width:100vw; height:100vh; overflow:hidden; }
+  .slide { position:absolute; inset:0; padding:36px 60px 90px; display:flex; flex-direction:column;
+    opacity:0; transform:translateX(60px) scale(0.98); pointer-events:none;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto; overflow-x:hidden; }
+  .slide.active { opacity:1; transform:translateX(0) scale(1); pointer-events:auto; }
+  .slide.prev { transform:translateX(-60px) scale(0.98); }
+  .slide::-webkit-scrollbar { width:8px; }
+  .slide::-webkit-scrollbar-track { background:transparent; }
+  .slide::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+  .slide::-webkit-scrollbar-thumb:hover { background:var(--cyan); }
+  
+  .progress-bar { position:fixed; top:0; left:0; right:0; height:4px; background:rgba(255,255,255,0.05); z-index:100; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--cyan),var(--orange)); box-shadow:0 0 10px var(--cyan); transition:width 0.5s ease; }
+  
+  .nav-bottom { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:16px;
+    background:rgba(13,19,38,0.85); backdrop-filter:blur(20px); border:1px solid var(--border); border-radius:100px;
+    padding:8px 8px 8px 20px; z-index:100; box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 20px rgba(0,240,255,0.1); }
+  .nav-btn { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--cyan),#0099aa); border:none; color:var(--bg); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; box-shadow:0 0 20px rgba(0,240,255,0.3); }
+  .nav-btn:hover { transform:scale(1.1); box-shadow:0 0 30px rgba(0,240,255,0.6); }
+  .nav-btn:disabled { opacity:0.3; cursor:not-allowed; transform:scale(1); }
+  .nav-btn.secondary { background:rgba(255,255,255,0.05); color:var(--cyan); border:1px solid var(--border); box-shadow:none; }
+  .nav-btn.secondary:hover { background:var(--card-h); box-shadow:0 0 15px rgba(0,240,255,0.2); }
+  .slide-indicator { font-family:'Space Grotesk'; font-size:14px; color:var(--muted); min-width:60px; text-align:center; font-weight:500; }
+  .slide-indicator strong { color:var(--cyan); font-size:18px; }
+  
+  .slide-header { display:flex; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+  .slide-badge { background:linear-gradient(135deg,var(--cyan),#0099aa); color:var(--bg); padding:6px 16px; border-radius:20px; font-family:'Space Grotesk'; font-weight:700; font-size:12px; letter-spacing:0.1em; box-shadow:0 0 20px rgba(0,240,255,0.4); }
+  .slide-badge.orange { background:linear-gradient(135deg,var(--orange),#cc4422); box-shadow:0 0 20px rgba(255,107,53,0.4); }
+  .slide-title { font-family:'Space Grotesk'; font-size:34px; font-weight:700; color:var(--fg); margin:0; letter-spacing:-0.02em; }
+  .slide-subtitle { color:var(--muted); font-size:15px; margin-top:4px; }
+  
+  .glass-card { background:var(--card); border:1px solid var(--border); border-radius:16px; backdrop-filter:blur(10px); transition:all 0.3s; }
+  .glass-card:hover { background:var(--card-h); border-color:var(--border-h); }
+  
+  .btn-primary { background:linear-gradient(135deg,var(--cyan),#0099aa); color:var(--bg); border:none; padding:14px 32px; border-radius:12px; font-family:'Outfit'; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s; box-shadow:0 0 30px rgba(0,240,255,0.3); letter-spacing:0.05em; text-transform:uppercase; display:inline-flex; align-items:center; gap:10px; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,240,255,0.5); }
+  .btn-primary.orange { background:linear-gradient(135deg,var(--orange),#cc4422); box-shadow:0 0 30px rgba(255,107,53,0.3); }
+  .btn-primary.orange:hover { box-shadow:0 8px 30px rgba(255,107,53,0.5); }
+  .btn-secondary { background:transparent; color:var(--cyan); border:2px solid var(--cyan); padding:10px 24px; border-radius:10px; font-weight:600; cursor:pointer; transition:all 0.2s; font-size:14px; }
+  .btn-secondary:hover { background:rgba(0,240,255,0.1); box-shadow:0 0 20px rgba(0,240,255,0.3); }
+  .btn-secondary.orange { color:var(--orange); border-color:var(--orange); }
+  .btn-secondary.orange:hover { background:rgba(255,107,53,0.1); box-shadow:0 0 20px rgba(255,107,53,0.3); }
+  
+  .neon-input { background:rgba(255,255,255,0.03); border:2px solid var(--border); border-radius:12px; padding:14px 20px; color:var(--fg); font-family:'Outfit'; font-size:16px; width:100%; transition:all 0.2s; outline:none; }
+  .neon-input:focus { border-color:var(--cyan); box-shadow:0 0 0 4px rgba(0,240,255,0.1),0 0 20px rgba(0,240,255,0.2); background:rgba(255,255,255,0.06); }
+  .neon-input::placeholder { color:var(--muted); }
+  .neon-input.correct { border-color:var(--green); box-shadow:0 0 0 4px rgba(0,255,136,0.1),0 0 20px rgba(0,255,136,0.3); background:rgba(0,255,136,0.05); }
+  .neon-input.wrong { border-color:var(--red); box-shadow:0 0 0 4px rgba(255,51,102,0.1),0 0 20px rgba(255,51,102,0.3); background:rgba(255,51,102,0.05); animation: shake 0.4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  
+  .cover-hero { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; gap:24px; position:relative; }
+  .cover-eyebrow { font-family:'Space Grotesk'; font-size:13px; letter-spacing:0.4em; color:var(--cyan); text-transform:uppercase; font-weight:600; padding:8px 20px; border:1px solid var(--border); border-radius:100px; background:rgba(0,240,255,0.05); }
+  .cover-title { font-family:'Space Grotesk'; font-size:clamp(48px,8vw,108px); font-weight:900; line-height:0.92; letter-spacing:-0.04em; background:linear-gradient(135deg,var(--cyan) 0%,#fff 50%,var(--orange) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:0; }
+  .cover-subtitle { font-size:clamp(18px,2.5vw,28px); color:var(--muted); font-weight:300; max-width:680px; line-height:1.4; }
+  .cover-tags { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .cover-tag { padding:8px 18px; border:1px solid var(--border); border-radius:100px; background:rgba(255,255,255,0.03); font-size:13px; color:var(--fg); font-weight:500; display:flex; align-items:center; gap:8px; }
+  .cover-tag i { color:var(--cyan); }
+  
+  .name-form { display:flex; gap:12px; max-width:480px; width:100%; margin-top:12px; }
+  
+  .deco-shape { position:absolute; pointer-events:none; opacity:0.3; }
+  .deco-shape.shape-1 { top:15%; right:8%; width:120px; height:120px; border:2px solid var(--cyan); border-radius:30%; transform:rotate(15deg); animation: rotate 20s linear infinite; }
+  .deco-shape.shape-2 { bottom:18%; left:10%; width:80px; height:80px; border:2px dashed var(--orange); border-radius:50%; animation: rotate 15s linear infinite reverse; }
+  .deco-shape.shape-3 { top:30%; left:5%; width:60px; height:60px; background:linear-gradient(135deg,var(--purple),transparent); border-radius:20%; animation: float-y 4s ease-in-out infinite; }
+  @keyframes rotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @keyframes float-y { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+  
+  .scenario-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:16px; }
+  .scenario-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:22px; transition:all 0.3s; cursor:default; position:relative; overflow:hidden; }
+  .scenario-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent,rgba(0,240,255,0.06)); opacity:0; transition:opacity 0.3s; }
+  .scenario-card:hover::before { opacity:1; }
+  .scenario-card:hover { transform:translateY(-4px); border-color:var(--border-h); }
+  .scenario-icon { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,var(--cyan),#0099aa); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--bg); margin-bottom:12px; box-shadow:0 0 20px rgba(0,240,255,0.3); }
+  .scenario-card:nth-child(2) .scenario-icon { background:linear-gradient(135deg,var(--orange),#cc4422); box-shadow:0 0 20px rgba(255,107,53,0.3); }
+  .scenario-card:nth-child(3) .scenario-icon { background:linear-gradient(135deg,var(--green),#00aa55); box-shadow:0 0 20px rgba(0,255,136,0.3); }
+  .scenario-card:nth-child(4) .scenario-icon { background:linear-gradient(135deg,var(--purple),#7722cc); box-shadow:0 0 20px rgba(177,74,255,0.3); }
+  .scenario-card h4 { font-family:'Space Grotesk'; font-size:17px; font-weight:600; margin:0 0 8px; color:var(--fg); }
+  .scenario-card p { color:var(--muted); font-size:14px; line-height:1.5; margin:0; }
+  
+  .question-prompt { margin-top:auto; padding:18px 22px; background:linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,53,0.06)); border:1px solid var(--border); border-radius:16px; display:flex; align-items:center; gap:14px; }
+  .question-prompt i { font-size:24px; color:var(--yellow); }
+  .question-prompt p { margin:0; color:var(--fg); font-size:15px; }
+  
+  .objective-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+  .objective-item { display:flex; gap:16px; align-items:flex-start; padding:20px; background:var(--card); border:1px solid var(--border); border-radius:14px; transition:all 0.3s; }
+  .objective-item:hover { background:var(--card-h); border-color:var(--border-h); transform:translateX(4px); }
+  .obj-num { width:36px; height:36px; min-width:36px; border-radius:10px; background:linear-gradient(135deg,var(--cyan),#0099aa); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk'; font-weight:700; color:var(--bg); font-size:15px; box-shadow:0 0 15px rgba(0,240,255,0.3); }
+  .objective-item h5 { font-family:'Space Grotesk'; font-size:15px; font-weight:600; margin:0 0 4px; }
+  .objective-item p { color:var(--muted); font-size:13px; margin:0; line-height:1.5; }
+  
+  .materi-toggle { display:flex; gap:8px; background:rgba(255,255,255,0.03); padding:6px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; width:fit-content; }
+  .materi-tab { padding:12px 24px; border-radius:10px; background:transparent; color:var(--muted); border:none; cursor:pointer; font-family:'Outfit'; font-weight:600; font-size:14px; transition:all 0.3s; display:flex; align-items:center; gap:10px; }
+  .materi-tab.active { background:linear-gradient(135deg,var(--cyan),#0099aa); color:var(--bg); box-shadow:0 0 25px rgba(0,240,255,0.4); }
+  .materi-tab.active.orange { background:linear-gradient(135deg,var(--orange),#cc4422); box-shadow:0 0 25px rgba(255,107,53,0.4); }
+  
+  .materi-content { display:none; animation: fadeInUp 0.5s ease; }
+  .materi-content.active { display:block; }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  
+  .materi-grid { display:grid; grid-template-columns:1.3fr 1fr; gap:18px; margin-bottom:18px; }
+  @media (max-width:980px){ .materi-grid { grid-template-columns:1fr; } }
+  
+  .info-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all 0.3s; height:100%; }
+  .info-card:hover { border-color:var(--border-h); }
+  .info-label { font-family:'Space Grotesk'; font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--cyan); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .info-label.orange { color:var(--orange); }
+  .info-card h3 { font-family:'Space Grotesk'; font-size:18px; font-weight:600; margin:0 0 8px; }
+  .info-card p { color:var(--muted); font-size:14px; line-height:1.6; margin:0; }
+  
+  .formula-box { background:rgba(0,0,0,0.3); border:1px dashed var(--border-h); border-radius:12px; padding:16px 20px; margin-top:12px; font-family:'Space Grotesk'; font-size:18px; font-weight:600; text-align:center; color:var(--cyan); }
+  .formula-box.orange { color:var(--orange); border-color:rgba(255,107,53,0.4); }
+  
+  .operator-badge { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:14px; font-family:'Space Grotesk'; font-size:32px; font-weight:700; margin-right:12px; vertical-align:middle; }
+  .operator-badge.div { background:linear-gradient(135deg,var(--cyan),#0099aa); color:var(--bg); box-shadow:0 0 25px rgba(0,240,255,0.4); }
+  .operator-badge.mul { background:linear-gradient(135deg,var(--orange),#cc4422); color:var(--bg); box-shadow:0 0 25px rgba(255,107,53,0.4); }
+  
+  .example-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:8px; }
+  .example-item { display:flex; gap:12px; align-items:flex-start; padding:14px; background:rgba(255,255,255,0.02); border-radius:10px; border-left:3px solid var(--cyan); }
+  .example-item.orange { border-left-color:var(--orange); }
+  .example-item i { color:var(--cyan); font-size:18px; margin-top:2px; }
+  .example-item.orange i { color:var(--orange); }
+  .example-item p { margin:0; font-size:13px; color:var(--fg); line-height:1.5; }
+  
+  .viz-container { background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:16px; padding:24px; margin-top:8px; }
+  .viz-bars { display:flex; gap:40px; justify-content:center; align-items:flex-end; height:180px; margin:20px 0; }
+  .viz-bar-group { display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .viz-bar { width:80px; background:linear-gradient(180deg,var(--cyan),#0099aa); border-radius:8px 8px 0 0; transition:height 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 0 20px rgba(0,240,255,0.3); position:relative; }
+  .viz-bar.bar-b { background:linear-gradient(180deg,var(--orange),#cc4422); box-shadow:0 0 20px rgba(255,107,53,0.3); }
+  .viz-bar-value { position:absolute; top:-26px; left:50%; transform:translateX(-50%); font-family:'Space Grotesk'; font-weight:700; font-size:16px; color:var(--fg); white-space:nowrap; }
+  .viz-bar-label { font-family:'Space Grotesk'; font-size:13px; color:var(--muted); font-weight:600; letter-spacing:0.05em; }
+  .viz-equation { text-align:center; font-family:'Space Grotesk'; font-size:18px; color:var(--fg); margin-top:16px; padding:12px; background:rgba(0,240,255,0.05); border-radius:10px; border:1px solid var(--border); }
+  .viz-equation strong { color:var(--cyan); font-weight:700; }
+  .viz-equation.orange strong { color:var(--orange); }
+  
+  .viz-slider { width:100%; margin-top:14px; -webkit-appearance:none; appearance:none; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; outline:none; }
+  .viz-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%; background:var(--cyan); cursor:pointer; box-shadow:0 0 15px rgba(0,240,255,0.5); border:2px solid var(--bg); }
+  .viz-slider::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:var(--cyan); cursor:pointer; box-shadow:0 0 15px rgba(0,240,255,0.5); border:2px solid var(--bg); }
+  .viz-slider.orange::-webkit-slider-thumb { background:var(--orange); box-shadow:0 0 15px rgba(255,107,53,0.5); }
+  .viz-slider.orange::-moz-range-thumb { background:var(--orange); box-shadow:0 0 15px rgba(255,107,53,0.5); }
+  
+  .case-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:8px; }
+  .case-card { background:var(--card); border:2px solid var(--border); border-radius:18px; padding:22px; transition:all 0.3s; position:relative; }
+  .case-card.answered-correct { border-color:var(--green); background:rgba(0,255,136,0.05); }
+  .case-card.answered-wrong { border-color:var(--red); background:rgba(255,51,102,0.05); }
+  .case-num { font-family:'Space Grotesk'; font-size:11px; letter-spacing:0.2em; color:var(--cyan); font-weight:700; margin-bottom:8px; }
+  .case-desc { font-size:14px; color:var(--fg); line-height:1.6; margin-bottom:16px; min-height:60px; }
+  .case-buttons { display:flex; gap:10px; }
+  .case-btn { flex:1; padding:10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border); color:var(--fg); font-family:'Outfit'; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s; }
+  .case-btn:hover:not(:disabled) { background:var(--card-h); }
+  .case-btn.selected-correct { background:rgba(0,255,136,0.15); border-color:var(--green); color:var(--green); }
+  .case-btn.selected-wrong { background:rgba(255,51,102,0.15); border-color:var(--red); color:var(--red); }
+  .case-btn:disabled { cursor:not-allowed; opacity:0.5; }
+  .case-feedback { margin-top:12px; padding:10px 14px; border-radius:8px; font-size:13px; display:none; }
+  .case-feedback.show { display:block; animation: fadeInUp 0.3s; }
+  .case-feedback.correct { background:rgba(0,255,136,0.1); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+  .case-feedback.wrong { background:rgba(255,51,102,0.1); color:var(--red); border:1px solid rgba(255,51,102,0.3); }
+  
+  .case-score { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 24px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; }
+  .case-score-label { color:var(--muted); font-size:13px; }
+  .case-score-value { font-family:'Space Grotesk'; font-size:24px; font-weight:700; color:var(--cyan); }
+  
+  .quiz-layout { display:grid; grid-template-columns:1fr 320px; gap:20px; flex:1; }
+  @media (max-width:980px){ .quiz-layout { grid-template-columns:1fr; } }
+  
+  .quiz-main { display:flex; flex-direction:column; gap:16px; }
+  .quiz-level-info { display:flex; gap:14px; align-items:center; font-size:12px; color:var(--muted); margin-bottom:4px; flex-wrap:wrap; }
+  .level-dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:middle; }
+  .level-dot.easy { background:var(--green); }
+  .level-dot.medium { background:var(--yellow); }
+  .level-dot.hots { background:var(--red); }
+  
+  .quiz-grid-num { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+  .num-btn { aspect-ratio:1; border-radius:8px; background:rgba(255,255,255,0.04); border:1px solid var(--border); color:var(--fg); font-family:'Space Grotesk'; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; font-size:13px; position:relative; }
+  .num-btn:hover:not(.active) { background:var(--card-h); transform:translateY(-2px); }
+  .num-btn.active { background:var(--cyan); color:var(--bg); box-shadow:0 0 15px rgba(0,240,255,0.5); border-color:var(--cyan); }
+  .num-btn.active.orange { background:var(--orange); border-color:var(--orange); box-shadow:0 0 15px rgba(255,107,53,0.5); }
+  .num-btn.correct { background:rgba(0,255,136,0.2); border-color:var(--green); color:var(--green); }
+  .num-btn.wrong { background:rgba(255,51,102,0.2); border-color:var(--red); color:var(--red); }
+  .num-btn.level-easy::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:14px; height:2px; background:var(--green); border-radius:1px; }
+  .num-btn.level-medium::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:14px; height:2px; background:var(--yellow); border-radius:1px; }
+  .num-btn.level-hots::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:14px; height:2px; background:var(--red); border-radius:1px; }
+  
+  .quiz-sidebar { display:flex; flex-direction:column; gap:14px; }
+  .quiz-stat { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; }
+  .quiz-stat-label { font-family:'Space Grotesk'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .quiz-stat-value { font-family:'Space Grotesk'; font-size:32px; font-weight:700; color:var(--cyan); }
+  .quiz-stat-value.green { color:var(--green); }
+  .quiz-stat-value.orange { color:var(--orange); }
+  .quiz-stat-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+  
+  .soal-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; flex:1; display:flex; flex-direction:column; }
+  .soal-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .soal-num { font-family:'Space Grotesk'; font-size:13px; color:var(--cyan); font-weight:700; letter-spacing:0.1em; }
+  .soal-num.orange { color:var(--orange); }
+  .soal-level-tag { padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; }
+  .soal-level-tag.easy { background:rgba(0,255,136,0.15); color:var(--green); }
+  .soal-level-tag.medium { background:rgba(255,204,0,0.15); color:var(--yellow); }
+  .soal-level-tag.hots { background:rgba(255,51,102,0.15); color:var(--red); }
+  .soal-text { font-size:17px; line-height:1.6; color:var(--fg); margin-bottom:20px; }
+  .soal-answer-row { display:flex; gap:12px; align-items:center; margin-top:auto; }
+  .soal-answer-row .neon-input { flex:1; }
+  
+  .pembahasan-box { background:rgba(0,0,0,0.3); border:1px dashed var(--border-h); border-radius:12px; padding:16px; margin-top:14px; display:none; animation: fadeInUp 0.3s; }
+  .pembahasan-box.show { display:block; }
+  .pembahasan-box.orange { border-color:rgba(255,107,53,0.4); }
+  .pembahasan-label { font-family:'Space Grotesk'; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .pembahasan-label.orange { color:var(--orange); }
+  .pembahasan-text { font-size:14px; line-height:1.6; color:var(--fg); }
+  
+  .answer-feedback { font-family:'Space Grotesk'; font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; display:none; }
+  .answer-feedback.show { display:block; animation: fadeInUp 0.3s; }
+  .answer-feedback.correct { background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+  .answer-feedback.wrong { background:rgba(255,51,102,0.15); color:var(--red); border:1px solid rgba(255,51,102,0.3); }
+  
+  .reflection-area { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; margin-top:16px; }
+  .reflection-area textarea { width:100%; min-height:100px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px; padding:14px; color:var(--fg); font-family:'Outfit'; font-size:14px; resize:vertical; outline:none; transition:all 0.2s; }
+  .reflection-area textarea:focus { border-color:var(--cyan); box-shadow:0 0 0 4px rgba(0,240,255,0.1); }
+  
+  .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:16px; }
+  .summary-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all 0.3s; }
+  .summary-card:hover { border-color:var(--border-h); }
+  .summary-card h4 { font-family:'Space Grotesk'; font-size:17px; margin:0 0 10px; display:flex; align-items:center; gap:10px; }
+  .summary-card.cyan h4 { color:var(--cyan); }
+  .summary-card.orange h4 { color:var(--orange); }
+  .summary-card ul { margin:0; padding-left:18px; color:var(--muted); font-size:14px; line-height:1.7; }
+  
+  .thank-you { text-align:center; padding:30px 0; }
+  .thank-you h2 { font-family:'Space Grotesk'; font-size:48px; font-weight:800; margin:0 0 12px; background:linear-gradient(135deg,var(--cyan),var(--orange)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .thank-you p { color:var(--muted); font-size:18px; margin:0; }
+  .thank-you .signature { margin-top:24px; font-family:'Space Grotesk'; font-size:14px; color:var(--cyan); letter-spacing:0.2em; }
+  
+  .toast { position:fixed; top:20px; right:20px; padding:14px 22px; background:rgba(13,19,38,0.95); border:1px solid var(--border); border-radius:12px; backdrop-filter:blur(20px); z-index:200; transform:translateX(120%); transition:transform 0.3s; max-width:320px; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+  .toast.show { transform:translateX(0); }
+  .toast.success { border-color:var(--green); }
+  .toast.error { border-color:var(--red); }
+  .toast.warning { border-color:var(--yellow); }
+  .toast-icon { display:inline-block; margin-right:10px; }
+  .toast.success .toast-icon { color:var(--green); }
+  .toast.error .toast-icon { color:var(--red); }
+  .toast.warning .toast-icon { color:var(--yellow); }
+  
+  @media (max-width:768px) {
+    .slide { padding:30px 20px 90px; }
+    .cover-title { font-size:42px; }
+    .slide-title { font-size:24px; }
+    .materi-grid { grid-template-columns:1fr; }
+    .quiz-layout { grid-template-columns:1fr; }
+    .nav-bottom { padding:6px 6px 6px 14px; gap:10px; }
+    .nav-btn { width:38px; height:38px; font-size:14px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:14.28%"></div></div>
+
+<div class="slides-container" id="slidesContainer">
+
+<!-- ============ SLIDE 1: COVER ============ -->
+<section class="slide active" data-slide="1">
+  <div class="deco-shape shape-1"></div>
+  <div class="deco-shape shape-2"></div>
+  <div class="deco-shape shape-3"></div>
+  
+  <div class="cover-hero">
+    <div class="cover-eyebrow"><i class="fa-solid fa-rocket"></i> Misi Matematika</div>
+    <h1 class="cover-title">PERBANDINGAN<br>SENILAI & BERBALIK NILAI</h1>
+    <p class="cover-subtitle">Petualangan menguasai rasio, skala, dan kecepatan dalam kehidupan nyata. Siapkan otakmu,级别kan instingmu.</p>
+    
+    <div class="cover-tags">
+      <div class="cover-tag"><i class="fa-solid fa-divide"></i> Rasio</div>
+      <div class="cover-tag"><i class="fa-solid fa-ruler"></i> Skala</div>
+      <div class="cover-tag"><i class="fa-solid fa-xmark"></i> Berbalik Nilai</div>
+      <div class="cover-tag"><i class="fa-solid fa-trophy"></i> 50 Soal Latihan</div>
+    </div>
+    
+    <div class="name-form">
+      <input type="text" class="neon-input" id="playerName" placeholder="MASUKKAN NAMA PETUALANG..." maxlength="30">
+      <button class="btn-primary" id="startBtn"><i class="fa-solid fa-play"></i> MULAI</button>
+    </div>
+    
+    <div style="color:var(--muted); font-size:13px; margin-top:8px;">
+      <i class="fa-solid fa-keyboard"></i> Gunakan tombol panah ← → untuk navigasi
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: APERSEPSI ============ -->
+<section class="slide" data-slide="2">
+  <div class="slide-header">
+    <div class="slide-badge"><i class="fa-solid fa-eye"></i> APERSEPSI</div>
+    <div>
+      <h2 class="slide-title">Skenario di Sekitar Kita</h2>
+      <p class="slide-subtitle">Perhatikan empat situasi ini. Apa pola hubungan yang kamu temukan?</p>
+    </div>
+  </div>
+  
+  <div class="scenario-grid">
+    <div class="scenario-card">
+      <div class="scenario-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+      <h4>Belanja Apel</h4>
+      <p>Makin banyak apel yang dibeli, makin banyak uang yang harus dibayar. Harga per kg selalu sama.</p>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-icon"><i class="fa-solid fa-people-group"></i></div>
+      <h4>Kerja Tim</h4>
+      <p>Makin banyak pekerja yang membangun rumah, makin cepat rumah selesai dikerjakan.</p>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-icon"><i class="fa-solid fa-gas-pump"></i></div>
+      <h4>Bensin Motor</h4>
+      <p>Makin banyak bensin diisi, makin jauh jarak yang bisa ditempuh motor.</p>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-icon"><i class="fa-solid fa-gauge-high"></i></div>
+      <h4>Kecepatan Balap</h4>
+      <p>Makin kencang motor melaju, makin singkat waktu yang dibutuhkan untuk sampai ke finish.</p>
+    </div>
+  </div>
+  
+  <div class="question-prompt">
+    <i class="fa-solid fa-lightbulb"></i>
+    <p>Coba pikirkan: dari 4 skenario di atas, mana yang <strong style="color:var(--cyan)">naik-turun bersama</strong>, dan mana yang <strong style="color:var(--orange)">satu naik, satu turun</strong>?</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: TUJUAN ============ -->
+<section class="slide" data-slide="3">
+  <div class="slide-header">
+    <div class="slide-badge orange"><i class="fa-solid fa-bullseye"></i> TUJUAN</div>
+    <div>
+      <h2 class="slide-title">Misi Kamu Hari Ini</h2>
+      <p class="slide-subtitle">Lima tujuan yang harus kamu kuasai di akhir petualangan ini</p>
+    </div>
+  </div>
+  
+  <div class="objective-list">
+    <div class="objective-item">
+      <div class="obj-num">01</div>
+      <div>
+        <h5>Memahami Konsep</h5>
+        <p>Membedakan perbandingan senilai dan berbalik nilai dengan jelas.</p>
+      </div>
+    </div>
+    <div class="objective-item">
+      <div class="obj-num">02</div>
+      <div>
+        <h5>Mengidentifikasi Kasus</h5>
+        <p>Mengenali jenis perbandingan dari situasi kehidupan sehari-hari.</p>
+      </div>
+    </div>
+    <div class="objective-item">
+      <div class="obj-num">03</div>
+      <div>
+        <h5>Menguasai Rumus</h5>
+        <p>Menggunakan notasi dan rumus yang tepat untuk tiap jenis perbandingan.</p>
+      </div>
+    </div>
+    <div class="objective-item">
+      <div class="obj-num">04</div>
+      <div>
+        <h5>Menyelesaikan Soal</h5>
+        <p>Mengerjakan soal cerita dengan strategi yang tepat dan akurat.</p>
+      </div>
+    </div>
+    <div class="objective-item">
+      <div class="obj-num">05</div>
+      <div>
+        <h5>Menerapkan di Kehidupan</h5>
+        <p>Menggunakan konsep perbandingan untuk masalah nyata seperti skala peta, kecepatan, dan kerja tim.</p>
+      </div>
+    </div>
+    <div class="objective-item">
+      <div class="obj-num">06</div>
+      <div>
+        <h5>Berpikir Kritis HOTS</h5>
+        <p>Menyelesaikan soal HOTS yang melibatkan analisis multi-langkah dan kombinasi konsep.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: MATERI ============ -->
+<section class="slide" data-slide="4">
+  <div class="slide-header">
+    <div class="slide-badge"><i class="fa-solid fa-book-open"></i> MATERI</div>
+    <div>
+      <h2 class="slide-title">Basis Pengetahuan</h2>
+      <p class="slide-subtitle">Pilih jenis perbandingan untuk mempelajari konsepnya secara mendalam</p>
+    </div>
+  </div>
+  
+  <div class="materi-toggle">
+    <button class="materi-tab active" data-materi="senilai"><i class="fa-solid fa-divide"></i> Perbandingan Senilai</button>
+    <button class="materi-tab" data-materi="berbalik"><i class="fa-solid fa-xmark"></i> Perbandingan Berbalik Nilai</button>
+  </div>
+  
+  <!-- Materi: Senilai -->
+  <div class="materi-content active" id="materiSenilai">
+    <div class="materi-grid">
+      <div class="info-card">
+        <div class="info-label"><i class="fa-solid fa-circle-info"></i> Definisi</div>
+        <h3>Apa itu Perbandingan Senilai?</h3>
+        <p>Dua besaran dikatakan <strong style="color:var(--cyan)">senilai</strong> apabila nilai kedua besaran tersebut naik bersamaan atau turun bersamaan dengan perbandingan yang selalu tetap. Jika besaran A bertambah, besaran B juga bertambah dengan rasio tetap.</p>
+        <div style="margin-top:14px; padding:12px 16px; background:rgba(0,240,255,0.06); border-radius:10px; border-left:3px solid var(--cyan); font-size:14px;">
+          <strong style="color:var(--cyan);">Ciri khas:</strong> nilai per satuan selalu sama. Contoh: harga per kg selalu sama meskipun jumlah kg berubah.
+        </div>
+      </div>
+      
+      <div class="info-card">
+        <div class="info-label"><i class="fa-solid fa-square-root-variable"></i> Notasi & Rumus</div>
+        <h3>Operasi: <span class="operator-badge div">÷</span></h3>
+        <p>Gunakan <strong>pembagian</strong> untuk mencari nilai per satuan.</p>
+        <div class="formula-box">
+          a : b = c : d<br>
+          <span style="font-size:14px; color:var(--muted);">a/b = c/d → a × d = b × c</span><br><br>
+          <span style="font-size:15px;">Nilai satuan = a ÷ b</span>
+        </div>
+        <p style="margin-top:12px; font-size:13px;">Skala peta: <strong style="color:var(--cyan)">skala = jarak peta ÷ jarak sebenarnya</strong></p>
+      </div>
+    </div>
+    
+    <div class="info-card" style="margin-bottom:18px;">
+      <div class="info-label"><i class="fa-solid fa-globe"></i> Contoh di Kehidupan Sehari-hari</div>
+      <div class="example-list">
+        <div class="example-item">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <p><strong>Belanja:</strong> 3 kg apel Rp45.000 → 5 kg apel Rp75.000</p>
+        </div>
+        <div class="example-item">
+          <i class="fa-solid fa-gas-pump"></i>
+          <p><strong>Bensin:</strong> 4 liter = 120 km → 8 liter = 240 km</p>
+        </div>
+        <div class="example-item">
+          <i class="fa-solid fa-map"></i>
+          <p><strong>Skala Peta:</strong> Jarak di peta sebanding dengan jarak sebenarnya</p>
+        </div>
+        <div class="example-item">
+          <i class="fa-solid fa-stopwatch"></i>
+          <p><strong>Kecepatan Tetap:</strong> Waktu dan jarak sebanding (jika v tetap)</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="viz-container">
+      <div class="info-label"><i class="fa-solid fa-chart-column"></i> Visualisasi Interaktif: Perbandingan Senilai</div>
+      <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">Geser slider untuk mengubah nilai A. Perhatikan B ikut naik proporsional.</p>
+      <div class="viz-bars">
+        <div class="viz-bar-group">
+          <div class="viz-bar" id="barA1" style="height:120px;">
+            <div class="viz-bar-value" id="valA1">30</div>
+          </div>
+          <div class="viz-bar-label">NILAI A</div>
+        </div>
+        <div class="viz-bar-group">
+          <div class="viz-bar bar-b" id="barB1" style="height:80px;">
+            <div class="viz-bar-value" id="valB1">40</div>
+          </div>
+          <div class="viz-bar-label">NILAI B</div>
+        </div>
+      </div>
+      <div class="viz-equation">
+        A : B = <strong id="ratioSenilai">3 : 4</strong> &nbsp;&nbsp;|&nbsp;&nbsp; A ÷ B = <strong id="divSenilai">0.75</strong>
+      </div>
+      <input type="range" class="viz-slider" id="sliderSenilai" min="10" max="100" value="30">
+    </div>
+  </div>
+  
+  <!-- Materi: Berbalik Nilai -->
+  <div class="materi-content" id="materiBerbalik">
+    <div class="materi-grid">
+      <div class="info-card">
+        <div class="info-label orange"><i class="fa-solid fa-circle-info"></i> Definisi</div>
+        <h3>Apa itu Perbandingan Berbalik Nilai?</h3>
+        <p>Dua besaran dikatakan <strong style="color:var(--orange)">berbalik nilai</strong> apabila nilai kedua besaran berlawanan arah: jika besaran A bertambah, besaran B berkurang (atau sebaliknya), dengan hasil kali kedua besaran selalu tetap.</p>
+        <div style="margin-top:14px; padding:12px 16px; background:rgba(255,107,53,0.06); border-radius:10px; border-left:3px solid var(--orange); font-size:14px;">
+          <strong style="color:var(--orange);">Ciri khas:</strong> hasil kali kedua besaran selalu konstan. Contoh: makin banyak pekerja, makin sedikit waktu — tetapi total pekerjaan tetap.
+        </div>
+      </div>
+      
+      <div class="info-card">
+        <div class="info-label orange"><i class="fa-solid fa-square-root-variable"></i> Notasi & Rumus</div>
+        <h3>Operasi: <span class="operator-badge mul">×</span></h3>
+        <p>Gunakan <strong>perkalian</strong> untuk mencari total hasil kerja.</p>
+        <div class="formula-box orange">
+          a × b = c × d<br>
+          <span style="font-size:14px; color:var(--muted);">a : b = d : c (perhatikan urutan)</span><br><br>
+          <span style="font-size:15px;">Hasil kerja = a × b</span>
+        </div>
+        <p style="margin-top:12px; font-size:13px;">Hubungan: <strong style="color:var(--orange)">kecepatan × waktu = jarak</strong> (jika jarak tetap, v dan w berbalik nilai)</p>
+      </div>
+    </div>
+    
+    <div class="info-card" style="margin-bottom:18px;">
+      <div class="info-label orange"><i class="fa-solid fa-globe"></i> Contoh di Kehidupan Sehari-hari</div>
+      <div class="example-list">
+        <div class="example-item orange">
+          <i class="fa-solid fa-people-group"></i>
+          <p><strong>Pekerja:</strong> 8 orang × 12 hari = 6 orang × 16 hari</p>
+        </div>
+        <div class="example-item orange">
+          <i class="fa-solid fa-gauge-high"></i>
+          <p><strong>Kecepatan:</strong> 60 km/jam × 4 jam = 80 km/jam × 3 jam</p>
+        </div>
+        <div class="example-item orange">
+          <i class="fa-solid fa-faucet"></i>
+          <p><strong>Pompa Air:</strong> 1 kran × 6 jam = 3 kran × 2 jam</p>
+        </div>
+        <div class="example-item orange">
+          <i class="fa-solid fa-gear"></i>
+          <p><strong>Mesin:</strong> 6 mesin × 14 hari = 4 mesin × 21 hari</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="viz-container">
+      <div class="info-label orange"><i class="fa-solid fa-chart-column"></i> Visualisasi Interaktif: Perbandingan Berbalik Nilai</div>
+      <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">Geser slider untuk mengubah nilai A. Perhatikan B turun saat A naik, tapi hasil kali selalu sama.</p>
+      <div class="viz-bars">
+        <div class="viz-bar-group">
+          <div class="viz-bar" id="barA2" style="height:60px; background:linear-gradient(180deg,var(--orange),#cc4422); box-shadow:0 0 20px rgba(255,107,53,0.3);">
+            <div class="viz-bar-value" id="valA2">3</div>
+          </div>
+          <div class="viz-bar-label">NILAI A</div>
+        </div>
+        <div class="viz-bar-group">
+          <div class="viz-bar" id="barB2" style="height:160px; background:linear-gradient(180deg,var(--cyan),#0099aa); box-shadow:0 0 20px rgba(0,240,255,0.3);">
+            <div class="viz-bar-value" id="valB2">8</div>
+          </div>
+          <div class="viz-bar-label">NILAI B</div>
+        </div>
+      </div>
+      <div class="viz-equation orange">
+        A × B = <strong id="mulBerbalik">24</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Tetap Konstan!
+      </div>
+      <input type="range" class="viz-slider orange" id="sliderBerbalik" min="1" max="12" value="3">
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: IDENTIFIKASI KASUS ============ -->
+<section class="slide" data-slide="5">
+  <div class="slide-header">
+    <div class="slide-badge orange"><i class="fa-solid fa-shuffle"></i> IDENTIFIKASI</div>
+    <div>
+      <h2 class="slide-title">Misi Klasifikasi</h2>
+      <p class="slide-subtitle">Tentukan apakah setiap kasus termasuk perbandingan senilai atau berbalik nilai</p>
+    </div>
+  </div>
+  
+  <div class="case-grid" id="caseGrid">
+    <!-- Diisi oleh JavaScript -->
+  </div>
+  
+  <div class="case-score">
+    <div>
+      <div class="case-score-label">SKOR KLASIFIKASI</div>
+      <div style="font-size:12px; color:var(--muted); margin-top:2px;">Selesaikan semua kasus untuk melihat hasilnya</div>
+    </div>
+    <div class="case-score-value" id="caseScore">0 / 4</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: LATIHAN SOAL ============ -->
+<section class="slide" data-slide="6">
+  <div class="slide-header">
+    <div class="slide-badge"><i class="fa-solid fa-trophy"></i> LATIHAN SOAL</div>
+    <div>
+      <h2 class="slide-title">Arena Tantangan</h2>
+      <p class="slide-subtitle">Pilih jenis perbandingan lalu kerjakan 25 soal bertingkat: 5 mudah, 10 sedang, 10 HOTS</p>
+    </div>
+  </div>
+  
+  <div class="materi-toggle">
+    <button class="materi-tab active" data-quiz="senilai"><i class="fa-solid fa-divide"></i> Perbandingan Senilai (25)</button>
+    <button class="materi-tab" data-quiz="berbalik"><i class="fa-solid fa-xmark"></i> Perbandingan Berbalik Nilai (25)</button>
+  </div>
+  
+  <div class="quiz-level-info">
+    <span><span class="level-dot easy"></span>Mudah (1-5)</span>
+    <span><span class="level-dot medium"></span>Sedang (6-15)</span>
+    <span><span class="level-dot hots"></span>HOTS (16-25)</span>
+    <span style="margin-left:auto; color:var(--muted); font-size:12px;"><i class="fa-solid fa-circle-info"></i> Tulis jawaban tanpa pemisah ribuan. Desimal boleh pakai koma atau titik.</span>
+  </div>
+  
+  <div class="quiz-layout">
+    <div class="quiz-main">
+      <div class="quiz-grid-num" id="numGrid"></div>
+      
+      <div class="soal-card">
+        <div class="soal-meta">
+          <span class="soal-num" id="soalNum">SOAL 01 / 25</span>
+          <span class="soal-level-tag easy" id="soalLevel">MUDAH</span>
+        </div>
+        <div class="soal-text" id="soalText">Memuat soal...</div>
+        
+        <div class="soal-answer-row">
+          <input type="text" class="neon-input" id="jawabanInput" placeholder="Tulis jawaban di sini..." autocomplete="off">
+          <button class="btn-secondary" id="cekBtn"><i class="fa-solid fa-check"></i> CEK</button>
+          <button class="btn-secondary" id="pembahasanBtn"><i class="fa-solid fa-lightbulb"></i> PEMBAHASAN</button>
+        </div>
+        
+        <div class="answer-feedback" id="answerFeedback"></div>
+        
+        <div class="pembahasan-box" id="pembahasanBox">
+          <div class="pembahasan-label"><i class="fa-solid fa-microscope"></i> Pembahasan</div>
+          <div class="pembahasan-text" id="pembahasanText"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="quiz-sidebar">
+      <div class="quiz-stat">
+        <div class="quiz-stat-label">BENAR</div>
+        <div class="quiz-stat-value green" id="statBenar">0</div>
+        <div class="quiz-stat-sub">dari 25 soal</div>
+      </div>
+      <div class="quiz-stat">
+        <div class="quiz-stat-label">SALAH</div>
+        <div class="quiz-stat-value orange" id="statSalah">0</div>
+        <div class="quiz-stat-sub">dari 25 soal</div>
+      </div>
+      <div class="quiz-stat">
+        <div class="quiz-stat-label">PROGRES</div>
+        <div class="quiz-stat-value" id="statProgres">0%</div>
+        <div class="quiz-stat-sub" id="statSisa">25 soal tersisa</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: KESIMPULAN ============ -->
+<section class="slide" data-slide="7">
+  <div class="slide-header">
+    <div class="slide-badge"><i class="fa-solid fa-flag-checkered"></i> KESIMPULAN</div>
+    <div>
+      <h2 class="slide-title">Misi Selesai</h2>
+      <p class="slide-subtitle">Ringkasan perjalanan dan refleksi pembelajaran</p>
+    </div>
+  </div>
+  
+  <div class="summary-grid">
+    <div class="summary-card cyan">
+      <h4><i class="fa-solid fa-divide"></i> Perbandingan Senilai</h4>
+      <ul>
+        <li>Dua besaran naik/turun bersama</li>
+        <li>Operasi utama: <strong>÷</strong> (pembagian)</li>
+        <li>Rumus: a : b = c : d → a/b = c/d</li>
+        <li>Contoh: belanja, bensin, skala peta</li>
+        <li>Nilai per satuan selalu tetap</li>
+      </ul>
+    </div>
+    <div class="summary-card orange">
+      <h4><i class="fa-solid fa-xmark"></i> Perbandingan Berbalik Nilai</h4>
+      <ul>
+        <li>Dua besaran berlawanan arah</li>
+        <li>Operasi utama: <strong>×</strong> (perkalian)</li>
+        <li>Rumus: a × b = c × d</li>
+        <li>Contoh: pekerja, kecepatan, pompa</li>
+        <li>Hasil kali kedua besaran konstan</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="reflection-area">
+    <div class="info-label"><i class="fa-solid fa-brain"></i> Refleksi Pembelajaran</div>
+    <h3 style="font-family:'Space Grotesk'; font-size:18px; margin:8px 0 12px;">Apa yang sudah kamu pahami hari ini?</h3>
+    <textarea id="refleksiText" placeholder="Tuliskan refleksi kamu di sini... Contoh: 'Saya sudah paham beda senilai dan berbalik nilai. Bagian HOTS tentang pompa air masih perlu saya pelajari lagi.'"></textarea>
+    
+    <div style="margin-top:16px; display:flex; gap:14px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:180px; background:rgba(0,240,255,0.05); border:1px solid var(--border); border-radius:12px; padding:14px;">
+        <div style="font-size:11px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">Total Soal Benar</div>
+        <div style="font-family:'Space Grotesk'; font-size:28px; font-weight:700; color:var(--cyan);" id="finalScore">0 / 50</div>
+      </div>
+      <div style="flex:1; min-width:180px; background:rgba(255,107,53,0.05); border:1px solid var(--border); border-radius:12px; padding:14px;">
+        <div style="font-size:11px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">Skor Klasifikasi</div>
+        <div style="font-family:'Space Grotesk'; font-size:28px; font-weight:700; color:var(--orange);" id="finalClassScore">0 / 4</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="thank-you">
+    <h2>THANK YOU FOR TODAY</h2>
+    <p>Perjalanan tidak berakhir di sini. Teruslah berlatih, petualang!</p>
+    <div class="signature" id="signatureText">— PERBANDINGAN MASTERY —</div>
+  </div>
+</section>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bottom">
+  <button class="nav-btn secondary" id="prevBtn" title="Sebelumnya"><i class="fa-solid fa-chevron-left"></i></button>
+  <div class="slide-indicator"><strong id="currentSlide">01</strong> / 07</div>
+  <button class="nav-btn" id="nextBtn" title="Selanjutnya"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <i class="fa-solid fa-circle-info toast-icon"></i>
+  <span id="toastMsg">Pesan</span>
+</div>
+
+<script>
+// ============ DATA SOAL ============
+const soalSenilai = [
+  // 5 MUDAH
+  { level:'mudah', soal:'Harga 3 kg apel adalah Rp45.000. Berapa harga 5 kg apel yang sama?', jawaban:75000, pembahasan:'Harga per kg = 45.000 ÷ 3 = 15.000. Harga 5 kg = 15.000 × 5 = 75.000. Karena makin banyak apel makin mahal, ini perbandingan senilai.' },
+  { level:'mudah', soal:'Sebuah mobil menempuh 120 km dalam 2 jam. Berapa km yang ditempuh dalam 5 jam dengan kecepatan yang sama?', jawaban:300, pembahasan:'120 ÷ 2 × 5 = 300 km. Kecepatan tetap, jadi jarak dan waktu sebanding (senilai).' },
+  { level:'mudah', soal:'Harga 4 buku adalah Rp20.000. Berapa harga 10 buku yang sama?', jawaban:50000, pembahasan:'20.000 ÷ 4 × 10 = 50.000. Makin banyak buku makin mahal — senilai.' },
+  { level:'mudah', soal:'2 liter air dapat mengisi 8 gelas. Berapa gelas yang dapat diisi 5 liter air?', jawaban:20, pembahasan:'8 ÷ 2 × 5 = 20 gelas. Liter dan gelas sebanding — senilai.' },
+  { level:'mudah', soal:'Sebuah peta berskala 1:100.000. Jarak sebenarnya antara dua kota adalah 50 km. Berapa cm jarak pada peta?', jawaban:50, pembahasan:'50 km = 5.000.000 cm. Jarak peta = 5.000.000 ÷ 100.000 = 50 cm. Skala = jarak peta ÷ jarak sebenarnya (senilai).' },
+  
+  // 10 SEDANG
+  { level:'sedang', soal:'Sebuah peta berskala 1:200.000. Jarak kota A ke B di peta 15 cm. Berapa jarak sebenarnya dalam km?', jawaban:30, pembahasan:'15 × 200.000 = 3.000.000 cm = 30 km. Jarak peta dan sebenarnya sebanding.' },
+  { level:'sedang', soal:'Harga 8 kg gula adalah Rp96.000. Berapa kg gula yang dapat dibeli dengan Rp150.000?', jawaban:12.5, pembahasan:'Harga/kg = 96.000 ÷ 8 = 12.000. 150.000 ÷ 12.000 = 12,5 kg. Uang dan jumlah barang sebanding.' },
+  { level:'sedang', soal:'Sebuah mesin menghasilkan 240 produk dalam 6 jam. Berapa produk dihasilkan dalam 9 jam?', jawaban:360, pembahasan:'240 ÷ 6 × 9 = 360 produk. Waktu dan hasil sebanding.' },
+  { level:'sedang', soal:'Pada peta skala 1:50.000, jarak dua kota 8 cm. Berapa km jarak sebenarnya?', jawaban:4, pembahasan:'8 × 50.000 = 400.000 cm = 4 km.' },
+  { level:'sedang', soal:'Harga 3 m kain adalah Rp75.000. Berapa harga 7 m kain yang sama?', jawaban:175000, pembahasan:'75.000 ÷ 3 × 7 = 175.000.' },
+  { level:'sedang', soal:'Sebuah kendaraan menempuh 180 km dengan 12 liter bensin. Berapa km yang dapat ditempuh dengan 30 liter bensin?', jawaban:450, pembahasan:'180 ÷ 12 × 30 = 450 km. Bensin dan jarak sebanding.' },
+  { level:'sedang', soal:'Skala peta 1:250.000. Jarak sebenarnya 75 km. Berapa cm jarak pada peta?', jawaban:30, pembahasan:'75 km = 7.500.000 cm. 7.500.000 ÷ 250.000 = 30 cm.' },
+  { level:'sedang', soal:'10 pekerja menghasilkan 50 produk per jam. Berapa produk yang dihasilkan 18 pekerja dalam 1 jam?', jawaban:90, pembahasan:'50 ÷ 10 × 18 = 90 produk. Jumlah pekerja dan hasil sebanding.' },
+  { level:'sedang', soal:'Sebuah motor memakai 4 liter bensin untuk menempuh 120 km. Berapa km dapat ditempuh dengan 18 liter bensin?', jawaban:540, pembahasan:'120 ÷ 4 × 18 = 540 km.' },
+  { level:'sedang', soal:'Skala denah rumah 1:200. Panjang ruangan pada denah 6 cm. Berapa meter panjang sebenarnya?', jawaban:12, pembahasan:'6 × 200 = 1.200 cm = 12 m.' },
+  
+  // 10 HOTS
+  { level:'hots', soal:'Sebuah peta berskala 1:250.000. Jarak sebenarnya antara dua kota adalah 87,5 km. Berapa cm jarak pada peta berskala 1:500.000?', jawaban:17.5, pembahasan:'Jarak sebenarnya = 87,5 km = 8.750.000 cm. Pada skala 1:500.000: 8.750.000 ÷ 500.000 = 17,5 cm. Perhatikan: skala diubah, jadi jarak peta juga berubah.' },
+  { level:'hots', soal:'Perbandingan uang Andi dan Budi adalah 3:5. Jika jumlah uang mereka Rp240.000, berapa selisih uang mereka?', jawaban:60000, pembahasan:'Total bagian = 3+5 = 8. Andi = 240.000 × 3/8 = 90.000. Budi = 240.000 × 5/8 = 150.000. Selisih = 60.000.' },
+  { level:'hots', soal:'Sebuah model rumah dibuat dengan skala 1:150. Jika tinggi pintu rumah asli 210 cm, berapa cm tinggi pintu pada model?', jawaban:1.4, pembahasan:'210 ÷ 150 = 1,4 cm. Model = ukuran asli ÷ skala.' },
+  { level:'hots', soal:'Jarak A-B pada peta berskala 1:a adalah 12 cm. Jika jarak sebenarnya 60 km, berapa nilai a?', jawaban:500000, pembahasan:'60 km = 6.000.000 cm. Skala = 6.000.000 ÷ 12 = 500.000. Jadi a = 500.000.' },
+  { level:'hots', soal:'Perbandingan umur Ayah dan Anak 7:2. Selisih umur mereka 25 tahun. Berapa umur Ayah sekarang?', jawaban:35, pembahasan:'Selisih bagian = 7-2 = 5. 5 bagian = 25 tahun, jadi 1 bagian = 5 tahun. Umur Ayah = 7 × 5 = 35 tahun.' },
+  { level:'hots', soal:'Sebuah mesin memproduksi 300 unit dalam 5 jam. Jika efisiensi meningkat 20%, berapa unit dihasilkan dalam 6 jam?', jawaban:432, pembahasan:'Awal: 300 ÷ 5 = 60 unit/jam. Setelah naik 20%: 60 × 1,2 = 72 unit/jam. Dalam 6 jam: 72 × 6 = 432 unit.' },
+  { level:'hots', soal:'Skala peta 1:1.000.000. Pesawat terbang dari kota A ke B dengan kecepatan 600 km/jam. Jarak di peta 12 cm. Berapa menit waktu tempuh?', jawaban:12, pembahasan:'12 × 1.000.000 = 12.000.000 cm = 120 km. Waktu = 120 ÷ 600 = 0,2 jam = 12 menit.' },
+  { level:'hots', soal:'Andi : Budi = 2:3, Budi : Caca = 3:5. Total uang mereka Rp1.500.000. Berapa uang Andi?', jawaban:300000, pembahasan:'Karena Budi sama (3), maka A:B:C = 2:3:5. Total = 10 bagian. Andi = 1.500.000 × 2/10 = 300.000.' },
+  { level:'hots', soal:'Sebuah model gedung setinggi 30 cm dibuat dengan skala 1:400. Di atas gedung dipasang antena setinggi 8 m. Berapa cm tinggi antena pada model?', jawaban:2, pembahasan:'8 m = 800 cm. Tinggi antena pada model = 800 ÷ 400 = 2 cm.' },
+  { level:'hots', soal:'Sebuah mobil menempuh 240 km dalam 3 jam 12 menit. Berapa kecepatan rata-rata mobil dalam km/jam?', jawaban:75, pembahasan:'3 jam 12 menit = 3 + 12/60 = 3,2 jam. Kecepatan = 240 ÷ 3,2 = 75 km/jam.' }
+];
+
+const soalBerbalik = [
+  // 5 MUDAH
+  { level:'mudah', soal:'8 pekerja menyelesaikan pekerjaan dalam 12 hari. Berapa hari jika dikerjakan 6 pekerja?', jawaban:16, pembahasan:'8 × 12 = 96 (total pekerjaan). 96 ÷ 6 = 16 hari. Makin sedikit pekerja, makin lama — berbalik nilai.' },
+  { level:'mudah', soal:'Sebuah mobil menempuh jarak tertentu dengan kecepatan 60 km/jam selama 4 jam. Berapa jam dengan kecepatan 80 km/jam?', jawaban:3, pembahasan:'60 × 4 = 240 km. 240 ÷ 80 = 3 jam. Makin cepat, makin singkat — berbalik nilai.' },
+  { level:'mudah', soal:'4 orang menyelesaikan tugas dalam 6 hari. Berapa hari jika dikerjakan 8 orang?', jawaban:3, pembahasan:'4 × 6 = 24. 24 ÷ 8 = 3 hari. Makin banyak orang, makin cepat — berbalik nilai.' },
+  { level:'mudah', soal:'Sebuah pekerjaan dapat diselesaikan 10 orang dalam 9 hari. Berapa orang yang dibutuhkan untuk menyelesaikannya dalam 15 hari?', jawaban:6, pembahasan:'10 × 9 = 90. 90 ÷ 15 = 6 orang.' },
+  { level:'mudah', soal:'Sebuah kran air mengisi kolam dalam 6 jam. Berapa jam jika 3 kran dengan debit sama digunakan bersama?', jawaban:2, pembahasan:'1 × 6 = 6. 6 ÷ 3 = 2 jam.' },
+  
+  // 10 SEDANG
+  { level:'sedang', soal:'12 pekerja menyelesaikan proyek dalam 20 hari. Jika diinginkan selesai dalam 15 hari, berapa pekerja tambahan yang diperlukan?', jawaban:4, pembahasan:'12 × 20 = 240. 240 ÷ 15 = 16 pekerja. Tambahan = 16 - 12 = 4 pekerja.' },
+  { level:'sedang', soal:'Sebuah mobil menempuh jarak tertentu dengan kecepatan 50 km/jam dalam 6 jam. Jika kecepatan dinaikkan 25%, berapa jam waktu tempuhnya?', jawaban:4.8, pembahasan:'Jarak = 50 × 6 = 300 km. Kecepatan baru = 50 × 1,25 = 62,5 km/jam. Waktu = 300 ÷ 62,5 = 4,8 jam.' },
+  { level:'sedang', soal:'15 siswa menghabiskan dana kelas Rp450.000 dalam 3 bulan. Berapa bulan jika 9 siswa dengan dana sama?', jawaban:5, pembahasan:'15 × 3 = 45. 45 ÷ 9 = 5 bulan.' },
+  { level:'sedang', soal:'Untuk mengecat tembok sebuah rumah diperlukan 6 pekerja selama 8 hari. Jika 2 pekerja sakit, berapa hari tambahan yang diperlukan?', jawaban:4, pembahasan:'6 × 8 = 48. Dengan 4 pekerja: 48 ÷ 4 = 12 hari. Tambahan = 12 - 8 = 4 hari.' },
+  { level:'sedang', soal:'Sebuah pompa air mengisi tangki dalam 12 jam. Berapa jam yang diperlukan 4 pompa dengan debit sama?', jawaban:3, pembahasan:'1 × 12 = 12. 12 ÷ 4 = 3 jam.' },
+  { level:'sedang', soal:'6 mesin produksi menyelesaikan order dalam 14 hari. Jika 2 mesin rusak, berapa hari tambahan untuk menyelesaikan order?', jawaban:7, pembahasan:'6 × 14 = 84. Dengan 4 mesin: 84 ÷ 4 = 21 hari. Tambahan = 21 - 14 = 7 hari.' },
+  { level:'sedang', soal:'Sebuah kendaraan menempuh jarak tertentu dengan kecepatan 40 km/jam dalam 9 jam. Berapa kecepatan agar tempuh dalam 6 jam?', jawaban:60, pembahasan:'40 × 9 = 360 km. 360 ÷ 6 = 60 km/jam.' },
+  { level:'sedang', soal:'10 pemuda dapat membuat kapal nelayan dalam 36 hari. Jika dibantu sehingga selesai dalam 24 hari, berapa pemuda tambahan yang membantu?', jawaban:5, pembahasan:'10 × 36 = 360. 360 ÷ 24 = 15 pemuda. Tambahan = 15 - 10 = 5 pemuda.' },
+  { level:'sedang', soal:'9 petani panen padi dalam 16 hari. Jika panen ingin selesai dalam 12 hari, berapa petani yang harus ditambah?', jawaban:3, pembahasan:'9 × 16 = 144. 144 ÷ 12 = 12 petani. Tambahan = 12 - 9 = 3 petani.' },
+  { level:'sedang', soal:'Sebuah kran mengisi bak mandi dalam 30 menit. Berapa menit jika 5 kran dengan debit sama digunakan bersama?', jawaban:6, pembahasan:'1 × 30 = 30. 30 ÷ 5 = 6 menit.' },
+  
+  // 10 HOTS
+  { level:'hots', soal:'10 pekerja menyelesaikan pekerjaan dalam 24 hari. Setelah bekerja 6 hari, ditambah 5 pekerja. Berapa hari lagi pekerjaan selesai?', jawaban:12, pembahasan:'Total kerja = 10 × 24 = 240. Setelah 6 hari: 60 kerjaan selesai, sisa = 180. Dengan 15 pekerja: 180 ÷ 15 = 12 hari.' },
+  { level:'hots', soal:'12 pekerja menyelesaikan proyek dalam 24 hari. Setelah 8 hari, 4 pekerja keluar. Berapa hari lagi proyek selesai?', jawaban:24, pembahasan:'Total = 12 × 24 = 288. Setelah 8 hari: 96 selesai, sisa = 192. Dengan 8 pekerja: 192 ÷ 8 = 24 hari.' },
+  { level:'hots', soal:'Sepeda motor berangkat dari A menuju B dengan kecepatan 40 km/jam dan tiba dalam 6 jam. Jika kecepatan dinaikkan 20%, berapa persen waktu tempuh berkurang?', jawaban:16.67, pembahasan:'Jarak = 40 × 6 = 240 km. Kecepatan baru = 48 km/jam. Waktu = 240 ÷ 48 = 5 jam. Berkurang = (6-5)/6 × 100 = 16,67%.' },
+  { level:'hots', soal:'Sebuah tangki berisi air dialirkan keluar oleh 6 kran dan habis dalam 10 jam. Jika ditambah 2 kran, berapa persen waktu pengosongan berkurang?', jawaban:25, pembahasan:'6 × 10 = 60. Dengan 8 kran: 60 ÷ 8 = 7,5 jam. Berkurang = (10-7,5)/10 × 100 = 25%.' },
+  { level:'hots', soal:'4 pria menyelesaikan pekerjaan dalam 15 hari. 6 wanita menyelesaikan pekerjaan yang sama dalam 10 hari. Berapa hari jika 2 pria dan 3 wanita bekerja bersama?', jawaban:12, pembahasan:'4P × 15 = 60P, 6W × 10 = 60W. Jadi 1P = 1W (efisiensi sama). 2P + 3W = 5 pekerja efektif. 60 ÷ 5 = 12 hari.' },
+  { level:'hots', soal:'Pompa A dapat mengisi tangki dalam 8 jam, pompa B dalam 12 jam, pompa C dalam 24 jam. Jika ketiganya bekerja bersama, berapa jam tangki penuh?', jawaban:4, pembahasan:'Laju total = 1/8 + 1/12 + 1/24 = 3/24 + 2/24 + 1/24 = 6/24 = 1/4 per jam. Maka waktu = 4 jam.' },
+  { level:'hots', soal:'Sebuah tangki dapat diisi oleh pipa A dalam 6 jam dan pipa B dalam 4 jam. Tangki dapat dikosongkan oleh pipa C dalam 12 jam. Jika ketiganya dibuka, berapa jam tangki penuh?', jawaban:3, pembahasan:'Laju bersih = 1/6 + 1/4 - 1/12 = 2/12 + 3/12 - 1/12 = 4/12 = 1/3 per jam. Maka waktu = 3 jam.' },
+  { level:'hots', soal:'Andi dapat mengecat tembok dalam 12 hari, Budi dalam 8 hari. Jika mereka bekerja bersama, berapa hari pekerjaan selesai?', jawaban:4.8, pembahasan:'Laju = 1/12 + 1/8 = 2/24 + 3/24 = 5/24 per hari. Waktu = 24/5 = 4,8 hari.' },
+  { level:'hots', soal:'Sebuah pekerjaan dapat diselesaikan oleh A dalam 10 hari, B dalam 15 hari. Mereka bekerja bersama selama 3 hari, lalu B berhenti. Berapa hari lagi A harus bekerja sendiri?', jawaban:5, pembahasan:'Laju A+B = 1/10 + 1/15 = 3/30 + 2/30 = 5/30 = 1/6 per hari. Dalam 3 hari selesai 3/6 = 1/2. Sisa = 1/2. A sendiri: (1/2) ÷ (1/10) = 5 hari.' },
+  { level:'hots', soal:'Sebuah proyek dikerjakan A, B, C. A selesai dalam 6 hari, B dalam 8 hari, C dalam 12 hari. Jika ketiganya bekerja bersama, berapa hari proyek selesai?', jawaban:2.67, pembahasan:'Laju total = 1/6 + 1/8 + 1/12 = 4/24 + 3/24 + 2/24 = 9/24 = 3/8 per hari. Waktu = 8/3 ≈ 2,67 hari.' }
+];
+
+// ============ DATA KASUS IDENTIFIKASI ============
+const kasusData = [
+  { desc:'5 pekerja selesai dalam 12 hari. 10 pekerja selesai dalam 6 hari. Makin banyak pekerja, makin cepat selesai.', jawaban:'berbalik', hint:'Pekerja dan waktu berlawanan arah.' },
+  { desc:'3 kg apel harganya Rp45.000. 6 kg apel harganya Rp90.000. Makin banyak apel, makin mahal.', jawaban:'senilai', hint:'Jumlah barang dan harga sebanding.' },
+  { desc:'Skala peta 1:100.000. Jarak di peta 5 cm, jarak sebenarnya 5 km. Makin besar jarak sebenarnya, makin besar jarak di peta.', jawaban:'senilai', hint:'Skala peta adalah perbandingan senilai.' },
+  { desc:'Kecepatan 60 km/jam, waktu tempuh 4 jam. Kecepatan 80 km/jam, waktu tempuh 3 jam. Makin cepat, makin singkat.', jawaban:'berbalik', hint:'Kecepatan dan waktu berlawanan arah.' }
+];
+
+// ============ STATE ============
+let currentSlide = 1;
+let playerName = '';
+let quizType = 'senilai';
+let currentSoal = 0;
+let quizState = {
+  senilai: Array(25).fill(null).map(()=>({answered:false, correct:false})),
+  berbalik: Array(25).fill(null).map(()=>({answered:false, correct:false}))
+};
+let caseAnswered = [false, false, false, false];
+let caseCorrect = [false, false, false, false];
+
+// ============ NAVIGATION ============
+const totalSlides = 7;
+const slides = document.querySelectorAll('.slide');
+const progressFill = document.getElementById('progressFill');
+const currentSlideEl = document.getElementById('currentSlide');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function goToSlide(n) {
+  if (n < 1 || n > totalSlides) return;
+  slides.forEach(s => s.classList.remove('active', 'prev'));
+  const current = document.querySelector(`[data-slide="${n}"]`);
+  current.classList.add('active');
+  if (n > 1) document.querySelector(`[data-slide="${n-1}"]`)?.classList.add('prev');
+  currentSlide = n;
+  currentSlideEl.textContent = String(n).padStart(2,'0');
+  progressFill.style.width = (n / totalSlides * 100) + '%';
+  prevBtn.disabled = n === 1;
+  nextBtn.disabled = n === totalSlides;
+  
+  // Update final scores on slide 7
+  if (n === 7) updateFinalScores();
+}
+
+prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+  if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+});
+
+// ============ SLIDE 1: NAME INPUT ============
+document.getElementById('startBtn').addEventListener('click', () => {
+  const name = document.getElementById('playerName').value.trim();
+  if (!name) {
+    showToast('Masukkan dulu namamu, petualang!', 'warning');
+    document.getElementById('playerName').focus();
+    return;
+  }
+  playerName = name;
+  showToast(`Selamat datang, ${name}! Semoga sukses.`, 'success');
+  goToSlide(2);
+});
+
+document.getElementById('playerName').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') document.getElementById('startBtn').click();
+});
+
+// ============ SLIDE 4: MATERI TOGGLE ============
+document.querySelectorAll('[data-materi]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-materi]').forEach(b => b.classList.remove('active', 'orange'));
+    btn.classList.add('active');
+    const target = btn.dataset.materi;
+    if (target === 'berbalik') btn.classList.add('orange');
+    document.querySelectorAll('.materi-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('materi' + (target === 'senilai' ? 'Senilai' : 'Berbalik')).classList.add('active');
+  });
+});
+
+// Visualisasi Senilai
+const sliderSenilai = document.getElementById('sliderSenilai');
+sliderSenilai.addEventListener('input', (e) => {
+  const a = parseInt(e.target.value);
+  const b = Math.round(a * 4 / 3); // rasio 3:4
+  document.getElementById('barA1').style.height = Math.min(a * 1.6, 200) + 'px';
+  document.getElementById('barB1').style.height = Math.min(b * 1.6, 200) + 'px';
+  document.getElementById('valA1').textContent = a;
+  document.getElementById('valB1').textContent = b;
+  // simplify ratio
+  const gcd = (x,y) => { while(y){const t=y; y=x%y; x=t;} return x; };
+  const g = gcd(a, b);
+  document.getElementById('ratioSenilai').textContent = (a/g) + ' : ' + (b/g);
+  document.getElementById('divSenilai').textContent = (a/b).toFixed(2);
+});
+
+// Visualisasi Berbalik
+const sliderBerbalik = document.getElementById('sliderBerbalik');
+sliderBerbalik.addEventListener('input', (e) => {
+  const a = parseInt(e.target.value);
+  const K = 24;
+  const b = Math.round(K / a);
+  document.getElementById('barA2').style.height = Math.min(a * 20, 200) + 'px';
+  document.getElementById('barB2').style.height = Math.min(b * 20, 200) + 'px';
+  document.getElementById('valA2').textContent = a;
+  document.getElementById('valB2').textContent = b;
+  document.getElementById('mulBerbalik').textContent = (a * b);
+});
+
+// ============ SLIDE 5: IDENTIFIKASI KASUS ============
+function renderCases() {
+  const grid = document.getElementById('caseGrid');
+  grid.innerHTML = '';
+  kasusData.forEach((k, i) => {
+    const card = document.createElement('div');
+    card.className = 'case-card';
+    card.id = 'case-' + i;
+    card.innerHTML = `
+      <div class="case-num">KASUS ${String(i+1).padStart(2,'0')}</div>
+      <div class="case-desc">${k.desc}</div>
+      <div class="case-buttons">
+        <button class="case-btn" onclick="answerCase(${i}, 'senilai')"><i class="fa-solid fa-divide"></i> Senilai</button>
+        <button class="case-btn" onclick="answerCase(${i}, 'berbalik')"><i class="fa-solid fa-xmark"></i> Berbalik Nilai</button>
+      </div>
+      <div class="case-feedback" id="case-feedback-${i}"></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+window.answerCase = function(idx, choice) {
+  if (caseAnswered[idx]) return;
+  caseAnswered[idx] = true;
+  const correct = choice === kasusData[idx].jawaban;
+  caseCorrect[idx] = correct;
+  
+  const card = document.getElementById('case-' + idx);
+  card.classList.add(correct ? 'answered-correct' : 'answered-wrong');
+  
+  const btns = card.querySelectorAll('.case-btn');
+  btns.forEach(b => { b.disabled = true; });
+  if (correct) {
+    btns[choice === 'senilai' ? 0 : 1].classList.add('selected-correct');
+  } else {
+    btns[choice === 'senilai' ? 0 : 1].classList.add('selected-wrong');
+    btns[kasusData[idx].jawaban === 'senilai' ? 0 : 1].classList.add('selected-correct');
+  }
+  
+  const feedback = document.getElementById('case-feedback-' + idx);
+  feedback.className = 'case-feedback show ' + (correct ? 'correct' : 'wrong');
+  feedback.innerHTML = correct 
+    ? `<i class="fa-solid fa-circle-check"></i> Benar! ${kasusData[idx].hint}` 
+    : `<i class="fa-solid fa-circle-xmark"></i> Belum tepat. Jawaban yang benar: <strong>${kasusData[idx].jawaban === 'senilai' ? 'Senilai' : 'Berbalik Nilai'}</strong>. ${kasusData[idx].hint}`;
+  
+  // Update score
+  const score = caseCorrect.filter(c => c).length;
+  document.getElementById('caseScore').textContent = `${score} / 4`;
+  
+  if (correct) showToast('Klasifikasi benar!', 'success');
+};
+
+// ============ SLIDE 6: LATIHAN SOAL ============
+const numGrid = document.getElementById('numGrid');
+const soalText = document.getElementById('soalText');
+const soalNum = document.getElementById('soalNum');
+const soalLevel = document.getElementById('soalLevel');
+const jawabanInput = document.getElementById('jawabanInput');
+const cekBtn = document.getElementById('cekBtn');
+const pembahasanBtn = document.getElementById('pembahasanBtn');
+const pembahasanBox = document.getElementById('pembahasanBox');
+const pembahasanText = document.getElementById('pembahasanText');
+const answerFeedback = document.getElementById('answerFeedback');
+
+function getSoalList() {
+  return quizType === 'senilai' ? soalSenilai : soalBerbalik;
+}
+
+function renderNumGrid() {
+  numGrid.innerHTML = '';
+  const list = getSoalList();
+  list.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'num-btn level-' + s.level;
+    if (i === currentSoal) btn.classList.add('active');
+    if (quizType === 'berbalik') btn.classList.add('orange');
+    const state = quizState[quizType][i];
+    if (state.answered) {
+      btn.classList.add(state.correct ? 'correct' : 'wrong');
+    }
+    btn.textContent = String(i+1).padStart(2,'0');
+    btn.onclick = () => loadSoal(i);
+    numGrid.appendChild(btn);
+  });
+}
+
+function loadSoal(idx) {
+  currentSoal = idx;
+  const list = getSoalList();
+  const s = list[idx];
+  soalNum.textContent = `SOAL ${String(idx+1).padStart(2,'0')} / 25`;
+  if (quizType === 'berbalik') soalNum.classList.add('orange'); else soalNum.classList.remove('orange');
+  
+  soalLevel.className = 'soal-level-tag ' + s.level;
+  soalLevel.textContent = s.level.toUpperCase();
+  soalText.textContent = s.soal;
+  
+  jawabanInput.value = '';
+  jawabanInput.classList.remove('correct', 'wrong');
+  answerFeedback.className = 'answer-feedback';
+  answerFeedback.textContent = '';
+  pembahasanBox.classList.remove('show');
+  
+  // Restore state if answered
+  const state = quizState[quizType][idx];
+  if (state.answered) {
+    jawabanInput.classList.add(state.correct ? 'correct' : 'wrong');
+  }
+  
+  renderNumGrid();
+}
+
+function parseAnswer(input) {
+  if (!input) return NaN;
+  let s = String(input).trim().replace(/\s/g, '').toLowerCase();
+  // Hapus unit umum
+  s = s.replace(/(rp|kg|km|cm|mm|menit|jam|hari|orang|liter|produk|gelas|unit|tahun|persen|%)/g, '');
+  if (!s) return NaN;
+  
+  let candidates = [];
+  // 1. Plain: hapus semua separator
+  let plain = s.replace(/[.,]/g, '');
+  if (plain && !isNaN(plain)) candidates.push(parseFloat(plain));
+  // 2. Indonesian: koma=desimal, titik=ribuan
+  let indo = s.replace(/\./g, '').replace(',', '.');
+  if (indo && !isNaN(indo)) candidates.push(parseFloat(indo));
+  // 3. English: koma=ribuan, titik=desimal
+  let eng = s.replace(/,/g, '');
+  if (eng && !isNaN(eng)) candidates.push(parseFloat(eng));
+  
+  return candidates.length ? candidates[0] : NaN;
+}
+
+function checkAnswer() {
+  const list = getSoalList();
+  const s = list[currentSoal];
+  const input = jawabanInput.value.trim();
+  if (!input) {
+    showToast('Isi jawaban dulu!', 'warning');
+    jawabanInput.focus();
+    return;
+  }
+  
+  const parsed = parseAnswer(input);
+  const expected = s.jawaban;
+  const isCorrect = !isNaN(parsed) && Math.abs(parsed - expected) < 0.05;
+  
+  const state = quizState[quizType][currentSoal];
+  state.answered = true;
+  state.correct = isCorrect;
+  
+  jawabanInput.classList.remove('correct', 'wrong');
+  jawabanInput.classList.add(isCorrect ? 'correct' : 'wrong');
+  
+  answerFeedback.className = 'answer-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+  answerFeedback.innerHTML = isCorrect 
+    ? `<i class="fa-solid fa-circle-check"></i> BENAR! Jawaban: ${expected}` 
+    : `<i class="fa-solid fa-circle-xmark"></i> BELUM TEPAT. Jawaban yang benar: ${expected}`;
+  
+  updateStats();
+  renderNumGrid();
+  
+  if (isCorrect) showToast('Jawaban benar!', 'success');
+}
+
+function updateStats() {
+  let benar = 0, salah = 0, answered = 0;
+  quizState[quizType].forEach(s => {
+    if (s.answered) {
+      answered++;
+      if (s.correct) benar++; else salah++;
+    }
+  });
+  document.getElementById('statBenar').textContent = benar;
+  document.getElementById('statSalah').textContent = salah;
+  document.getElementById('statProgres').textContent = Math.round(answered/25*100) + '%';
+  document.getElementById('statSisa').textContent = (25 - answered) + ' soal tersisa';
+}
+
+cekBtn.addEventListener('click', checkAnswer);
+jawabanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+
+pembahasanBtn.addEventListener('click', () => {
+  const list = getSoalList();
+  pembahasanText.textContent = list[currentSoal].pembahasan;
+  pembahasanBox.classList.toggle('show');
+  if (quizType === 'berbalik') {
+    pembahasanBox.classList.add('orange');
+    document.querySelector('.pembahasan-label').classList.add('orange');
+  } else {
+    pembahasanBox.classList.remove('orange');
+    document.querySelector('.pembahasan-label').classList.remove('orange');
+  }
+});
+
+// Quiz type toggle
+document.querySelectorAll('[data-quiz]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-quiz]').forEach(b => b.classList.remove('active', 'orange'));
+    btn.classList.add('active');
+    const target = btn.dataset.quiz;
+    if (target === 'berbalik') btn.classList.add('orange');
+    quizType = target;
+    currentSoal = 0;
+    loadSoal(0);
+    updateStats();
+  });
+});
+
+// ============ SLIDE 7: FINAL SCORES ============
+function updateFinalScores() {
+  let totalBenar = 0;
+  quizState.senilai.forEach(s => { if (s.correct) totalBenar++; });
+  quizState.berbalik.forEach(s => { if (s.correct) totalBenar++; });
+  document.getElementById('finalScore').textContent = `${totalBenar} / 50`;
+  
+  const classScore = caseCorrect.filter(c => c).length;
+  document.getElementById('finalClassScore').textContent = `${classScore} / 4`;
+  
+  if (playerName) {
+    document.getElementById('signatureText').textContent = `— ${playerName.toUpperCase()} · PERBANDINGAN MASTERY —`;
+  }
+}
+
+// ============ TOAST ============
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
+  toast.className = 'toast ' + type;
+  toastMsg.textContent = msg;
+  const icon = toast.querySelector('.toast-icon');
+  icon.className = 'toast-icon fa-solid ' + (
+    type === 'success' ? 'fa-circle-check' :
+    type === 'error' ? 'fa-circle-xmark' :
+    type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-info'
+  );
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// ============ PARTICLES ============
+function createParticles() {
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDelay = Math.random() * 15 + 's';
+    p.style.animationDuration = (10 + Math.random() * 10) + 's';
+    p.style.background = Math.random() > 0.5 ? 'var(--cyan)' : 'var(--orange)';
+    p.style.boxShadow = `0 0 10px ${Math.random() > 0.5 ? 'var(--cyan)' : 'var(--orange)'}`;
+    document.body.appendChild(p);
+  }
+}
+
+// ============ INIT ============
+renderCases();
+renderNumGrid();
+loadSoal(0);
+updateStats();
+createParticles();
+</script>
+</body>
+</html>
