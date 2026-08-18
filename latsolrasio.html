@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Matematika - Rasio & Skala</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg-1: #0a1628;
+    --bg-2: #112240;
+    --accent: #ffb347;
+    --accent-2: #4ade80;
+    --accent-3: #fb7185;
+    --accent-4: #38bdf8;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  
+  * {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .font-display { font-family: 'Fraunces', serif; }
+  
+  body {
+    background: 
+      radial-gradient(ellipse at 20% 0%, rgba(255, 179, 71, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(74, 222, 128, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 70%),
+      linear-gradient(180deg, #0a1628 0%, #112240 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  
+  .floating-shape {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    pointer-events: none;
+    animation: float 20s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -60px) scale(1.1); }
+    66% { transform: translate(-30px, 40px) scale(0.95); }
+  }
+  
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #ffb347 0%, #ff8c42 100%);
+    color: #0a1628;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px -10px rgba(255, 179, 71, 0.5);
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(255, 179, 71, 0.7);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .btn-success {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: #052e16;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px -10px rgba(74, 222, 128, 0.5);
+  }
+  
+  .btn-success:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(74, 222, 128, 0.7);
+  }
+  
+  .btn-success:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .option-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    text-align: left;
+  }
+  
+  .option-btn:hover:not(.disabled):not(.selected):not(.correct):not(.incorrect) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 179, 71, 0.4);
+    transform: translateX(6px);
+  }
+  
+  .option-btn.selected {
+    background: rgba(255, 179, 71, 0.15);
+    border-color: #ffb347;
+    box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.2);
+  }
+  
+  .option-btn.correct {
+    background: rgba(74, 222, 128, 0.18);
+    border-color: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+  }
+  
+  .option-btn.incorrect {
+    background: rgba(251, 113, 133, 0.18);
+    border-color: #fb7185;
+    box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.25);
+  }
+  
+  .option-btn.disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  .timer-ring {
+    transform: rotate(-90deg);
+  }
+  
+  .timer-ring circle.progress {
+    transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fade-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+  
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  .animate-slide-in {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 10px 30px -10px rgba(255, 179, 71, 0.5); }
+    50% { box-shadow: 0 15px 50px -10px rgba(255, 179, 71, 0.8); }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  
+  .shake { animation: shake 0.4s ease-in-out; }
+  
+  .modal-content::-webkit-scrollbar { width: 8px; }
+  .modal-content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+  .modal-content::-webkit-scrollbar-thumb { background: rgba(255,179,71,0.5); border-radius: 4px; }
+  .modal-content::-webkit-scrollbar-thumb:hover { background: rgba(255,179,71,0.7); }
+  
+  .progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .nav-dot {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .nav-dot:hover {
+    transform: scale(1.3);
+  }
+  
+  .material-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+  }
+  
+  .material-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+  }
+  
+  .formula-box {
+    background: linear-gradient(135deg, rgba(255, 179, 71, 0.08) 0%, rgba(74, 222, 128, 0.08) 100%);
+    border: 1px solid rgba(255, 179, 71, 0.2);
+    border-radius: 16px;
+  }
+  
+  .badge-hots {
+    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  
+  .stat-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  }
+  
+  @keyframes confetti-fall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 100;
+    animation: confetti-fall 3s linear forwards;
+  }
+  
+  .notification {
+    animation: fadeInUp 0.3s ease-out forwards;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating background shapes -->
+<div class="floating-shape" style="width: 450px; height: 450px; background: #ffb347; top: -120px; left: -120px;"></div>
+<div class="floating-shape" style="width: 350px; height: 350px; background: #4ade80; bottom: -80px; right: -80px; animation-delay: -7s;"></div>
+<div class="floating-shape" style="width: 280px; height: 280px; background: #38bdf8; top: 45%; right: 25%; animation-delay: -14s;"></div>
+
+<!-- Grid overlay -->
+<div class="fixed inset-0 grid-pattern pointer-events-none opacity-40"></div>
+
+<!-- Notification container -->
+<div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<!-- Main Container -->
+<div class="relative z-10 min-h-screen">
+
+  <!-- ==================== COVER SCREEN ==================== -->
+  <section id="cover" class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+    <div class="max-w-4xl w-full">
+      <div class="glass-strong rounded-3xl p-8 sm:p-12 animate-fade-up">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-sm font-medium text-slate-300">Matematika HOTS • Kelas 6 SD</span>
+          </div>
+          
+          <h1 class="font-display font-black text-5xl sm:text-7xl leading-tight mb-4">
+            <span class="text-white">Petualangan</span><br>
+            <span class="bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 bg-clip-text text-transparent">Rasio & Skala</span>
+          </h1>
+          
+          <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto">
+            Asah kemampuan berpikir kritis dengan 50 soal pilihan ganda menarik tentang rasio, perbandingan senilai, perbandingan berbalik nilai, dan skala.
+          </p>
+        </div>
+        
+        <!-- Features grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div class="glass rounded-2xl p-4 text-center">
+            <i class="fas fa-list-ol text-2xl text-amber-400 mb-2"></i>
+            <div class="text-2xl font-bold text-white">50</div>
+            <div class="text-xs text-slate-400">Soal PG</div>
+          </div>
+          <div class="glass rounded-2xl p-4 text-center">
+            <i class="fas fa-stopwatch text-2xl text-emerald-400 mb-2"></i>
+            <div class="text-2xl font-bold text-white">2 mnt</div>
+            <div class="text-xs text-slate-400">Per Soal</div>
+          </div>
+          <div class="glass rounded-2xl p-4 text-center">
+            <i class="fas fa-layer-group text-2xl text-sky-400 mb-2"></i>
+            <div class="text-2xl font-bold text-white">4</div>
+            <div class="text-xs text-slate-400">Topik</div>
+          </div>
+          <div class="glass rounded-2xl p-4 text-center">
+            <i class="fas fa-trophy text-2xl text-rose-400 mb-2"></i>
+            <div class="text-2xl font-bold text-white">HOTS</div>
+            <div class="text-xs text-slate-400">Level</div>
+          </div>
+        </div>
+        
+        <!-- Name input -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-slate-300 mb-2">
+            <i class="fas fa-user mr-2 text-amber-400"></i>Nama Siswa
+          </label>
+          <input 
+            type="text" 
+            id="studentName" 
+            placeholder="Masukkan nama lengkapmu di sini..."
+            class="w-full px-5 py-4 rounded-2xl bg-white/5 border-2 border-white/10 focus:border-amber-400 focus:outline-none text-lg text-white placeholder-slate-500 transition-colors"
+          >
+          <p id="nameError" class="text-rose-400 text-sm mt-2 hidden">
+            <i class="fas fa-exclamation-circle mr-1"></i>Silakan masukkan nama terlebih dahulu!
+          </p>
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button onclick="openMaterial()" class="btn-secondary flex-1 px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2">
+            <i class="fas fa-book-open"></i>
+            Lihat Materi
+          </button>
+          <button onclick="startQuiz()" class="btn-primary flex-1 px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-lg pulse-glow">
+            <i class="fas fa-play"></i>
+            Mulai Latihan
+          </button>
+        </div>
+        
+        <!-- Topic preview -->
+        <div class="mt-8 pt-6 border-t border-white/10">
+          <p class="text-xs text-slate-400 mb-3 text-center font-medium uppercase tracking-wider">Topik yang Dipelajari</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-medium">Rasio Dasar</span>
+            <span class="px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-300 text-xs font-medium">Perbandingan Senilai</span>
+            <span class="px-3 py-1.5 rounded-full bg-rose-400/10 border border-rose-400/30 text-rose-300 text-xs font-medium">Berbalik Nilai</span>
+            <span class="px-3 py-1.5 rounded-full bg-sky-400/10 border border-sky-400/30 text-sky-300 text-xs font-medium">Skala</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MATERIAL MODAL ==================== -->
+  <div id="materialModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-strong rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="p-5 sm:p-6 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <h2 class="font-display font-bold text-2xl sm:text-3xl text-white">Materi Pembelajaran</h2>
+          <p class="text-sm text-slate-400">Rasio, Perbandingan, dan Skala</p>
+        </div>
+        <button onclick="closeMaterial()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-slate-300"></i>
+        </button>
+      </div>
+      <div class="modal-content p-5 sm:p-8 overflow-y-auto flex-1">
+        
+        <!-- Materi 1 -->
+        <div class="material-card rounded-2xl p-5 sm:p-6 mb-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <i class="fas fa-divide text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-xl text-white">1. Bentuk Rasio</h3>
+              <p class="text-xs text-slate-400">Dasar perbandingan dua besaran</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-3">
+            <strong class="text-amber-300">Rasio</strong> adalah perbandingan dua besaran sejenis yang dinyatakan dalam bentuk sederhana. Rasio dapat ditulis dalam tiga bentuk:
+          </p>
+          <div class="formula-box p-4 mb-3">
+            <p class="text-center text-lg font-bold text-white mb-2">a : b &nbsp;=&nbsp; a/b &nbsp;=&nbsp; a per b</p>
+            <p class="text-center text-sm text-slate-400">Contoh: 2 : 3 = 2/3 = "dua per tiga"</p>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-amber-300">Contoh:</strong> Di kelas ada 15 siswa laki-laki dan 20 siswa perempuan. Rasio laki-laki dan perempuan = 15 : 20 = <span class="text-amber-300 font-bold">3 : 4</span> (disederhanakan dengan dibagi 5).
+          </p>
+        </div>
+        
+        <!-- Materi 2 -->
+        <div class="material-card rounded-2xl p-5 sm:p-6 mb-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center">
+              <i class="fas fa-calculator text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-xl text-white">2. Mencari Banyak Menggunakan Rasio</h3>
+              <p class="text-xs text-slate-400">Menentukan nilai tiap bagian</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-3">
+            Jika diketahui rasio dan total/selisih/satu bagian, kita bisa mencari banyaknya suatu hal:
+          </p>
+          <div class="formula-box p-4 mb-3">
+            <p class="text-white font-semibold mb-2">Langkah penyelesaian:</p>
+            <ol class="text-sm text-slate-300 space-y-1 list-decimal list-inside">
+              <li>Jumlahkan semua bagian rasio</li>
+              <li>Bagi total/selisih dengan jumlah bagian -> nilai 1 bagian</li>
+              <li>Kalikan nilai 1 bagian dengan bagian yang ditanyakan</li>
+            </ol>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-emerald-300">Contoh:</strong> Rasio uang Andi : Budi = 3 : 5. Selisih uang mereka Rp 12.000. Selisih bagian = 5 - 3 = 2 bagian = Rp 12.000. Maka 1 bagian = Rp 6.000. Uang Andi = 3 x Rp 6.000 = <span class="text-emerald-300 font-bold">Rp 18.000</span>.
+          </p>
+        </div>
+        
+        <!-- Materi 3 -->
+        <div class="material-card rounded-2xl p-5 sm:p-6 mb-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center">
+              <i class="fas fa-arrow-trend-up text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-xl text-white">3. Perbandingan Senilai</h3>
+              <p class="text-xs text-slate-400">Dua besaran berbanding lurus</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-3">
+            <strong class="text-sky-300">Perbandingan senilai</strong> terjadi ketika dua besaran naik/turun bersama-sama. Jika satu besaran naik, besaran lain juga naik, dan sebaliknya.
+          </p>
+          <div class="formula-box p-4 mb-3">
+            <p class="text-center text-white font-bold text-lg mb-2">a/b = c/d &nbsp; atau &nbsp; a x d = b x c</p>
+            <p class="text-center text-sm text-slate-400">a1/b1 = a2/b2</p>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-2">
+            <strong class="text-sky-300">Ciri-ciri perbandingan senilai:</strong>
+          </p>
+          <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside mb-3">
+            <li>Saat nilai pertama naik, nilai kedua juga naik</li>
+            <li>Saat nilai pertama turun, nilai kedua juga turun</li>
+            <li>Contoh: kecepatan & jarak tempuh, harga & jumlah barang, jumlah pekerja & hasil produksi</li>
+          </ul>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-sky-300">Contoh:</strong> 3 buku harga Rp 15.000. Berapa harga 7 buku? <br>
+            <span class="text-slate-400">3/15.000 = 7/x -> x = (7 x 15.000)/3 =</span> <span class="text-sky-300 font-bold">Rp 35.000</span>
+          </p>
+        </div>
+        
+        <!-- Materi 4 -->
+        <div class="material-card rounded-2xl p-5 sm:p-6 mb-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+              <i class="fas fa-arrow-trend-down text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-xl text-white">4. Perbandingan Berbalik Nilai</h3>
+              <p class="text-xs text-slate-400">Dua besaran berbanding terbalik</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-3">
+            <strong class="text-rose-300">Perbandingan berbalik nilai</strong> terjadi ketika dua besaran berubah secara berlawanan. Jika satu besaran naik, besaran lain turun, dan sebaliknya.
+          </p>
+          <div class="formula-box p-4 mb-3">
+            <p class="text-center text-white font-bold text-lg mb-2">a x b = c x d &nbsp; (konstan)</p>
+            <p class="text-center text-sm text-slate-400">a1 x b1 = a2 x b2</p>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-2">
+            <strong class="text-rose-300">Ciri-ciri perbandingan berbalik nilai:</strong>
+          </p>
+          <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside mb-3">
+            <li>Saat nilai pertama naik, nilai kedua turun</li>
+            <li>Saat nilai pertama turun, nilai kedua naik</li>
+            <li>Contoh: jumlah pekerja & waktu kerja, kecepatan & waktu tempuh, jumlah pipa & waktu pengisian</li>
+          </ul>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-rose-300">Contoh:</strong> 4 pekerja selesai dalam 12 hari. Berapa hari untuk 6 pekerja? <br>
+            <span class="text-slate-400">4 x 12 = 6 x x -> x = 48/6 =</span> <span class="text-rose-300 font-bold">8 hari</span>
+          </p>
+        </div>
+        
+        <!-- Materi 5 -->
+        <div class="material-card rounded-2xl p-5 sm:p-6 mb-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-violet-500 flex items-center justify-center">
+              <i class="fas fa-ruler-combined text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-xl text-white">5. Skala</h3>
+              <p class="text-xs text-slate-400">Perbandingan jarak pada gambar dan jarak sebenarnya</p>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-3">
+            <strong class="text-purple-300">Skala</strong> adalah perbandingan jarak pada peta/gambar dengan jarak sebenarnya.
+          </p>
+          <div class="formula-box p-4 mb-3">
+            <p class="text-white font-semibold mb-2">Rumus Utama:</p>
+            <p class="text-center text-amber-300 font-bold text-lg mb-2">Skala = Jarak Peta / Jarak Sebenarnya</p>
+            <p class="text-sm text-slate-300 mb-1">Turunan:</p>
+            <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Jarak Sebenarnya = Jarak Peta / Skala</li>
+              <li>Jarak Peta = Jarak Sebenarnya x Skala</li>
+              <li>Luas Sebenarnya = Luas Peta x (Skala)^2</li>
+            </ul>
+          </div>
+          <div class="bg-white/5 rounded-xl p-4 mb-3">
+            <p class="text-sm text-slate-300 mb-2"><strong class="text-purple-300">Konversi Satuan:</strong></p>
+            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <div>1 km = 100.000 cm</div>
+              <div>1 m = 100 cm</div>
+              <div>1 km = 1.000 m</div>
+              <div>1 hektar = 10.000 m2</div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            <strong class="text-purple-300">Contoh:</strong> Jarak kota A dan B pada peta 5 cm, skala 1:200.000. Jarak sebenarnya = 5 x 200.000 = 1.000.000 cm = <span class="text-purple-300 font-bold">10 km</span>.
+          </p>
+        </div>
+        
+        <!-- Tips -->
+        <div class="rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-amber-400/10 to-rose-400/10 border border-amber-400/20">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-lightbulb text-2xl text-amber-400 mt-1"></i>
+            <div>
+              <h4 class="font-bold text-white mb-2">Tips Mengerjakan Soal</h4>
+              <ul class="text-sm text-slate-300 space-y-1.5 list-disc list-inside">
+                <li>Baca soal dengan teliti, identifikasi jenis perbandingan apa yang digunakan</li>
+                <li>Untuk perbandingan senilai: gunakan bentuk pecahan atau perkalian silang</li>
+                <li>Untuk perbandingan berbalik nilai: kalikan kedua besaran (hasilnya konstan)</li>
+                <li>Pada soal skala, perhatikan satuan - konversikan ke satuan yang sama</li>
+                <li>Untuk soal rasio gabungan, samakan bagian perantara terlebih dahulu</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="p-5 border-t border-white/10">
+        <button onclick="closeMaterial()" class="btn-primary w-full px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+          <i class="fas fa-check"></i>
+          Saya Sudah Paham
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ SCREEN ==================== -->
+  <section id="quiz" class="hidden min-h-screen p-4 sm:p-6">
+    <div class="max-w-5xl mx-auto">
+      
+      <!-- Quiz Header -->
+      <div class="glass-strong rounded-2xl p-4 sm:p-5 mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <i class="fas fa-user-graduate text-white"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400">Siswa</p>
+              <p id="playerNameDisplay" class="font-bold text-white">-</p>
+            </div>
+          </div>
+          
+          <!-- Timer -->
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <svg width="60" height="60" class="timer-ring">
+                <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+                <circle id="timerCircle" class="progress" cx="30" cy="30" r="26" fill="none" stroke="#ffb347" stroke-width="4" stroke-dasharray="163.36" stroke-dashoffset="0" stroke-linecap="round"/>
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span id="timerText" class="text-sm font-bold text-white">2:00</span>
+              </div>
+            </div>
+            <button id="addTimeBtn" onclick="addFifteenSec()" class="btn-secondary px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-1">
+              <i class="fas fa-plus"></i>15s
+            </button>
+          </div>
+          
+          <button onclick="confirmFinish()" class="btn-secondary px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+            <i class="fas fa-flag-checkered"></i>
+            Finish
+          </button>
+        </div>
+        
+        <!-- Progress -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span id="progressText">Soal 1 dari 50</span>
+            <span id="sectionLabel">Bagian I: Rasio Dasar</span>
+          </div>
+          <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+            <div id="progressBar" class="progress-bar h-full bg-gradient-to-r from-amber-400 to-orange-500" style="width: 2%"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Question Card -->
+      <div id="questionCard" class="glass-strong rounded-3xl p-6 sm:p-8 mb-4 animate-fade-up">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span id="questionNumber" class="font-display font-bold text-3xl text-amber-400">01</span>
+            <span class="badge-hots" id="hotsBadge">HOTS</span>
+          </div>
+        </div>
+        
+        <p id="questionText" class="text-white text-base sm:text-lg leading-relaxed mb-6"></p>
+        
+        <div id="optionsContainer" class="space-y-3"></div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="glass-strong rounded-2xl p-4 sm:p-5">
+        <div id="actionButtons" class="flex flex-wrap gap-2 sm:gap-3">
+          <button id="checkBtn" onclick="checkAnswer()" disabled class="btn-success flex-1 px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            Cek Jawaban
+          </button>
+          <button id="discussionBtn" onclick="showDiscussion()" disabled class="btn-secondary px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
+            <i class="fas fa-book"></i>
+            <span class="hidden sm:inline">Pembahasan</span>
+          </button>
+          <button id="prevBtn" onclick="prevQuestion()" class="btn-secondary px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
+            <i class="fas fa-chevron-left"></i>
+            <span class="hidden sm:inline">Sebelumnya</span>
+          </button>
+          <button id="nextBtn" onclick="nextQuestion()" class="btn-primary px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+            <span class="hidden sm:inline">Selanjutnya</span>
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <!-- Discussion Box -->
+        <div id="discussionBox" class="hidden mt-4 p-5 rounded-xl bg-gradient-to-br from-sky-400/10 to-emerald-400/10 border border-sky-400/20">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-400/20 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-lightbulb text-sky-300"></i>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-bold text-white mb-2">Pembahasan</h4>
+              <p id="discussionText" class="text-sm text-slate-300 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Question Navigator -->
+      <div class="glass rounded-2xl p-4 mt-4">
+        <p class="text-xs text-slate-400 mb-3 font-medium">Navigasi Soal</p>
+        <div id="navigator" class="grid grid-cols-10 gap-1.5"></div>
+        <div class="flex flex-wrap gap-3 mt-3 text-xs">
+          <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded bg-emerald-400"></div>
+            <span class="text-slate-400">Benar</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded bg-rose-400"></div>
+            <span class="text-slate-400">Salah</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded bg-amber-400"></div>
+            <span class="text-slate-400">Aktif</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded bg-white/10"></div>
+            <span class="text-slate-400">Belum dijawab</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- ==================== RESULTS SCREEN ==================== -->
+  <section id="results" class="hidden min-h-screen p-4 sm:p-6 flex items-center justify-center">
+    <div class="max-w-4xl w-full">
+      <div class="glass-strong rounded-3xl p-6 sm:p-10 animate-fade-up">
+        
+        <!-- Trophy header -->
+        <div class="text-center mb-8">
+          <div id="resultIcon" class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 mb-4 shadow-2xl">
+            <i class="fas fa-trophy text-4xl text-white"></i>
+          </div>
+          <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-2">Selesai!</h2>
+          <p id="resultMessage" class="text-slate-300 text-lg">Kerja bagus!</p>
+          <p class="text-slate-400 text-sm mt-2">
+            <i class="fas fa-user mr-1"></i><span id="resultName">Siswa</span>
+          </p>
+        </div>
+        
+        <!-- Stats grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="stat-card rounded-2xl p-5 text-center">
+            <i class="fas fa-list text-2xl text-sky-400 mb-2"></i>
+            <div id="statAttempted" class="text-3xl font-bold text-white">0</div>
+            <div class="text-xs text-slate-400 mt-1">Dikerjakan</div>
+          </div>
+          <div class="stat-card rounded-2xl p-5 text-center">
+            <i class="fas fa-check text-2xl text-emerald-400 mb-2"></i>
+            <div id="statCorrect" class="text-3xl font-bold text-emerald-400">0</div>
+            <div class="text-xs text-slate-400 mt-1">Benar</div>
+          </div>
+          <div class="stat-card rounded-2xl p-5 text-center">
+            <i class="fas fa-times text-2xl text-rose-400 mb-2"></i>
+            <div id="statWrong" class="text-3xl font-bold text-rose-400">0</div>
+            <div class="text-xs text-slate-400 mt-1">Salah</div>
+          </div>
+          <div class="stat-card rounded-2xl p-5 text-center">
+            <i class="fas fa-clock text-2xl text-amber-400 mb-2"></i>
+            <div id="statAvgTime" class="text-3xl font-bold text-amber-400">0s</div>
+            <div class="text-xs text-slate-400 mt-1">Rata-rata Waktu</div>
+          </div>
+        </div>
+        
+        <!-- Score visual -->
+        <div class="rounded-2xl p-6 bg-gradient-to-br from-white/5 to-white/0 border border-white/10 mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-slate-400">Skor Akhir</span>
+            <span id="finalScore" class="font-display font-bold text-3xl text-white">0</span>
+          </div>
+          <div class="h-3 bg-white/5 rounded-full overflow-hidden">
+            <div id="scoreBar" class="progress-bar h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-400" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between mt-2 text-xs text-slate-500">
+            <span>0</span>
+            <span>50</span>
+          </div>
+        </div>
+        
+        <!-- Time breakdown -->
+        <div class="rounded-2xl p-5 bg-white/5 border border-white/10 mb-6">
+          <h4 class="font-bold text-white mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-bar text-amber-400"></i>
+            Ringkasan Waktu Pengerjaan
+          </h4>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p class="text-slate-400">Total Waktu</p>
+              <p id="totalTime" class="text-white font-bold text-lg">0 menit 0 detik</p>
+            </div>
+            <div>
+              <p class="text-slate-400">Soal Tercepat</p>
+              <p id="fastestTime" class="text-white font-bold text-lg">-</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button onclick="reviewAnswers()" class="btn-secondary flex-1 px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2">
+            <i class="fas fa-eye"></i>
+            Tinjau Jawaban
+          </button>
+          <button onclick="restartQuiz()" class="btn-primary flex-1 px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+            <i class="fas fa-redo"></i>
+            Mulai Lagi
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== REVIEW MODAL ==================== -->
+  <div id="reviewModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-strong rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="p-5 sm:p-6 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <h2 class="font-display font-bold text-2xl text-white">Tinjau Jawaban</h2>
+          <p class="text-sm text-slate-400">Lihat pembahasan tiap soal</p>
+        </div>
+        <button onclick="closeReview()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-slate-300"></i>
+        </button>
+      </div>
+      <div id="reviewContent" class="modal-content p-5 sm:p-8 overflow-y-auto flex-1 space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== CONFIRM FINISH MODAL ==================== -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-strong rounded-3xl max-w-md w-full p-6 sm:p-8">
+      <div class="text-center mb-5">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-400/20 mb-4">
+          <i class="fas fa-exclamation-triangle text-3xl text-amber-400"></i>
+        </div>
+        <h3 class="font-display font-bold text-2xl text-white mb-2">Selesai Sekarang?</h3>
+        <p class="text-slate-300 text-sm">Apakah kamu yakin ingin mengakhiri latihan ini? Hasil akan langsung ditampilkan.</p>
+      </div>
+      <div id="confirmStats" class="bg-white/5 rounded-xl p-4 mb-5 text-sm"></div>
+      <div class="flex gap-3">
+        <button onclick="closeConfirm()" class="btn-secondary flex-1 px-5 py-3 rounded-xl font-semibold">Lanjutkan Latihan</button>
+        <button onclick="finishQuiz()" class="btn-primary flex-1 px-5 py-3 rounded-xl font-bold">Ya, Selesai</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ==================== QUESTIONS DATA ====================
+  const questions = [
+    // BAGIAN I: RASIO DASAR
+    {section:"I", sectionName:"Rasio Dasar", hots:false, q:"Perbandingan banyaknya siswa laki-laki dan perempuan di kelas 6 adalah 3 : 5. Jika selisih jumlah siswa perempuan dan laki-laki adalah 8 orang, maka jumlah seluruh siswa di kelas tersebut adalah ...", opts:["24 orang","32 orang","40 orang","48 orang"], ans:1, exp:"Rasio L : P = 3 : 5. Selisih perbandingan = 5 - 3 = 2 bagian = 8 orang. Nilai 1 bagian = 8 / 2 = 4 orang. Jumlah seluruh siswa = (3 + 5) x 4 = 8 x 4 = 32 orang."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Di perpustakaan sekolah, perbandingan buku fiksi dan nonfiksi adalah 7 : 4. Setelah pengelola membeli 15 buku nonfiksi baru, perbandingannya menjadi 7 : 7 (atau 1 : 1). Berapakah jumlah buku fiksi mula-mula?", opts:["28 buku","35 buku","42 buku","56 buku"], ans:1, exp:"Rasio awal F : NF = 7 : 4. Setelah ditambah 15 buku NF, rasio menjadi 7 : 7. Buku fiksi tetap (7 bagian), sedangkan buku nonfiksi bertambah dari 4 bagian menjadi 7 bagian (naik 3 bagian). Kenaikan 3 bagian = 15 buku, maka 1 bagian = 5 buku. Buku fiksi mula-mula = 7 x 5 = 35 buku."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Rasio kelereng Alfa dan Bima adalah 2 : 3, sedangkan rasio kelereng Bima dan Ciko adalah 4 : 5. Jika jumlah kelereng Alfa dan Ciko adalah 69 butir, banyak kelereng Bima adalah ...", opts:["36 butir","45 butir","48 butir","60 butir"], ans:0, exp:"A : B = 2 : 3 = 8 : 12; B : C = 4 : 5 = 12 : 15. Maka A : B : C = 8 : 12 : 15. Jumlah A dan C = 8 + 15 = 23 bagian = 69 butir, maka 1 bagian = 3 butir. Kelereng Bima = 12 x 3 = 36 butir."},
+    {section:"I", sectionName:"Rasio Dasar", hots:false, q:"Perbandingan uang tabungan Rina, Susi, dan Tini adalah 3 : 5 : 8. Jika jumlah uang Rina dan Tini adalah Rp330.000,00, selisih uang Susi dan Rina adalah ...", opts:["Rp45.000,00","Rp60.000,00","Rp75.000,00","Rp90.000,00"], ans:1, exp:"Rasio R : S : T = 3 : 5 : 8. R + T = 3 + 8 = 11 bagian = Rp330.000, maka 1 bagian = Rp30.000. Selisih S dan R = 5 - 3 = 2 bagian = 2 x Rp30.000 = Rp60.000,00."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Usia Ayah, Ibu, dan Dani berbanding 8 : 7 : 2. Jika 4 tahun yang lalu umur Dani adalah 6 tahun, maka jumlah umur Ayah dan Ibu saat ini adalah ...", opts:["65 tahun","70 tahun","75 tahun","80 tahun"], ans:2, exp:"Dani 4 tahun lalu = 6 tahun, maka Dani sekarang = 6 + 4 = 10 tahun. Rasio Dani = 2 bagian = 10 tahun, maka 1 bagian = 5 tahun. Rasio Ayah + Ibu = 8 + 7 = 15 bagian. Jumlah umur Ayah & Ibu = 15 x 5 = 75 tahun."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Dalam sebuah kantong, perbandingan kelereng merah, kuning, dan hijau adalah 4 : 3 : 5. Jika diambil 6 kelereng hijau, perbandingan kelereng merah dan hijau menjadi sama banyak. Banyak seluruh kelereng semula adalah ...", opts:["60 butir","72 butir","84 butir","96 butir"], ans:1, exp:"M : K : H = 4 : 3 : 5. Diambil 6 kelereng hijau, perbandingan M dan H menjadi sama (merah 4 bagian, hijau menjadi 4 bagian, berkurang 1 bagian). Berarti 1 bagian = 6 butir. Total kelereng mula-mula = (4 + 3 + 5) x 6 = 12 x 6 = 72 butir."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Perbandingan volume air dalam botol A dan botol B adalah 5 : 8. Jika 180 ml air dari botol B dituangkan ke botol A, volume air pada kedua botol menjadi sama banyak. Volume air botol A mula-mula adalah ...", opts:["450 ml","600 ml","750 ml","960 ml"], ans:1, exp:"A = 5x, B = 8x. Total air = 13x. Jika sama banyak, masing-masing = 6,5x. Perubahan botol A = 6,5x - 5x = 1,5x = 180 ml, maka x = 120 ml. Volume botol A mula-mula = 5 x 120 = 600 ml."},
+    {section:"I", sectionName:"Rasio Dasar", hots:false, q:"Suatu adonan roti membutuhkan tepung terigu dan gula pasir dengan rasio 5 : 2. Jika seorang pembuat kue menggunakan 350 gram gula pasir, berat tepung terigu yang harus ditambahkan adalah ...", opts:["700 gram","875 gram","950 gram","1.050 gram"], ans:1, exp:"Terigu : Gula = 5 : 2. Terigu = (5/2) x 350 gram = 5 x 175 = 875 gram."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Perbandingan panjang dan lebar sebuah kebun berbentuk persegi panjang adalah 7 : 4. Jika keliling kebun tersebut adalah 110 meter, luas kebun tersebut adalah ...", opts:["700 m2","680 m2","750 m2","820 m2"], ans:0, exp:"p : l = 7 : 4. Keliling = 2(p + l) = 110 m, maka p + l = 55 m. Total bagian = 7 + 4 = 11 bagian = 55 m, maka 1 bagian = 5 m. Panjang = 7 x 5 = 35 m, Lebar = 4 x 5 = 20 m. Luas = 35 x 20 = 700 m2."},
+    {section:"I", sectionName:"Rasio Dasar", hots:false, q:"Tiga orang pekerja membagi upah borongan dengan rasio 3 : 4 : 5. Jika pekerja yang menerima bagian terbanyak mendapat Rp450.000,00, jumlah seluruh upah borongan tersebut adalah ...", opts:["Rp900.000,00","Rp1.050.000,00","Rp1.080.000,00","Rp1.200.000,00"], ans:2, exp:"Bagian terbanyak = 5 bagian = Rp450.000, maka 1 bagian = Rp90.000. Total perbandingan = 3 + 4 + 5 = 12 bagian. Total upah = 12 x Rp90.000 = Rp1.080.000,00."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Perbandingan berat badan Arya dan Bagas adalah 4 : 5. Setelah Arya berolahraga rutin dan berat badannya turun 2 kg, perbandingannya menjadi 6 : 8 (atau 3 : 4). Berapakah berat badan Bagas?", opts:["35 kg","40 kg","45 kg","50 kg"], ans:1, exp:"Arya : Bagas = 4 : 5, maka Arya = 4x, Bagas = 5x. Setelah turun 2 kg: (4x - 2) / 5x = 3/4, maka 4(4x - 2) = 3(5x), maka 16x - 8 = 15x, maka x = 8. Berat badan Bagas = 5 x 8 = 40 kg."},
+    {section:"I", sectionName:"Rasio Dasar", hots:true, q:"Rasio jumlah ayam dan bebek milik Pak Tono adalah 5 : 3. Jika Pak Tono menjual 10 ekor ayam dan membeli 6 ekor bebek, jumlah ayam dan bebek menjadi sama banyak. Banyak ayam mula-mula adalah ...", opts:["30 ekor","35 ekor","40 ekor","45 ekor"], ans:2, exp:"Ayam = 5x, Bebek = 3x. 5x - 10 = 3x + 6, maka 2x = 16, maka x = 8. Jumlah ayam mula-mula = 5 x 8 = 40 ekor."},
+    
+    // BAGIAN II: PERBANDINGAN SENILAI
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Sebuah mobil memerlukan 6 liter bensin untuk menempuh jarak 72 km. Banyak bensin yang dibutuhkan untuk menempuh jarak 180 km dengan kecepatan konstan adalah ...", opts:["12 liter","14 liter","15 liter","18 liter"], ans:2, exp:"Perbandingan senilai: Konsumsi per liter = 72 km / 6 liter = 12 km/liter. Bensin untuk 180 km = 180 / 12 = 15 liter."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Harga 2 kodi buku tulis adalah Rp180.000,00. Jika Pak Rudi ingin membeli 3 lusin buku tulis yang sejenis, biaya yang harus ia bayar adalah ...", opts:["Rp144.000,00","Rp156.000,00","Rp162.000,00","Rp170.000,00"], ans:2, exp:"2 kodi = 40 buah = Rp180.000, maka Harga per buku = Rp180.000 / 40 = Rp4.500. 3 lusin = 36 buah. Harga = 36 x Rp4.500 = Rp162.000,00."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Sebuah mesin cetak dapat mencetak 350 lembar brosur dalam waktu 5 menit. Waktu yang dibutuhkan mesin tersebut untuk mencetak 2.100 lembar brosur adalah ...", opts:["25 menit","30 menit","35 menit","40 menit"], ans:1, exp:"Kecepatan = 350 lembar / 5 menit = 70 lembar/menit. Waktu untuk 2.100 lembar = 2.100 / 70 = 30 menit."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Konveksi 'Karya Busana' mampu menjahit 84 potong seragam sekolah dalam waktu 6 hari. Jika pesanan bertambah sehingga konveksi harus menyelesaikan 140 potong seragam dengan laju kerja yang sama, waktu yang diperlukan adalah ...", opts:["9 hari","10 hari","11 hari","12 hari"], ans:1, exp:"Kapasitas harian = 84 / 6 = 14 potong/hari. Waktu untuk 140 potong = 140 / 14 = 10 hari."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Untuk membuat 15 porsi puding buah, diperlukan 450 gram gula dan 3 liter susu cair. Jika seorang koki ingin membuat 25 porsi puding yang sama, kebutuhan gula dan susu berturut-turut adalah ...", opts:["650 g dan 4 liter","750 g dan 5 liter","750 g dan 4,5 liter","800 g dan 5 liter"], ans:1, exp:"Faktor pengali = 25 / 15 = 5/3. Gula = 450 x (5/3) = 750 gram. Susu = 3 x (5/3) = 5 liter."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Nilai tukar mata uang asing adalah 3 Dollar AS setara dengan Rp46.500,00. Jika Wisnu memiliki 25 Dollar AS dan menukarkannya ke rupiah, uang yang ia peroleh adalah ...", opts:["Rp375.000,00","Rp387.500,00","Rp392.500,00","Rp405.000,00"], ans:1, exp:"Kurs 1 Dollar = Rp46.500 / 3 = Rp15.500. Nilai 25 Dollar = 25 x Rp15.500 = Rp387.500,00."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Berat tumpukan 120 lembar kertas HVS yang sama adalah 480 gram. Jika sebuah kardus berisi kertas HVS serupa memiliki berat total kertas 2,4 kg, banyak lembar kertas dalam kardus tersebut adalah ...", opts:["500 lembar","600 lembar","700 lembar","800 lembar"], ans:1, exp:"2,4 kg = 2.400 gram. Berat 1 lembar = 480 g / 120 = 4 gram. Banyak lembar = 2.400 / 4 = 600 lembar."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Sebuah pompa air otomatis mampu memindahkan 240 liter air ke dalam toren dalam durasi 8 menit. Jika kapasitas toren adalah 750 liter dan saat ini sudah terisi 150 liter, sisa waktu untuk mengisi toren hingga penuh adalah ...", opts:["18 menit","20 menit","22 menit","25 menit"], ans:1, exp:"Debit pompa = 240 L / 8 menit = 30 L/menit. Volume yang perlu diisi = 750 - 150 = 600 liter. Waktu = 600 / 30 = 20 menit."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Di sebuah toko kue, 4 kotak donat berisi total 24 buah dijual seharga Rp72.000,00. Jika Ibu membeli 9 kotak donat yang sama persis, harga yang harus dibayar Ibu adalah ...", opts:["Rp144.000,00","Rp158.000,00","Rp162.000,00","Rp180.000,00"], ans:2, exp:"Harga 1 kotak = Rp72.000 / 4 = Rp18.000. Harga 9 kotak = 9 x Rp18.000 = Rp162.000,00."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:false, q:"Seorang pengetik cepat mampu mengetik 600 kata dalam 15 menit. Jika ia harus mengetik naskah laporan sebanyak 2.600 kata dengan kecepatan yang sama, waktu yang dibutuhkannya adalah ...", opts:["1 jam 5 menit","1 jam 10 menit","1 jam 15 menit","1 jam 20 menit"], ans:0, exp:"Kecepatan = 600 / 15 = 40 kata/menit. Waktu = 2.600 / 40 = 65 menit = 1 jam 5 menit."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Sebuah pabrik keramik menghasilkan 45 lusin piring dalam waktu 3 jam kerja. Berapa banyak piring (dalam satuan buah) yang dihasilkan pabrik tersebut jika beroperasi selama 7 jam?", opts:["1.220 buah","1.260 buah","1.300 buah","1.350 buah"], ans:1, exp:"45 lusin = 540 buah per 3 jam = 180 buah/jam. Produksi 7 jam = 7 x 180 = 1.260 buah."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Biaya menginap di sebuah hotel selama 4 hari adalah Rp1.400.000,00. Jika seorang tamu membayar total Rp2.800.000,00 setelah mendapat diskon 20%, berapa hari tamu tersebut sebenarnya menginap?", opts:["8 hari","9 hari","10 hari","12 hari"], ans:2, exp:"Tarif per hari = Rp1.400.000 / 4 = Rp350.000. Bayar Rp2.800.000 setelah diskon 20% (artinya 80% dari tarif normal), maka Tarif normal = Rp2.800.000 / 0,8 = Rp3.500.000. Lama menginap = Rp3.500.000 / Rp350.000 = 10 hari."},
+    {section:"II", sectionName:"Perbandingan Senilai", hots:true, q:"Sebuah sepeda motor menempuh jarak 90 km dengan 2,5 liter bensin. Jika tangki motor diisi 6 liter bensin dan motor telah menempuh perjalanan sejauh 144 km, sisa bensin dalam tangki adalah ...", opts:["1,5 liter","2,0 liter","2,4 liter","3,6 liter"], ans:1, exp:"Efisiensi = 90 km / 2,5 L = 36 km/liter. Bensin terpakai = 144 / 36 = 4 liter. Sisa bensin = 6 - 4 = 2,0 liter."},
+    
+    // BAGIAN III: PERBANDINGAN BERBALIK NILAI
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Suatu pekerjaan pembangunan jembatan dapat diselesaikan oleh 18 orang pekerja dalam waktu 40 hari. Jika pekerjaan tersebut ingin diselesaikan dalam waktu 24 hari, banyak pekerja yang harus dipekerjakan seluruhnya adalah ...", opts:["25 orang","28 orang","30 orang","32 orang"], ans:2, exp:"Perbandingan berbalik nilai: P1 x H1 = P2 x H2, maka 18 x 40 = P2 x 24, maka P2 = 720 / 24 = 30 orang."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Persediaan pakan ternak di peternakan ayam cukup untuk 120 ekor ayam selama 30 hari. Jika peternak membeli lagi 30 ekor ayam tanpa menambah stok pakan, persediaan pakan tersebut akan habis dalam waktu ...", opts:["20 hari","24 hari","25 hari","26 hari"], ans:1, exp:"Jumlah ayam menjadi 120 + 30 = 150 ekor. 120 x 30 = 150 x H2, maka H2 = 3.600 / 150 = 24 hari."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Sebuah mobil menempuh perjalanan dari kota P ke kota Q dengan kecepatan rata-rata 60 km/jam dalam waktu 3 jam 30 menit. Jika pengendara ingin tiba 1 jam lebih cepat, kecepatan rata-rata mobil harus ditingkatkan menjadi ...", opts:["75 km/jam","80 km/jam","84 km/jam","90 km/jam"], ans:2, exp:"Waktu awal = 3,5 jam, maka Jarak = 60 x 3,5 = 210 km. Waktu baru = 3,5 - 1 = 2,5 jam. Kecepatan baru = 210 / 2,5 = 84 km/jam."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Sebanyak 15 orang pekerja direncanakan menyelesaikan renovasi rumah dalam waktu 24 hari. Setelah bekerja selama 8 hari, pekerjaan terhenti selama 4 hari karena cuaca buruk. Agar proyek selesai tepat waktu sesuai rencana semula, banyak tambahan pekerja yang diperlukan adalah ...", opts:["4 orang","5 orang","6 orang","8 orang"], ans:1, exp:"Sisa waktu normal = 24 - 8 = 16 hari. Beban sisa = 15 x 16 = 240 orang-hari. Sisa waktu tersedia = 16 - 4 = 12 hari. Pekerja dibutuhkan = 240 / 12 = 20 orang. Tambahan pekerja = 20 - 15 = 5 orang."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Sebuah proyek gedung direncanakan selesai dalam waktu 50 hari oleh 24 pekerja. Setelah dikerjakan selama 20 hari, pemborong menambah 6 orang pekerja baru. Berapa hari lebih cepat proyek tersebut dapat diselesaikan dari target awal?", opts:["4 hari","6 hari","8 hari","10 hari"], ans:1, exp:"Sisa waktu = 50 - 20 = 30 hari. Beban tersisa = 24 x 30 = 720 orang-hari. Pekerja baru = 24 + 6 = 30 orang. Waktu penyelesaian sisa = 720 / 30 = 24 hari. Lebih cepat = 30 - 24 = 6 hari."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Pak Rahmat membagikan sejumlah permen kepada 24 anak panti asuhan dan setiap anak menerima 15 butir permen. Jika permen yang sama dibagikan kepada 30 anak, banyak permen yang didapat setiap anak adalah ...", opts:["10 butir","12 butir","14 butir","16 butir"], ans:1, exp:"Total permen = 24 x 15 = 360 butir. Jika untuk 30 anak = 360 / 30 = 12 butir per anak."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Sebuah kapal pesiar memiliki persediaan makanan yang cukup untuk 45 orang awak selama 28 hari. Di tengah perjalanan, kapal mengevakuasi 15 orang korban perahu karam. Berapa hari persediaan makanan tersebut akan bertahan sejak kapal mengevakuasi korban jika porsi makan tiap orang tetap sama?", opts:["18 hari","21 hari","22 hari","24 hari"], ans:1, exp:"Total porsi = 45 x 28 = 1.260 orang-hari. Jumlah orang menjadi 45 + 15 = 60 orang. Lama bertahan = 1.260 / 60 = 21 hari."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Sebuah tangki air dapat dikosongkan oleh 6 pipa pembuangan berukuran sama dalam waktu 40 menit. Jika hanya 4 pipa pembuangan yang dibuka, waktu yang dibutuhkan untuk mengosongkan tangki tersebut adalah ...", opts:["50 menit","55 menit","60 menit","75 menit"], ans:2, exp:"6 pipa x 40 menit = 4 pipa x T2, maka T2 = 240 / 4 = 60 menit."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:false, q:"Budi mengendarai sepeda dengan kelajuan rata-rata 12 km/jam dari rumah ke sekolah dalam waktu 20 menit. Jika adik Budi berjalan kaki menempuh rute yang sama dengan kelajuan rata-rata 4 km/jam, waktu tempuh adik adalah ...", opts:["45 menit","50 menit","60 menit","75 menit"], ans:2, exp:"Jarak = 12 km/jam x (20/60 jam) = 4 km. Waktu adik = 4 km / (4 km/jam) = 1 jam = 60 menit."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Suatu pekerjaan jika dikerjakan oleh 12 orang pria selesai dalam 15 hari. Jika pekerjaan tersebut dikerjakan oleh 18 orang pria dengan kemampuan yang sama, efisiensi waktu yang dihemat (selisih hari penyelesaian) adalah ...", opts:["3 hari","5 hari","6 hari","10 hari"], ans:1, exp:"12 x 15 = 18 x H2, maka H2 = 180 / 18 = 10 hari. Efisiensi waktu yang dihemat = 15 - 10 = 5 hari."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Peternak memiliki persediaan rumput untuk 36 ekor kambing selama 20 hari. Setelah 5 hari berjalan, peternak menjual 6 ekor kambingnya. Berapa hari lagi sisa pakan rumput tersebut akan habis?", opts:["16 hari","18 hari","20 hari","22 hari"], ans:1, exp:"Sisa waktu = 20 - 5 = 15 hari untuk 36 kambing, maka Beban sisa = 36 x 15 = 540 kambing-hari. Jumlah kambing menjadi 36 - 6 = 30 ekor. Sisa hari = 540 / 30 = 18 hari."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Seorang penjahit membuat 40 helai pakaian dengan menggunakan pola kain selebar 90 cm memerlukan panjang kain 60 meter. Jika ia menggunakan pola pada kain dengan lebar 120 cm, panjang kain yang dibutuhkan adalah ...", opts:["40 meter","45 meter","48 meter","50 meter"], ans:1, exp:"Luas total kain tetap: 90 cm x 60 m = 120 cm x P2, maka P2 = 5.400 / 120 = 45 meter."},
+    {section:"III", sectionName:"Perbandingan Berbalik Nilai", hots:true, q:"Sebuah proyek perbaikan jalan target awalnya dikerjakan oleh 20 orang dalam 30 hari. Setelah berjalan 10 hari, 5 orang pekerja mengundurkan diri dan tidak diganti. Proyek tersebut akan terlambat selama ...", opts:["5 hari","6,67 hari","8 hari","10 hari"], ans:1, exp:"Sisa pekerjaan = 20 orang x 20 hari = 400 orang-hari. Sisa pekerja = 20 - 5 = 15 orang. Waktu yang dibutuhkan = 400 / 15 = 26,67 hari. Keterlambatan = 26,67 - 20 = 6,67 hari."},
+    
+    // BAGIAN IV: SKALA
+    {section:"IV", sectionName:"Skala", hots:false, q:"Jarak antara kota A dan kota B pada peta berskala 1 : 1.500.000 adalah 6 cm. Jarak sebenarnya antara kedua kota tersebut adalah ...", opts:["9 km","90 km","120 km","900 km"], ans:1, exp:"JS = JP x Skala = 6 cm x 1.500.000 = 9.000.000 cm = 90 km."},
+    {section:"IV", sectionName:"Skala", hots:false, q:"Jarak sebenarnya antara dua kecamatan adalah 42 km. Jika jarak pada peta yang dibuat Andi adalah 7 cm, maka skala peta tersebut adalah ...", opts:["1 : 60.000","1 : 600.000","1 : 6.000.000","1 : 700.000"], ans:1, exp:"42 km = 4.200.000 cm. Skala = JP / JS = 7 cm / 4.200.000 cm = 1 : 600.000."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Sebuah denah rumah digambar dengan skala 1 : 200. Sebuah ruang tamu berukuran 3 cm x 4 cm pada denah. Luas ruang tamu sebenarnya adalah ...", opts:["12 m2","24 m2","48 m2","96 m2"], ans:2, exp:"Panjang sebenarnya = 3 cm x 200 = 600 cm = 6 m. Lebar sebenarnya = 4 cm x 200 = 800 cm = 8 m. Luas sebenarnya = 6 m x 8 m = 48 m2."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Jarak kota X dan Y pada Peta I yang berskala 1 : 400.000 adalah 12 cm. Jika jarak kedua kota tersebut digambar kembali pada Peta II dengan panjang 8 cm, maka skala Peta II adalah ...", opts:["1 : 500.000","1 : 600.000","1 : 750.000","1 : 800.000"], ans:1, exp:"JS = 12 cm x 400.000 = 4.800.000 cm. Skala Peta II = 8 cm / 4.800.000 cm = 1 : 600.000."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Sebidang tanah berbentuk persegi memiliki keliling pada gambar 32 cm. Jika gambar tersebut menggunakan skala 1 : 250, luas tanah sebenarnya adalah ...", opts:["200 m2","400 m2","625 m2","800 m2"], ans:1, exp:"Sisi pada peta = 32 / 4 = 8 cm. Sisi sebenarnya = 8 cm x 250 = 2.000 cm = 20 m. Luas sebenarnya = 20 m x 20 m = 400 m2."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Lapangan sepak bola berukuran sebenarnya 100 m x 60 m. Jika lapangan tersebut digambar dengan skala 1 : 500, perbandingan keliling lapangan pada gambar terhadap keliling lapangan sebenarnya adalah ...", opts:["1 : 250","1 : 500","1 : 2.500","1 : 250.000"], ans:1, exp:"Rasio panjang dimensi linier (panjang, lebar, dan keliling) selalu sama dengan skala gambar, yaitu 1 : 500."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Sebuah taman berbentuk lingkaran memiliki diameter 28 meter. Pada denah berskala 1 : 400, luas taman pada gambar adalah ... (gunakan pi = 22/7)", opts:["38,5 cm2","44,0 cm2","154,0 cm2","616,0 cm2"], ans:0, exp:"Diameter sebenarnya = 28 m = 2.800 cm. Diameter pada peta = 2.800 / 400 = 7 cm, maka Jari-jari (r) = 3,5 cm. Luas = (22/7) x 3,5 x 3,5 = 38,5 cm2."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Jarak antara kota K dan kota M pada peta adalah 4,5 cm. Skala peta tersebut adalah 1 : 2.000.000. Jika seorang pengendara motor menempuh jarak sebenarnya dengan kecepatan rata-rata 45 km/jam, waktu perjalanan yang dibutuhkan adalah ...", opts:["1,5 jam","2 jam","2,5 jam","3 jam"], ans:1, exp:"JS = 4,5 cm x 2.000.000 = 9.000.000 cm = 90 km. Waktu = 90 km / (45 km/jam) = 2 jam."},
+    {section:"IV", sectionName:"Skala", hots:false, q:"Model sebuah gedung bertingkat memiliki tinggi 35 cm dan lebar 15 cm. Jika tinggi gedung sebenarnya adalah 70 meter, maka lebar gedung sebenarnya adalah ...", opts:["25 meter","30 meter","35 meter","40 meter"], ans:1, exp:"Skala model = 35 cm / 7.000 cm = 1 : 200. Lebar sebenarnya = 15 cm x 200 = 3.000 cm = 30 meter."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Jarak kota P dan Q pada peta berskala 1 : 1.200.000 adalah 15 cm. Pak Hasan mengendarai mobil dari kota P ke Q dengan menghabiskan bensin sebanyak 1 liter setiap 15 km. Banyak bensin yang dihabiskan untuk perjalanan tersebut adalah ...", opts:["10 liter","12 liter","14 liter","15 liter"], ans:1, exp:"JS = 15 cm x 1.200.000 = 18.000.000 cm = 180 km. Bensin = 180 / 15 = 12 liter."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Kolam renang berukuran panjang 25 m dan lebar 10 m digambar pada kertas gambar berukuran 20 cm x 15 cm. Skala terbesar (paling proporsional) yang mungkin digunakan agar gambar kolam termuat penuh adalah ...", opts:["1 : 100","1 : 125","1 : 150","1 : 200"], ans:1, exp:"Panjang: 2.500 cm / 20 cm = 125 (skala 1 : 125). Lebar: 1.000 cm / 15 cm = 66,67 (skala 1 : 67). Agar kedua dimensi termuat penuh pada kertas gambar, harus dipilih perbandingan pengecilan yang mampu menampung dimensi terpanjang, yaitu skala 1 : 125."},
+    {section:"IV", sectionName:"Skala", hots:true, q:"Suatu denah kebun berskala 1 : 500 memiliki luas gambar 48 cm2. Jika kebun tersebut dijual dengan harga Rp600.000,00 per meter persegi, total nilai jual kebun tersebut adalah ...", opts:["Rp720.000.000,00","Rp600.000.000,00","Rp480.000.000,00","Rp360.000.000,00"], ans:0, exp:"Faktor skala luas = 500 x 500 = 250.000. Luas sebenarnya = 48 cm2 x 250.000 = 12.000.000 cm2 = 1.200 m2. Nilai jual = 1.200 m2 x Rp600.000 = Rp720.000.000,00."}
+  ];
+
+  // ==================== STATE ====================
+  let currentQ = 0;
+  let studentName = "";
+  let selectedOption = null;
+  let answered = false;
+  let timeRemaining = 120;
+  let timerInterval = null;
+  let answers = [];
+  let fifteenSecUsed = false;
+  
+  // Inisialisasi array jawaban
+  function initAnswers() {
+    answers = [];
+    for (let i = 0; i < questions.length; i++) {
+      answers.push({selected: null, correct: false, answered: false, timeTaken: 0, fifteenSecUsed: false});
+    }
+  }
+  initAnswers();
+
+  // ==================== UTILITIES ====================
+  function showNotification(message, type) {
+    type = type || 'info';
+    var colors = {
+      success: 'from-emerald-500/20 to-emerald-500/5 border-emerald-400/40',
+      error: 'from-rose-500/20 to-rose-500/5 border-rose-400/40',
+      warning: 'from-amber-500/20 to-amber-500/5 border-amber-400/40',
+      info: 'from-sky-500/20 to-sky-500/5 border-sky-400/40'
+    };
+    var icons = {
+      success: 'fa-check-circle text-emerald-400',
+      error: 'fa-times-circle text-rose-400',
+      warning: 'fa-exclamation-triangle text-amber-400',
+      info: 'fa-info-circle text-sky-400'
+    };
+    var div = document.createElement('div');
+    div.className = 'notification glass rounded-xl px-4 py-3 flex items-center gap-3 bg-gradient-to-br ' + colors[type] + ' border';
+    div.innerHTML = '<i class="fas ' + icons[type] + '"></i><span class="text-sm text-white">' + message + '</span>';
+    document.getElementById('notificationContainer').appendChild(div);
+    setTimeout(function() {
+      div.style.opacity = '0';
+      div.style.transform = 'translateX(100px)';
+      setTimeout(function() { div.remove(); }, 300);
+    }, 3000);
+  }
+
+  // ==================== MATERIAL MODAL ====================
+  function openMaterial() {
+    document.getElementById('materialModal').classList.remove('hidden');
+    document.getElementById('materialModal').classList.add('flex');
+  }
+  
+  function closeMaterial() {
+    document.getElementById('materialModal').classList.add('hidden');
+    document.getElementById('materialModal').classList.remove('flex');
+  }
+
+  // ==================== START QUIZ ====================
+  function startQuiz() {
+    var name = document.getElementById('studentName').value.trim();
+    if (!name) {
+      document.getElementById('nameError').classList.remove('hidden');
+      document.getElementById('studentName').classList.add('shake');
+      setTimeout(function() {
+        document.getElementById('studentName').classList.remove('shake');
+      }, 400);
+      return;
+    }
+    
+    studentName = name;
+    document.getElementById('nameError').classList.add('hidden');
+    document.getElementById('playerNameDisplay').textContent = studentName;
+    document.getElementById('cover').classList.add('hidden');
+    document.getElementById('quiz').classList.remove('hidden');
+    
+    initAnswers();
+    currentQ = 0;
+    renderNavigator();
+    renderQuestion();
+  }
+
+  // ==================== RENDER QUESTION ====================
+  function renderQuestion() {
+    var q = questions[currentQ];
+    var total = questions.length;
+    
+    // PENTING: Restore state dari answers array
+    selectedOption = answers[currentQ].selected;
+    answered = answers[currentQ].answered;
+    fifteenSecUsed = answers[currentQ].fifteenSecUsed;
+    
+    // Update header
+    document.getElementById('questionNumber').textContent = String(currentQ + 1).padStart(2, '0');
+    document.getElementById('progressText').textContent = 'Soal ' + (currentQ + 1) + ' dari ' + total;
+    document.getElementById('sectionLabel').textContent = 'Bagian ' + q.section + ': ' + q.sectionName;
+    document.getElementById('progressBar').style.width = (((currentQ + 1) / total) * 100) + '%';
+    document.getElementById('hotsBadge').style.display = q.hots ? 'inline-block' : 'none';
+    
+    // Question text
+    document.getElementById('questionText').textContent = q.q;
+    
+    // Options - render ulang setiap kali
+    var container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    var letters = ['A', 'B', 'C', 'D'];
+    
+    for (var i = 0; i < q.opts.length; i++) {
+      (function(idx) {
+        var opt = q.opts[idx];
+        var btn = document.createElement('button');
+        btn.className = 'option-btn w-full px-4 sm:px-5 py-3 sm:py-4 rounded-2xl flex items-center gap-3';
+        
+        var stateClass = '';
+        if (answered) {
+          btn.classList.add('disabled');
+          if (idx === q.ans) {
+            stateClass = 'correct';
+          } else if (idx === selectedOption) {
+            stateClass = 'incorrect';
+          }
+        } else if (idx === selectedOption) {
+          stateClass = 'selected';
+        }
+        if (stateClass) btn.classList.add(stateClass);
+        
+        var badgeBg = 'bg-white/10 text-white';
+        var checkIcon = '';
+        
+        if (stateClass === 'correct') {
+          badgeBg = 'bg-emerald-400 text-emerald-950';
+          checkIcon = '<i class="fas fa-check text-emerald-400"></i>';
+        } else if (stateClass === 'incorrect') {
+          badgeBg = 'bg-rose-400 text-rose-950';
+          checkIcon = '<i class="fas fa-times text-rose-400"></i>';
+        } else if (stateClass === 'selected') {
+          badgeBg = 'bg-amber-400 text-amber-950';
+        }
+        
+        btn.innerHTML = 
+          '<div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 ' + badgeBg + '">' + letters[idx] + '</div>' +
+          '<span class="text-sm sm:text-base text-white flex-1">' + opt + '</span>' +
+          checkIcon;
+        
+        // Event listener langsung pada button
+        btn.addEventListener('click', function() {
+          selectOption(idx);
+        });
+        
+        container.appendChild(btn);
+      })(i);
+    }
+    
+    // Update action buttons
+    updateActionButtons();
+    
+    // Discussion box
+    if (answered) {
+      document.getElementById('discussionText').textContent = q.exp;
+      document.getElementById('discussionBox').classList.remove('hidden');
+    } else {
+      document.getElementById('discussionBox').classList.add('hidden');
+    }
+    
+    // Timer
+    if (!answered) {
+      startTimer();
+    } else {
+      stopTimer();
+      timeRemaining = Math.max(0, 120 - (answers[currentQ].timeTaken || 0));
+      updateTimerDisplay();
+    }
+    
+    renderNavigator();
+    
+    // Scroll to top
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  // ==================== UPDATE ACTION BUTTONS ====================
+  function updateActionButtons() {
+    var checkBtn = document.getElementById('checkBtn');
+    var discussionBtn = document.getElementById('discussionBtn');
+    var prevBtn = document.getElementById('prevBtn');
+    var nextBtn = document.getElementById('nextBtn');
+    var addTimeBtn = document.getElementById('addTimeBtn');
+    
+    // Tombol Cek Jawaban: enabled hanya jika sudah pilih opsi DAN belum dijawab
+    checkBtn.disabled = (selectedOption === null) || answered;
+    
+    // Tombol Pembahasan: enabled hanya jika sudah dijawab
+    discussionBtn.disabled = !answered;
+    
+    if (answered) {
+      discussionBtn.innerHTML = '<i class="fas fa-book"></i><span class="hidden sm:inline">Pembahasan</span>';
+      if (answers[currentQ].correct) {
+        checkBtn.innerHTML = '<i class="fas fa-check-circle"></i> Jawaban Benar';
+      } else {
+        checkBtn.innerHTML = '<i class="fas fa-times-circle"></i> Jawaban Salah';
+      }
+    } else {
+      checkBtn.innerHTML = '<i class="fas fa-check-circle"></i> Cek Jawaban';
+    }
+    
+    // Tombol +15s: disabled jika sudah dijawab atau sudah dipakai
+    addTimeBtn.disabled = answered || fifteenSecUsed;
+    
+    // Tombol Prev
+    prevBtn.disabled = currentQ === 0;
+    
+    // Tombol Next / Finish
+    if (currentQ === questions.length - 1) {
+      nextBtn.innerHTML = '<i class="fas fa-flag-checkered"></i><span class="hidden sm:inline">Finish</span>';
+    } else {
+      nextBtn.innerHTML = '<span class="hidden sm:inline">Selanjutnya</span><i class="fas fa-chevron-right"></i>';
+    }
+  }
+
+  // ==================== SELECT OPTION ====================
+  function selectOption(idx) {
+    // Jika sudah dijawab, tidak bisa ubah pilihan
+    if (answered) return;
+    
+    // Simpan pilihan ke variabel sementara DAN ke answers array
+    selectedOption = idx;
+    answers[currentQ].selected = idx;
+    
+    // Render ulang untuk menampilkan highlight
+    renderQuestion();
+  }
+
+  // ==================== CHECK ANSWER ====================
+  function checkAnswer() {
+    // Validasi: harus sudah pilih opsi dan belum dijawab
+    if (selectedOption === null) {
+      showNotification('Pilih jawaban terlebih dahulu!', 'warning');
+      return;
+    }
+    if (answered) return;
+    
+    var q = questions[currentQ];
+    var isCorrect = selectedOption === q.ans;
+    
+    // Simpan jawaban ke answers array (pertahankan fifteenSecUsed)
+    answers[currentQ].selected = selectedOption;
+    answers[currentQ].correct = isCorrect;
+    answers[currentQ].answered = true;
+    answers[currentQ].timeTaken = 120 - timeRemaining;
+    
+    answered = true;
+    stopTimer();
+    
+    if (isCorrect) {
+      showNotification('Jawaban benar! Kerja bagus!', 'success');
+    } else {
+      showNotification('Jawaban kurang tepat. Lihat pembahasan!', 'error');
+    }
+    
+    renderQuestion();
+  }
+
+  // ==================== SHOW DISCUSSION ====================
+  function showDiscussion() {
+    if (!answered) {
+      showNotification('Jawab soalnya terlebih dahulu ya!', 'warning');
+      return;
+    }
+    var box = document.getElementById('discussionBox');
+    if (box.classList.contains('hidden')) {
+      document.getElementById('discussionText').textContent = questions[currentQ].exp;
+      box.classList.remove('hidden');
+      box.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    } else {
+      box.classList.add('hidden');
+    }
+  }
+
+  // ==================== TIMER ====================
+  function startTimer() {
+    stopTimer();
+    timeRemaining = 120;
+    updateTimerDisplay();
+    
+    timerInterval = setInterval(function() {
+      timeRemaining--;
+      updateTimerDisplay();
+      
+      if (timeRemaining <= 0) {
+        stopTimer();
+        // Auto mark as unanswered/wrong jika waktu habis
+        if (selectedOption !== null && !answered) {
+          var q = questions[currentQ];
+          answers[currentQ].selected = selectedOption;
+          answers[currentQ].correct = (selectedOption === q.ans);
+          answers[currentQ].answered = true;
+          answers[currentQ].timeTaken = 120;
+          answered = true;
+          showNotification('Waktu habis! Jawaban dikoreksi otomatis.', 'warning');
+        } else if (!answered) {
+          answers[currentQ].timeTaken = 120;
+          showNotification('Waktu habis! Soal dilewati.', 'error');
+        }
+        renderQuestion();
+      }
+    }, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+  
+  function updateTimerDisplay() {
+    var minutes = Math.floor(timeRemaining / 60);
+    var seconds = timeRemaining % 60;
+    document.getElementById('timerText').textContent = minutes + ':' + String(seconds).padStart(2, '0');
+    
+    var circle = document.getElementById('timerCircle');
+    var circumference = 2 * Math.PI * 26;
+    var progress = timeRemaining / 120;
+    var offset = circumference * (1 - progress);
+    circle.style.strokeDashoffset = offset;
+    
+    if (timeRemaining <= 15) {
+      circle.style.stroke = '#ef4444';
+      document.getElementById('timerText').style.color = '#fca5a5';
+    } else if (timeRemaining <= 30) {
+      circle.style.stroke = '#fb7185';
+      document.getElementById('timerText').style.color = '#fda4af';
+    } else {
+      circle.style.stroke = '#ffb347';
+      document.getElementById('timerText').style.color = '#ffffff';
+    }
+  }
+
+  function addFifteenSec() {
+    if (answered) {
+      showNotification('Soal sudah dijawab!', 'warning');
+      return;
+    }
+    if (fifteenSecUsed) {
+      showNotification('Tombol +15s sudah dipakai untuk soal ini!', 'warning');
+      return;
+    }
+    timeRemaining += 15;
+    fifteenSecUsed = true;
+    answers[currentQ].fifteenSecUsed = true;
+    updateTimerDisplay();
+    showNotification('+15 detik ditambahkan!', 'success');
+    updateActionButtons();
+  }
+
+  // ==================== NAVIGATION ====================
+  function nextQuestion() {
+    if (currentQ === questions.length - 1) {
+      confirmFinish();
+      return;
+    }
+    currentQ++;
+    renderQuestion();
+  }
+  
+  function prevQuestion() {
+    if (currentQ === 0) return;
+    currentQ--;
+    renderQuestion();
+  }
+  
+  function goToQuestion(idx) {
+    currentQ = idx;
+    renderQuestion();
+  }
+
+  // ==================== NAVIGATOR ====================
+  function renderNavigator() {
+    var nav = document.getElementById('navigator');
+    nav.innerHTML = '';
+    for (var i = 0; i < questions.length; i++) {
+      (function(idx) {
+        var dot = document.createElement('div');
+        dot.className = 'nav-dot w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ';
+        
+        var bgColor = 'bg-white/5 text-slate-400';
+        if (answers[idx].answered) {
+          bgColor = answers[idx].correct ? 'bg-emerald-400/80 text-emerald-950' : 'bg-rose-400/80 text-rose-950';
+        }
+        if (idx === currentQ) {
+          bgColor = 'bg-amber-400 text-amber-950';
+        }
+        dot.className += bgColor;
+        dot.textContent = idx + 1;
+        dot.onclick = function() { goToQuestion(idx); };
+        nav.appendChild(dot);
+      })(i);
+    }
+  }
+
+  // ==================== FINISH ====================
+  function confirmFinish() {
+    var attempted = 0, correct = 0;
+    for (var i = 0; i < answers.length; i++) {
+      if (answers[i].answered) {
+        attempted++;
+        if (answers[i].correct) correct++;
+      }
+    }
+    var wrong = attempted - correct;
+    var remaining = questions.length - attempted;
+    
+    document.getElementById('confirmStats').innerHTML = 
+      '<div class="grid grid-cols-3 gap-2 text-center">' +
+        '<div><div class="text-2xl font-bold text-emerald-400">' + correct + '</div><div class="text-xs text-slate-400">Benar</div></div>' +
+        '<div><div class="text-2xl font-bold text-rose-400">' + wrong + '</div><div class="text-xs text-slate-400">Salah</div></div>' +
+        '<div><div class="text-2xl font-bold text-slate-400">' + remaining + '</div><div class="text-xs text-slate-400">Belum Dijawab</div></div>' +
+      '</div>';
+    document.getElementById('confirmModal').classList.remove('hidden');
+    document.getElementById('confirmModal').classList.add('flex');
+  }
+  
+  function closeConfirm() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    document.getElementById('confirmModal').classList.remove('flex');
+  }
+
+  function finishQuiz() {
+    closeConfirm();
+    stopTimer();
+    
+    var attempted = 0, correct = 0;
+    var times = [];
+    
+    for (var i = 0; i < answers.length; i++) {
+      if (answers[i].answered) {
+        attempted++;
+        if (answers[i].correct) correct++;
+        times.push(answers[i].timeTaken);
+      }
+    }
+    var wrong = attempted - correct;
+    
+    // Calculate times
+    var totalTime = 0;
+    for (var j = 0; j < times.length; j++) {
+      totalTime += times[j];
+    }
+    var avgTime = times.length > 0 ? Math.round(totalTime / times.length) : 0;
+    var fastestTime = times.length > 0 ? Math.min.apply(null, times) : 0;
+    
+    // Update UI
+    document.getElementById('resultName').textContent = studentName;
+    document.getElementById('statAttempted').textContent = attempted;
+    document.getElementById('statCorrect').textContent = correct;
+    document.getElementById('statWrong').textContent = wrong;
+    document.getElementById('statAvgTime').textContent = avgTime + 's';
+    document.getElementById('finalScore').textContent = correct;
+    document.getElementById('scoreBar').style.width = ((correct / questions.length) * 100) + '%';
+    
+    // Time breakdown
+    var totalMin = Math.floor(totalTime / 60);
+    var totalSec = totalTime % 60;
+    document.getElementById('totalTime').textContent = totalMin + ' menit ' + totalSec + ' detik';
+    document.getElementById('fastestTime').textContent = fastestTime > 0 ? fastestTime + ' detik' : '-';
+    
+    // Result message
+    var message, iconClass;
+    var percentage = (correct / questions.length) * 100;
+    if (percentage >= 80) {
+      message = 'Luar biasa! Kamu menguasai materi dengan sangat baik!';
+      iconClass = 'from-amber-400 to-orange-500';
+    } else if (percentage >= 60) {
+      message = 'Bagus! Terus berlatih untuk hasil yang lebih maksimal.';
+      iconClass = 'from-emerald-400 to-green-500';
+    } else if (percentage >= 40) {
+      message = 'Cukup baik. Pelajari lagi materi yang masih sulit ya!';
+      iconClass = 'from-sky-400 to-blue-500';
+    } else {
+      message = 'Jangan menyerah! Pelajari materi dan coba lagi.';
+      iconClass = 'from-rose-400 to-pink-500';
+    }
+    document.getElementById('resultMessage').textContent = message;
+    document.getElementById('resultIcon').className = 'inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br ' + iconClass + ' mb-4 shadow-2xl';
+    
+    // Show results
+    document.getElementById('quiz').classList.add('hidden');
+    document.getElementById('results').classList.remove('hidden');
+    
+    // Confetti
+    if (percentage >= 60) {
+      createConfetti();
+    }
+  }
+  
+  function createConfetti() {
+    var colors = ['#ffb347', '#4ade80', '#fb7185', '#38bdf8', '#fbbf24'];
+    for (var i = 0; i < 50; i++) {
+      (function(n) {
+        setTimeout(function() {
+          var c = document.createElement('div');
+          c.className = 'confetti';
+          c.style.left = Math.random() * 100 + '%';
+          c.style.background = colors[Math.floor(Math.random() * colors.length)];
+          c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          c.style.animationDelay = Math.random() * 0.5 + 's';
+          document.body.appendChild(c);
+          setTimeout(function() { c.remove(); }, 5000);
+        }, n * 50);
+      })(i);
+    }
+  }
+
+  // ==================== REVIEW ====================
+  function reviewAnswers() {
+    var content = document.getElementById('reviewContent');
+    content.innerHTML = '';
+    var letters = ['A', 'B', 'C', 'D'];
+    
+    for (var idx = 0; idx < questions.length; idx++) {
+      (function(i) {
+        var q = questions[i];
+        var ans = answers[i];
+        var card = document.createElement('div');
+        card.className = 'rounded-2xl p-5 border ';
+        
+        var statusBadge = '';
+        var borderColor = 'border-white/10 bg-white/5';
+        
+        if (!ans.answered) {
+          statusBadge = '<span class="px-2 py-1 rounded-md bg-slate-500/20 text-slate-300 text-xs font-semibold">Tidak Dijawab</span>';
+        } else if (ans.correct) {
+          statusBadge = '<span class="px-2 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-semibold"><i class="fas fa-check mr-1"></i>Benar</span>';
+          borderColor = 'border-emerald-400/30 bg-emerald-400/5';
+        } else {
+          statusBadge = '<span class="px-2 py-1 rounded-md bg-rose-500/20 text-rose-300 text-xs font-semibold"><i class="fas fa-times mr-1"></i>Salah</span>';
+          borderColor = 'border-rose-400/30 bg-rose-400/5';
+        }
+        
+        card.className += borderColor;
+        
+        var optionsHtml = '';
+        for (var j = 0; j < q.opts.length; j++) {
+          var optClass = 'bg-white/5 text-slate-300';
+          var icon = '';
+          if (j === q.ans) {
+            optClass = 'bg-emerald-400/15 text-emerald-200 border-emerald-400/40';
+            icon = '<i class="fas fa-check text-emerald-400 ml-auto"></i>';
+          } else if (j === ans.selected && !ans.correct) {
+            optClass = 'bg-rose-400/15 text-rose-200 border-rose-400/40';
+            icon = '<i class="fas fa-times text-rose-400 ml-auto"></i>';
+          }
+          optionsHtml += 
+            '<div class="px-3 py-2 rounded-lg border ' + optClass + ' flex items-center gap-2 text-sm">' +
+              '<span class="font-bold">' + letters[j] + '.</span>' +
+              '<span>' + q.opts[j] + '</span>' +
+              icon +
+            '</div>';
+        }
+        
+        card.innerHTML = 
+          '<div class="flex items-center justify-between mb-3">' +
+            '<div class="flex items-center gap-2">' +
+              '<span class="font-display font-bold text-amber-400 text-xl">' + String(i+1).padStart(2,'0') + '</span>' +
+              '<span class="text-xs text-slate-400">Bagian ' + q.section + '</span>' +
+              (q.hots ? '<span class="badge-hots">HOTS</span>' : '') +
+            '</div>' +
+            statusBadge +
+          '</div>' +
+          '<p class="text-white text-sm mb-3 leading-relaxed">' + q.q + '</p>' +
+          '<div class="space-y-1.5 mb-3">' + optionsHtml + '</div>' +
+          '<div class="rounded-xl p-3 bg-sky-400/10 border border-sky-400/20">' +
+            '<p class="text-xs text-sky-300 font-semibold mb-1"><i class="fas fa-lightbulb mr-1"></i>Pembahasan:</p>' +
+            '<p class="text-xs text-slate-300 leading-relaxed">' + q.exp + '</p>' +
+          '</div>';
+        
+        content.appendChild(card);
+      })(idx);
+    }
+    
+    document.getElementById('reviewModal').classList.remove('hidden');
+    document.getElementById('reviewModal').classList.add('flex');
+  }
+  
+  function closeReview() {
+    document.getElementById('reviewModal').classList.add('hidden');
+    document.getElementById('reviewModal').classList.remove('flex');
+  }
+
+  // ==================== RESTART ====================
+  function restartQuiz() {
+    currentQ = 0;
+    selectedOption = null;
+    answered = false;
+    timeRemaining = 120;
+    fifteenSecUsed = false;
+    
+    initAnswers();
+    
+    document.getElementById('results').classList.add('hidden');
+    document.getElementById('cover').classList.remove('hidden');
+    document.getElementById('studentName').value = '';
+  }
+
+  // ==================== INIT & EVENT LISTENERS ====================
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('quiz').classList.contains('hidden')) return;
+    if (!document.getElementById('materialModal').classList.contains('hidden')) return;
+    if (!document.getElementById('confirmModal').classList.contains('hidden')) return;
+    if (!document.getElementById('reviewModal').classList.contains('hidden')) return;
+    
+    if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+      var idx = parseInt(e.key) - 1;
+      if (!answered) selectOption(idx);
+    } else if (e.key === 'Enter') {
+      if (!answered && selectedOption !== null) {
+        checkAnswer();
+      } else if (answered) {
+        nextQuestion();
+      }
+    } else if (e.key === 'ArrowRight') {
+      nextQuestion();
+    } else if (e.key === 'ArrowLeft') {
+      prevQuestion();
+    }
+  });
+
+  // Close modal on backdrop click
+  document.getElementById('materialModal').addEventListener('click', function(e) {
+    if (e.target.id === 'materialModal') closeMaterial();
+  });
+  document.getElementById('reviewModal').addEventListener('click', function(e) {
+    if (e.target.id === 'reviewModal') closeReview();
+  });
+  document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target.id === 'confirmModal') closeConfirm();
+  });
+  
+  // Enter key on name input
+  document.getElementById('studentName').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') startQuiz();
+  });
+</script>
+
+</body>
+</html>
