@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pecahan Senilai & Perbandingan — Presentasi Interaktif</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1f;
+  --bg-2: #141938;
+  --fg: #f8fafc;
+  --muted: #94a3b8;
+  --gold: #f59e0b;
+  --gold-light: #fbbf24;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --green: #10b981;
+  --red: #ef4444;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(245,158,11,0.12), transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 100%, rgba(6,182,212,0.10), transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%, rgba(236,72,153,0.06), transparent 60%);
+}
+
+.display {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.accent {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 50%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+}
+
+/* Progress bar */
+.progress-container {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 4px; background: rgba(255,255,255,0.05); z-index: 100;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--pink), var(--cyan));
+  width: 0;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Header */
+.header {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 16px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 50; pointer-events: none;
+}
+.logo { display: flex; align-items: center; gap: 12px; pointer-events: auto; }
+.logo-mark {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--pink));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 800;
+  color: #0a0e1f; font-size: 20px;
+}
+.logo-text { font-size: 14px; font-weight: 600; color: var(--muted); }
+
+.slide-counter {
+  pointer-events: auto;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  padding: 8px 16px; border-radius: 100px;
+  font-size: 13px; font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: blur(10px);
+}
+
+/* Slides */
+.presentation { position: relative; min-height: 100vh; }
+
+.slide {
+  display: none;
+  min-height: 100vh;
+  padding: 100px 60px 120px;
+  align-items: center;
+  justify-content: center;
+}
+.slide.active {
+  display: flex;
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-content { max-width: 1100px; width: 100%; margin: 0 auto; }
+
+/* Navigation */
+.nav-buttons {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px;
+  z-index: 50;
+  background: rgba(10,14,31,0.75);
+  border: 1px solid var(--border);
+  padding: 8px; border-radius: 100px;
+  backdrop-filter: blur(20px);
+}
+
+.nav-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+  color: var(--fg);
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--gold); color: #0a0e1f;
+  transform: scale(1.05);
+  border-color: var(--gold);
+}
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.dots { display: flex; gap: 6px; padding: 0 16px; align-items: center; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer; transition: all 0.3s;
+}
+.dot.active {
+  background: var(--gold);
+  width: 24px; border-radius: 4px;
+}
+
+/* Typography */
+.slide-eyebrow {
+  display: inline-block;
+  font-size: 12px; letter-spacing: 0.2em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 600; margin-bottom: 16px;
+}
+.slide-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800; line-height: 1.05;
+  margin-bottom: 24px; letter-spacing: -0.02em;
+}
+.slide-subtitle {
+  font-size: 17px; color: var(--muted);
+  margin-bottom: 40px; max-width: 700px;
+  line-height: 1.6;
+}
+
+/* Grids */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+@media (max-width: 900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .slide { padding: 90px 24px 120px; }
+  .header { padding: 16px 20px; }
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+.card:hover {
+  border-color: rgba(245,158,11,0.3);
+  transform: translateY(-4px);
+}
+.card-label {
+  font-size: 11px; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--gold);
+  font-weight: 600; margin-bottom: 12px;
+}
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px; font-weight: 700; margin-bottom: 12px;
+}
+.card-text { color: var(--muted); line-height: 1.6; font-size: 15px; }
+.card-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 800;
+  font-size: 22px; margin-bottom: 16px;
+}
+
+/* Cover slide */
+.cover { text-align: center; }
+.cover-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 6px 16px; border-radius: 100px;
+  font-size: 13px; color: var(--gold-light);
+  margin-bottom: 32px; font-weight: 500;
+}
+.cover-eyebrow::before {
+  content: ''; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--gold);
+  box-shadow: 0 0 12px var(--gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.cover h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(48px, 8vw, 88px);
+  line-height: 0.95; margin-bottom: 24px;
+  font-weight: 900;
+}
+.cover-desc {
+  font-size: 18px; color: var(--muted);
+  max-width: 600px; margin: 0 auto 48px;
+  line-height: 1.6;
+}
+.cover-visual {
+  display: flex; justify-content: center;
+  gap: 20px; margin-bottom: 48px;
+}
+
+/* Pie visual */
+.pie-visual {
+  position: relative; width: 110px; height: 110px;
+  border-radius: 50%;
+  animation: float 4s ease-in-out infinite;
+}
+.pie-visual::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+.cover-meta {
+  display: flex; justify-content: center; gap: 40px;
+  margin-top: 32px; flex-wrap: wrap;
+}
+.cover-meta-item {
+  text-align: left;
+}
+.cover-meta-item .num {
+  font-family: 'Fraunces', serif;
+  font-size: 32px; font-weight: 800; color: var(--gold);
+}
+.cover-meta-item .label {
+  font-size: 12px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+/* Visualizer */
+.visualizer {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px;
+  margin-top: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.visualizer::before {
+  content: ''; position: absolute;
+  top: -50%; right: -20%; width: 60%; height: 200%;
+  background: radial-gradient(circle, rgba(245,158,11,0.08), transparent 60%);
+  pointer-events: none;
+}
+
+.visualizer-grid {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 48px; align-items: center;
+  position: relative; z-index: 1;
+}
+
+@media (max-width: 700px) {
+  .visualizer-grid { grid-template-columns: 1fr; gap: 32px; }
+  .visualizer { padding: 24px; }
+}
+
+.pie-display {
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  position: relative;
+  transition: background 0.5s;
+  box-shadow: 0 20px 60px rgba(245,158,11,0.2);
+  margin: 0 auto;
+}
+.pie-display::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.pie-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10,14,31,0.92);
+  width: 64%; height: 64%;
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+}
+.pie-fraction {
+  font-family: 'Fraunces', serif;
+  font-size: 42px; font-weight: 800;
+  line-height: 1; text-align: center;
+}
+.pie-fraction .bar {
+  display: block; height: 3px;
+  background: var(--gold); margin: 4px auto;
+  width: 30px;
+}
+
+.controls { display: flex; flex-direction: column; gap: 20px; }
+.control-group label {
+  display: flex; justify-content: space-between;
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 10px; align-items: center;
+}
+.control-group label .value {
+  color: var(--gold); font-weight: 700;
+  font-family: 'Fraunces', serif; font-size: 18px;
+}
+
+.slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); cursor: pointer;
+  box-shadow: 0 0 14px rgba(245,158,11,0.6);
+  transition: transform 0.2s;
+  border: 3px solid #0a0e1f;
+}
+.slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); cursor: pointer; border: 3px solid #0a0e1f;
+}
+
+.equivalent-list {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.equivalent-chip {
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 6px 14px; border-radius: 8px;
+  font-family: 'Fraunces', serif;
+  font-weight: 600; font-size: 14px;
+  color: var(--gold-light);
+}
+.simplest-chip {
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.4);
+  padding: 8px 16px; border-radius: 8px;
+  font-family: 'Fraunces', serif;
+  font-weight: 700; font-size: 18px;
+  color: var(--green);
+  display: inline-block;
+}
+
+.label-mini {
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 8px; text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Examples */
+.example-box {
+  background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(236,72,153,0.04));
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+}
+.example-step {
+  display: flex; gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.example-step:last-child { border-bottom: none; }
+.step-number {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--gold); color: #0a0e1f;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; flex-shrink: 0;
+  font-family: 'Fraunces', serif;
+}
+.step-content { font-size: 15px; line-height: 1.6; padding-top: 3px; }
+.math {
+  font-family: 'Fraunces', serif;
+  font-weight: 600; color: var(--gold-light);
+  font-size: 17px;
+}
+
+/* Exercise */
+.exercise {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.exercise::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: linear-gradient(180deg, var(--gold), var(--pink));
+}
+.exercise-header {
+  display: flex; justify-content: space-between;
+  align-items: start; margin-bottom: 16px; gap: 16px;
+}
+.exercise-number {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; color: var(--gold);
+  font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.exercise-question {
+  font-size: 16px; line-height: 1.6; margin-top: 8px;
+}
+.exercise-question strong { color: var(--gold-light); }
+
+.toggle-solution {
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: var(--gold-light);
+  padding: 8px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  font-family: inherit;
+  display: inline-flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+.toggle-solution:hover {
+  background: var(--gold); color: #0a0e1f;
+}
+.toggle-solution.open {
+  background: var(--gold); color: #0a0e1f;
+}
+
+.solution {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.5s ease, margin 0.5s ease;
+  padding: 0 20px; margin-top: 0;
+  background: rgba(255,255,255,0.02);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 12px 12px 0;
+}
+.solution.show {
+  max-height: 800px;
+  padding: 20px; margin-top: 20px;
+}
+.solution-step {
+  display: flex; gap: 12px; margin-bottom: 12px;
+  font-size: 15px; line-height: 1.6;
+}
+.solution-step:last-child { margin-bottom: 0; }
+.solution-step .num {
+  color: var(--gold); font-weight: 700;
+  flex-shrink: 0; font-family: 'Fraunces', serif;
+  font-size: 16px;
+}
+.highlight {
+  background: rgba(245,158,11,0.15);
+  padding: 2px 8px; border-radius: 4px;
+  color: var(--gold-light); font-weight: 600;
+  font-family: 'Fraunces', serif;
+}
+.highlight-green {
+  background: rgba(16,185,129,0.15);
+  padding: 2px 8px; border-radius: 4px;
+  color: var(--green); font-weight: 600;
+  font-family: 'Fraunces', serif;
+}
+
+/* Quiz */
+.quiz-score-panel {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 32px;
+}
+.score-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px; text-align: center;
+}
+.score-value {
+  font-family: 'Fraunces', serif;
+  font-size: 36px; font-weight: 800;
+  color: var(--gold); line-height: 1;
+}
+.score-value.correct { color: var(--green); }
+.score-value.wrong { color: var(--red); }
+.score-value.total { color: var(--cyan); }
+.score-label {
+  font-size: 11px; color: var(--muted);
+  margin-top: 6px; text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+.quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s;
+  display: flex; flex-direction: column;
+}
+.quiz-card.answered-correct {
+  border-color: var(--green);
+  background: rgba(16,185,129,0.05);
+}
+.quiz-card.answered-wrong {
+  border-color: var(--red);
+  background: rgba(239,68,68,0.05);
+}
+
+.quiz-number {
+  display: inline-block;
+  font-family: 'Fraunces', serif;
+  font-size: 12px; color: var(--gold);
+  font-weight: 700; letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.quiz-question {
+  font-size: 15px; line-height: 1.5;
+  margin-bottom: 16px; font-weight: 500;
+  flex-grow: 0;
+}
+.quiz-options {
+  display: flex; flex-direction: column;
+  gap: 8px; margin-bottom: 16px;
+}
+.option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer; transition: all 0.2s;
+  font-size: 14px;
+}
+.option:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(245,158,11,0.3);
+}
+.option input { display: none; }
+.option .radio {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--muted);
+  flex-shrink: 0; position: relative;
+  transition: all 0.2s;
+}
+.option input:checked + .radio { border-color: var(--gold); }
+.option input:checked + .radio::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold);
+}
+.option.correct {
+  background: rgba(16,185,129,0.15);
+  border-color: var(--green);
+}
+.option.correct .radio { border-color: var(--green); }
+.option.correct .radio::after { background: var(--green); }
+.option.wrong {
+  background: rgba(239,68,68,0.15);
+  border-color: var(--red);
+}
+.option.wrong .radio { border-color: var(--red); }
+.option.wrong .radio::after { background: var(--red); }
+.option-letter {
+  font-family: 'Fraunces', serif;
+  font-weight: 700; color: var(--muted);
+  font-size: 14px;
+}
+
+.quiz-actions { display: flex; gap: 8px; margin-top: auto; }
+.btn-check, .btn-explain {
+  flex: 1; padding: 9px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid; font-family: inherit;
+}
+.btn-check {
+  background: var(--gold); color: #0a0e1f;
+  border-color: var(--gold);
+}
+.btn-check:hover { background: var(--gold-light); border-color: var(--gold-light); }
+.btn-check:disabled {
+  opacity: 0.5; cursor: not-allowed;
+}
+.btn-explain {
+  background: transparent; color: var(--cyan);
+  border-color: rgba(6,182,212,0.4);
+}
+.btn-explain:hover {
+  background: rgba(6,182,212,0.1);
+  border-color: var(--cyan);
+}
+
+.explanation {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+  padding: 0 16px; margin-top: 0;
+  background: rgba(6,182,212,0.05);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px; line-height: 1.6;
+  color: #cbd5e1;
+}
+.explanation.show {
+  max-height: 400px;
+  padding: 14px 16px; margin-top: 12px;
+}
+.explanation strong { color: var(--cyan); font-family: 'Fraunces', serif; }
+
+.result-feedback {
+  font-size: 13px; font-weight: 600;
+  margin-top: 8px; padding: 6px 0;
+  display: none;
+}
+.result-feedback.show { display: block; }
+.result-feedback.correct { color: var(--green); }
+.result-feedback.wrong { color: var(--red); }
+
+.quiz-reset {
+  display: block; margin: 40px auto 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 12px 28px; border-radius: 100px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  font-family: inherit;
+}
+.quiz-reset:hover {
+  background: var(--red); color: white;
+  border-color: var(--red);
+}
+
+/* Table */
+.comparison-table {
+  width: 100%; border-collapse: separate;
+  border-spacing: 0; margin-top: 24px;
+  background: var(--card);
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.comparison-table th,
+.comparison-table td {
+  padding: 16px 20px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.comparison-table th {
+  background: rgba(255,255,255,0.03);
+  font-weight: 600; font-size: 12px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.comparison-table .highlight-cell {
+  background: rgba(245,158,11,0.05);
+  font-family: 'Fraunces', serif;
+  font-weight: 700; color: var(--gold-light);
+}
+
+/* Feature list */
+.feature-list { list-style: none; margin-top: 24px; }
+.feature-list li {
+  padding: 16px 0; display: flex; gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.feature-list li:last-child { border-bottom: none; }
+.feature-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 700; color: var(--gold);
+  flex-shrink: 0; font-size: 16px;
+}
+.feature-text strong {
+  display: block; margin-bottom: 4px;
+  font-size: 16px; font-weight: 600;
+}
+.feature-text span {
+  font-size: 14px; color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Formula box */
+.formula-box {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(236,72,153,0.05));
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin: 24px 0;
+  text-align: center;
+}
+.formula-box .label {
+  font-size: 12px; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 0.15em;
+  font-weight: 600; margin-bottom: 12px;
+}
+.formula-text {
+  font-family: 'Fraunces', serif;
+  font-size: 24px; font-weight: 700;
+  color: var(--fg);
+}
+.formula-text .accent {
+  background: linear-gradient(135deg, var(--gold), var(--pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Fraction bars */
+.fraction-bar-container {
+  display: flex; flex-direction: column; gap: 14px;
+  margin: 20px 0;
+}
+.fraction-bar-row {
+  display: flex; align-items: center; gap: 16px;
+}
+.fraction-bar-label {
+  font-family: 'Fraunces', serif;
+  font-size: 22px; font-weight: 700;
+  width: 80px; text-align: right;
+}
+.fraction-bar {
+  flex: 1; height: 36px;
+  border-radius: 6px;
+  display: flex; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.fraction-bar .filled {
+  background: linear-gradient(90deg, var(--gold), var(--pink));
+  transition: width 0.5s;
+}
+.fraction-bar .empty {
+  background: rgba(255,255,255,0.04);
+  flex: 1;
+}
+
+/* Math display */
+.math-display {
+  display: inline-flex; flex-direction: column;
+  align-items: center; vertical-align: middle;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+}
+.math-display .num { padding: 0 4px; }
+.math-display .den { 
+  padding: 0 4px;
+  border-top: 2px solid currentColor;
+  margin-top: 2px;
+}
+
+/* Hint */
+.hint {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(6,182,212,0.06);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px; color: #cbd5e1;
+  margin-top: 16px;
+}
+.hint svg { color: var(--cyan); flex-shrink: 0; }
+
+/* Big number for exercise answer */
+.answer-display {
+  display: inline-flex; align-items: center;
+  gap: 16px; margin-top: 8px;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 12px;
+  padding: 12px 20px;
+}
+.answer-label {
+  font-size: 12px; color: var(--green);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.answer-value {
+  font-family: 'Fraunces', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--green);
+}
+
+@media (max-width: 600px) {
+  .quiz-score-panel { grid-template-columns: repeat(2, 1fr); }
+  .quiz-grid { grid-template-columns: 1fr; }
+  .cover h1 { font-size: 48px; }
+  .slide-title { font-size: 32px; }
+  .exercise { padding: 20px 24px; }
+  .exercise-header { flex-direction: column; }
+}
+
+/* Decorative */
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.4;
+  filter: blur(40px);
+}
+</style>
+</head>
+<body>
+
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">π</div>
+    <div class="logo-text">Matematika Interaktif</div>
+  </div>
+  <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">9</span></div>
+</header>
+
+<main class="presentation" id="presentation">
+
+  <!-- Slide 1: Cover -->
+  <section class="slide active" data-slide="0">
+    <div class="slide-content cover">
+      <div class="cover-eyebrow">Presentasi Interaktif • Kelas Matematika</div>
+      <div class="cover-visual">
+        <div class="pie-visual" style="background: conic-gradient(var(--gold) 0deg 90deg, rgba(255,255,255,0.06) 90deg 360deg); box-shadow: 0 0 60px rgba(245,158,11,0.4);"></div>
+        <div class="pie-visual" style="background: conic-gradient(var(--pink) 0deg 180deg, rgba(255,255,255,0.06) 180deg 360deg); box-shadow: 0 0 60px rgba(236,72,153,0.4); animation-delay: 0.5s;"></div>
+        <div class="pie-visual" style="background: conic-gradient(var(--cyan) 0deg 120deg, rgba(255,255,255,0.06) 120deg 360deg); box-shadow: 0 0 60px rgba(6,182,212,0.4); animation-delay: 1s;"></div>
+      </div>
+      <h1>Pecahan Senilai<br>& <span class="accent">Perbandingan</span></h1>
+      <p class="cover-desc">Memahami konsep pecahan senilai dan perbandingan senilai melalui visualisasi interaktif, latihan soal kontekstual, serta kuis pilihan ganda berisi 20 soal lengkap dengan pembahasan.</p>
+      <div class="cover-meta">
+        <div class="cover-meta-item">
+          <div class="num">09</div>
+          <div class="label">Slide Materi</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="num">03</div>
+          <div class="label">Latihan Soal</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="num">20</div>
+          <div class="label">Soal Kuis</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="num">100%</div>
+          <div class="label">Interaktif</div>
+        </div>
+      </div>
+      <div class="hint" style="justify-content: center; max-width: 480px; margin: 32px auto 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>Gunakan tombol panah di bawah atau tombol ← → pada keyboard untuk berpindah slide</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Daftar Isi -->
+  <section class="slide" data-slide="1">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Daftar Isi</span>
+      <h2 class="slide-title">Yang Akan <span class="accent">Kita Pelajari</span></h2>
+      <p class="slide-subtitle">Empat konsep inti yang saling berkaitan, dari dasar pecahan hingga aplikasinya dalam perbandingan senilai.</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-icon" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--gold);">1</div>
+          <div class="card-label">Konsep Dasar</div>
+          <div class="card-title">Pecahan & Pecahan Senilai</div>
+          <p class="card-text">Memahami apa itu pecahan, bagaimana dua pecahan dapat memiliki nilai yang sama walau bentuknya berbeda, dan cara menemukannya.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); color: var(--pink);">2</div>
+          <div class="card-label">Aplikasi</div>
+          <div class="card-title">Perbandingan & Perbandingan Senilai</div>
+          <p class="card-text">Konsep perbandingan dua besaran dan bagaimana perbandingan senilai digunakan untuk menyelesaikan masalah sehari-hari.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); color: var(--cyan);">3</div>
+          <div class="card-label">Latihan</div>
+          <div class="card-title">Soal Perbandingan Umur</div>
+          <p class="card-text">Tiga soal kontekstual tentang perbandingan umur dengan penyelesaian langkah demi langkah yang dapat dibuka dan dipelajari.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--green);">4</div>
+          <div class="card-label">Evaluasi</div>
+          <div class="card-title">Kuis 20 Soal Pilihan Ganda</div>
+          <p class="card-text">Uji pemahaman Anda dengan 20 soal pilihan ganda tentang perbandingan senilai. Setiap soal dilengkapi tombol cek jawaban dan pembahasan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Konsep Pecahan -->
+  <section class="slide" data-slide="2">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Materi 01</span>
+      <h2 class="slide-title">Apa Itu <span class="accent">Pecahan?</span></h2>
+      <p class="slide-subtitle">Pecahan adalah bagian dari keseluruhan yang ditulis dalam bentuk a/b, di mana a disebut pembilang dan b disebut penyebut.</p>
+      
+      <div class="grid-2">
+        <div>
+          <ul class="feature-list">
+            <li>
+              <div class="feature-icon">a</div>
+              <div class="feature-text">
+                <strong>Pembilang (numerator)</strong>
+                <span>Menyatakan berapa bagian dari keseluruhan yang kita ambil atau perhatikan.</span>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon">b</div>
+              <div class="feature-text">
+                <strong>Penyebut (denominator)</strong>
+                <span>Menyatakan berapa banyak bagian sama yang membagi keseluruhan. Penyebut tidak boleh nol.</span>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon">÷</div>
+              <div class="feature-text">
+                <strong>Nilai Pecahan</strong>
+                <span>Nilai pecahan = pembilang ÷ penyebut. Contoh: 3/4 = 3 ÷ 4 = 0,75</span>
+              </div>
+            </li>
+          </ul>
+          
+          <div class="formula-box">
+            <div class="label">Notasi Pecahan</div>
+            <div class="formula-text">
+              <span class="math-display">
+                <span class="num">pembilang</span>
+                <span class="den">penyebut</span>
+              </span>
+              <span style="margin: 0 16px;">=</span>
+              <span class="accent">a/b</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="card" style="text-align: center;">
+            <div class="card-label">Visualisasi</div>
+            <div style="display: flex; justify-content: center; gap: 16px; margin: 24px 0;">
+              <div>
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--gold) 0deg 90deg, rgba(255,255,255,0.06) 90deg 360deg); position: relative; margin: 0 auto;">
+                  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10,14,31,0.85); width: 70%; height: 70%; border-radius: 50%; margin: auto; top: 0; bottom: 0; left: 0; right: 0;">
+                    <span class="math-display" style="font-size: 22px;"><span class="num">1</span><span class="den">4</span></span>
+                  </div>
+                </div>
+                <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">satu per empat</p>
+              </div>
+              <div>
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--pink) 0deg 180deg, rgba(255,255,255,0.06) 180deg 360deg); position: relative; margin: 0 auto;">
+                  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10,14,31,0.85); width: 70%; height: 70%; border-radius: 50%; margin: auto; top: 0; bottom: 0; left: 0; right: 0;">
+                    <span class="math-display" style="font-size: 22px;"><span class="num">1</span><span class="den">2</span></span>
+                  </div>
+                </div>
+                <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">satu per dua</p>
+              </div>
+            </div>
+            
+            <div class="fraction-bar-container">
+              <div class="fraction-bar-row">
+                <div class="fraction-bar-label">1/4</div>
+                <div class="fraction-bar">
+                  <div class="filled" style="width: 25%;"></div>
+                  <div class="empty"></div>
+                </div>
+              </div>
+              <div class="fraction-bar-row">
+                <div class="fraction-bar-label">1/2</div>
+                <div class="fraction-bar">
+                  <div class="filled" style="width: 50%;"></div>
+                  <div class="empty"></div>
+                </div>
+              </div>
+              <div class="fraction-bar-row">
+                <div class="fraction-bar-label">3/4</div>
+                <div class="fraction-bar">
+                  <div class="filled" style="width: 75%;"></div>
+                  <div class="empty"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: Pecahan Senilai Interaktif -->
+  <section class="slide" data-slide="3">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Materi 02 — Interaktif</span>
+      <h2 class="slide-title">Pecahan <span class="accent">Senilai</span></h2>
+      <p class="slide-subtitle">Dua pecahan dikatakan senilai jika memiliki nilai yang sama, walau pembilang dan penyebutnya berbeda. Geser slider di bawah untuk mengeksplorasi konsep ini.</p>
+      
+      <div class="visualizer">
+        <div class="visualizer-grid">
+          <div class="pie-display" id="pieDisplay">
+            <div class="pie-center">
+              <div class="pie-fraction">
+                <span id="pieNum">1</span>
+                <span class="bar"></span>
+                <span id="pieDen">2</span>
+              </div>
+            </div>
+          </div>
+          <div class="controls">
+            <div class="control-group">
+              <label>Pembilang <span class="value" id="numValue">1</span></label>
+              <input type="range" class="slider" id="numSlider" min="1" max="11" value="1">
+            </div>
+            <div class="control-group">
+              <label>Penyebut <span class="value" id="denValue">2</span></label>
+              <input type="range" class="slider" id="denSlider" min="2" max="12" value="2">
+            </div>
+            <div>
+              <div class="label-mini">Pecahan senilai lainnya:</div>
+              <div class="equivalent-list" id="equivalentList"></div>
+            </div>
+            <div>
+              <div class="label-mini">Bentuk paling sederhana:</div>
+              <div class="simplest-chip" id="simplestForm">1/2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hint">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span>Coba ubah pembilang dan penyebut — perhatikan bagaimana pie tetap menunjukkan proporsi yang sama untuk pecahan senilai yang berbeda.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5: Cara Mencari Pecahan Senilai -->
+  <section class="slide" data-slide="4">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Materi 03</span>
+      <h2 class="slide-title">Mencari & Menyederhanakan <span class="accent">Pecahan Senilai</span></h2>
+      <p class="slide-subtitle">Ada dua operasi utama untuk mendapatkan pecahan senilai: mengali dan membagi pembilang & penyebut dengan bilangan yang sama.</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Aturan 1 — Mengali</div>
+          <div class="card-title">Memperbesar Pecahan</div>
+          <p class="card-text" style="margin-bottom: 16px;">Kalikan pembilang dan penyebut dengan bilangan bulat positif yang sama untuk mendapatkan pecahan senilai yang lebih besar bentuknya.</p>
+          <div class="example-box" style="margin: 0;">
+            <div class="example-step">
+              <div class="step-number">1</div>
+              <div class="step-content">Ambil pecahan <span class="math">2/3</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">2</div>
+              <div class="step-content">Kalikan atas dan bawah dengan 2: <span class="math">(2×2)/(3×2) = 4/6</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">3</div>
+              <div class="step-content">Kalikan dengan 3: <span class="math">(2×3)/(3×3) = 6/9</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">4</div>
+              <div class="step-content">Hasil: <span class="math">2/3 = 4/6 = 6/9 = 8/12 ...</span></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">Aturan 2 — Membagi</div>
+          <div class="card-title">Menyederhanakan Pecahan</div>
+          <p class="card-text" style="margin-bottom: 16px;">Bagi pembilang dan penyebut dengan FPB (Faktor Persekutuan Terbesar) untuk mendapatkan bentuk paling sederhana.</p>
+          <div class="example-box" style="margin: 0;">
+            <div class="example-step">
+              <div class="step-number">1</div>
+              <div class="step-content">Ambil pecahan <span class="math">8/12</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">2</div>
+              <div class="step-content">Cari FPB(8, 12) = <span class="math">4</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">3</div>
+              <div class="step-content">Bagi atas dan bawah dengan 4: <span class="math">(8÷4)/(12÷4) = 2/3</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">4</div>
+              <div class="step-content">Bentuk paling sederhana: <span class="math">2/3</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="formula-box">
+        <div class="label">Sifat Dasar Pecahan</div>
+        <div class="formula-text">
+          <span class="accent">a/b</span> = <span class="accent">(a×k)/(b×k)</span> = <span class="accent">(a÷k)/(b÷k)</span>
+        </div>
+        <p style="margin-top: 12px; color: var(--muted); font-size: 14px;">untuk setiap bilangan bulat k ≠ 0</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: Perbandingan -->
+  <section class="slide" data-slide="5">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Materi 04</span>
+      <h2 class="slide-title">Konsep <span class="accent">Perbandingan</span></h2>
+      <p class="slide-subtitle">Perbandingan adalah cara menyatakan hubungan dua besaran sejenis. Ditulis sebagai a : b atau a/b, dibaca "a banding b".</p>
+      
+      <div class="grid-2">
+        <div>
+          <ul class="feature-list">
+            <li>
+              <div class="feature-icon">:</div>
+              <div class="feature-text">
+                <strong>Notasi a : b</strong>
+                <span>Menyatakan perbandingan dua nilai. Contoh: 3 : 4 berarti untuk setiap 3 satuan pertama terdapat 4 satuan kedua.</span>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon">=</div>
+              <div class="feature-text">
+                <strong>Perbandingan Senilai</strong>
+                <span>Jika dua besaran naik/turun bersama dengan rasio tetap, perbandingannya senilai. Misal: lebih banyak pekerja → lebih cepat selesai (dengan asumsi produktivitas sama).</span>
+              </div>
+            </li>
+            <li>
+              <div class="feature-icon">↔</div>
+              <div class="feature-text">
+                <strong>Perbandingan Berbalik Nilai</strong>
+                <span>Jika satu besaran naik, yang lain turun. Misal: kecepatan dan waktu tempuh — makin cepat makin sedikit waktu dibutuhkan.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <div class="card">
+            <div class="card-label">Contoh Sehari-hari</div>
+            <div class="card-title">Perbandingan Uang Saku</div>
+            <p class="card-text" style="margin-bottom: 16px;">Uang saku Andi dan Budi berbanding 3 : 5. Jika Andi mendapat Rp3.000, Budi mendapat Rp5.000. Total uang saku mereka Rp8.000.</p>
+            
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Orang</th>
+                  <th>Bagian</th>
+                  <th>Uang</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Andi</td>
+                  <td class="highlight-cell">3</td>
+                  <td>Rp3.000</td>
+                </tr>
+                <tr>
+                  <td>Budi</td>
+                  <td class="highlight-cell">5</td>
+                  <td>Rp5.000</td>
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td class="highlight-cell">8</td>
+                  <td><strong>Rp8.000</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="formula-box">
+        <div class="label">Rumus Dasar Perbandingan Senilai</div>
+        <div class="formula-text">
+          <span class="accent">a : b = c : d</span> &nbsp; → &nbsp; <span class="accent">a × d = b × c</span>
+        </div>
+        <p style="margin-top: 12px; color: var(--muted); font-size: 14px;">Hasil kali silang (cross product) selalu sama untuk perbandingan senilai</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7: Perbandingan Senilai -->
+  <section class="slide" data-slide="6">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Materi 05</span>
+      <h2 class="slide-title">Perbandingan <span class="accent">Senilai</span></h2>
+      <p class="slide-subtitle">Perbandingan senilai terjadi ketika dua besaran bertambah atau berkurang bersamaan dengan rasio yang tetap. Inilah kunci untuk menyelesaikan soal-soal perbandingan.</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Langkah Penyelesaian</div>
+          <div class="card-title">Strategi Umum</div>
+          
+          <div class="example-box" style="margin-top: 16px;">
+            <div class="example-step">
+              <div class="step-number">1</div>
+              <div class="step-content">Tentukan perbandingan yang diketahui, misal <span class="math">a : b</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">2</div>
+              <div class="step-content">Hitung total atau selisih bagian: <span class="math">a + b</span> atau <span class="math">a − b</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">3</div>
+              <div class="step-content">Cari nilai 1 bagian dengan membagi total/selisih dengan jumlah bagian</div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">4</div>
+              <div class="step-content">Kalikan nilai 1 bagian dengan bagian masing-masing objek</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-label">Contoh</div>
+          <div class="card-title">Umur Adik & Kakak</div>
+          <p class="card-text" style="margin-bottom: 16px;">Perbandingan umur adik dan kakak adalah 2 : 5. Jika umur kakak 20 tahun, berapa umur adik?</p>
+          
+          <div class="example-box" style="margin: 0;">
+            <div class="example-step">
+              <div class="step-number">1</div>
+              <div class="step-content">Perbandingan: <span class="math">adik : kakak = 2 : 5</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">2</div>
+              <div class="step-content">Kakak = 5 bagian = <span class="math">20 tahun</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">3</div>
+              <div class="step-content">1 bagian = <span class="math">20 ÷ 5 = 4 tahun</span></div>
+            </div>
+            <div class="example-step">
+              <div class="step-number">4</div>
+              <div class="step-content">Umur adik = 2 × 4 = <span class="highlight-green">8 tahun</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="formula-box">
+        <div class="label">Tiga Jenis Soal Perbandingan Senilai</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px;">
+          <div>
+            <div style="color: var(--gold); font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px;">Total Diketahui</div>
+            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">total ÷ (a+b) = 1 bagian</div>
+          </div>
+          <div>
+            <div style="color: var(--pink); font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px;">Selisih Diketahui</div>
+            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">selisih ÷ (a−b) = 1 bagian</div>
+          </div>
+          <div>
+            <div style="color: var(--cyan); font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px;">Salah Satu Diketahui</div>
+            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">nilai ÷ bagian = 1 bagian</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 8: Latihan Soal Perbandingan Umur -->
+  <section class="slide" data-slide="7">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Latihan — Perbandingan Umur</span>
+      <h2 class="slide-title">Soal Cerita & <span class="accent">Penyelesaian</span></h2>
+      <p class="slide-subtitle">Tiga soal kontekstual tentang perbandingan umur. Klik tombol "Lihat Penyelesaian" untuk membuka langkah-langkah pengerjaan secara detail.</p>
+      
+      <!-- Soal 1 -->
+      <div class="exercise">
+        <div class="exercise-header">
+          <div>
+            <span class="exercise-number">Soal 01 — Tipe Total Diketahui</span>
+            <p class="exercise-question">Perbandingan umur <strong>Ani</strong> dan <strong>Budi</strong> adalah <strong>2 : 3</strong>. Jika jumlah umur mereka adalah <strong>25 tahun</strong>, berapakah umur masing-masing?</p>
+          </div>
+          <button class="toggle-solution" onclick="toggleSolution(1)">Lihat Penyelesaian</button>
+        </div>
+        <div class="solution" id="solution-1">
+          <div class="solution-step">
+            <span class="num">1.</span>
+            <span>Tulis perbandingan: Ani : Budi = <span class="highlight">2 : 3</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">2.</span>
+            <span>Hitung total bagian: <span class="highlight">2 + 3 = 5 bagian</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">3.</span>
+            <span>Nilai 1 bagian: <span class="highlight">25 tahun ÷ 5 = 5 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">4.</span>
+            <span>Umur Ani = 2 × 5 tahun = <span class="highlight-green">10 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">5.</span>
+            <span>Umur Budi = 3 × 5 tahun = <span class="highlight-green">15 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">✓</span>
+            <span>Verifikasi: 10 + 15 = 25 tahun ✓ dan 10 : 15 = 2 : 3 ✓</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Soal 2 -->
+      <div class="exercise">
+        <div class="exercise-header">
+          <div>
+            <span class="exercise-number">Soal 02 — Tipe Selisih Diketahui</span>
+            <p class="exercise-question">Perbandingan umur <strong>Ayah</strong> dan <strong>Ibu</strong> adalah <strong>9 : 8</strong>. Jika selisih umur mereka adalah <strong>5 tahun</strong>, berapakah umur masing-masing?</p>
+          </div>
+          <button class="toggle-solution" onclick="toggleSolution(2)">Lihat Penyelesaian</button>
+        </div>
+        <div class="solution" id="solution-2">
+          <div class="solution-step">
+            <span class="num">1.</span>
+            <span>Tulis perbandingan: Ayah : Ibu = <span class="highlight">9 : 8</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">2.</span>
+            <span>Hitung selisih bagian: <span class="highlight">9 − 8 = 1 bagian</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">3.</span>
+            <span>Nilai 1 bagian: <span class="highlight">5 tahun ÷ 1 = 5 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">4.</span>
+            <span>Umur Ayah = 9 × 5 tahun = <span class="highlight-green">45 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">5.</span>
+            <span>Umur Ibu = 8 × 5 tahun = <span class="highlight-green">40 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">✓</span>
+            <span>Verifikasi: 45 − 40 = 5 tahun ✓ dan 45 : 40 = 9 : 8 ✓</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Soal 3 -->
+      <div class="exercise">
+        <div class="exercise-header">
+          <div>
+            <span class="exercise-number">Soal 03 — Tipe Tiga Orang dengan Selisih</span>
+            <p class="exercise-question">Perbandingan umur <strong>Rina</strong>, <strong>Sinta</strong>, dan <strong>Dina</strong> adalah <strong>1 : 2 : 3</strong>. Jika <strong>Dina 12 tahun lebih tua</strong> dari Rina, tentukan umur masing-masing!</p>
+          </div>
+          <button class="toggle-solution" onclick="toggleSolution(3)">Lihat Penyelesaian</button>
+        </div>
+        <div class="solution" id="solution-3">
+          <div class="solution-step">
+            <span class="num">1.</span>
+            <span>Tulis perbandingan: Rina : Sinta : Dina = <span class="highlight">1 : 2 : 3</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">2.</span>
+            <span>Selisih Dina dan Rina: <span class="highlight">3 − 1 = 2 bagian</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">3.</span>
+            <span>2 bagian = 12 tahun, maka 1 bagian = <span class="highlight">12 ÷ 2 = 6 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">4.</span>
+            <span>Umur Rina = 1 × 6 = <span class="highlight-green">6 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">5.</span>
+            <span>Umur Sinta = 2 × 6 = <span class="highlight-green">12 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">6.</span>
+            <span>Umur Dina = 3 × 6 = <span class="highlight-green">18 tahun</span></span>
+          </div>
+          <div class="solution-step">
+            <span class="num">✓</span>
+            <span>Verifikasi: 18 − 6 = 12 tahun ✓ dan 6 : 12 : 18 = 1 : 2 : 3 ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 9: Kuis 20 Soal -->
+  <section class="slide" data-slide="8">
+    <div class="slide-content">
+      <span class="slide-eyebrow">Evaluasi Akhir</span>
+      <h2 class="slide-title">Kuis: <span class="accent">Perbandingan Senilai</span></h2>
+      <p class="slide-subtitle">20 soal pilihan ganda untuk menguji pemahamanmu. Pilih jawaban, klik "Cek Jawaban" untuk melihat kebenarannya, lalu "Pembahasan" untuk melihat penjelasan lengkap.</p>
+      
+      <div class="quiz-score-panel">
+        <div class="score-item">
+          <div class="score-value" id="answeredCount">0</div>
+          <div class="score-label">Terjawab</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value correct" id="correctCount">0</div>
+          <div class="score-label">Benar</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value wrong" id="wrongCount">0</div>
+          <div class="score-label">Salah</div>
+        </div>
+        <div class="score-item">
+          <div class="score-value total">20</div>
+          <div class="score-label">Total Soal</div>
+        </div>
+      </div>
+      
+      <div class="quiz-grid" id="quizGrid">
+        <!-- Quiz cards will be generated by JS -->
+      </div>
+      
+      <button class="quiz-reset" onclick="resetQuiz()">Reset Semua Jawaban</button>
+    </div>
+  </section>
+
+</main>
+
+<div class="nav-buttons">
+  <button class="nav-btn" id="prevBtn" aria-label="Sebelumnya">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="Selanjutnya">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+</div>
+
+<script>
+// =====================
+// STATE & DATA
+// =====================
+const totalSlides = 9;
+let currentSlide = 0;
+
+// Quiz data: 20 questions about perbandingan senilai
+const quizData = [
+  {
+    q: "Jika 3/4 = x/20, maka nilai x yang tepat adalah ...",
+    options: ["12", "15", "18", "20"],
+    correct: 1,
+    explanation: "3/4 = x/20 → x = (3 × 20) / 4 = 60 / 4 = <strong>15</strong>. Atau kalikan pembilang dan penyebut dengan 5: 3/4 = 15/20."
+  },
+  {
+    q: "Pecahan senilai dari 2/5 adalah ...",
+    options: ["4/10", "3/8", "4/15", "5/12"],
+    correct: 0,
+    explanation: "Kalikan pembilang dan penyebut dengan 2: (2×2)/(5×2) = <strong>4/10</strong>. 4/10 memiliki nilai yang sama dengan 2/5 yaitu 0,4."
+  },
+  {
+    q: "Jika 5/6 = .../30, maka pecahan yang benar untuk mengisi titik-titik adalah ...",
+    options: ["20", "25", "30", "35"],
+    correct: 1,
+    explanation: "5/6 = x/30. Penyebut dikali 5 (6×5=30), maka pembilang juga dikali 5: 5×5 = <strong>25</strong>. Jadi 5/6 = 25/30."
+  },
+  {
+    q: "Jika 4 : 7 = 12 : x, maka nilai x adalah ...",
+    options: ["18", "21", "24", "28"],
+    correct: 1,
+    explanation: "4 : 7 = 12 : x. Bagian kiri dikali 3 (4×3=12), maka bagian kanan juga dikali 3: 7×3 = <strong>21</strong>. Atau gunakan hasil kali silang: 4x = 7×12 = 84, x = 21."
+  },
+  {
+    q: "Bentuk paling sederhana dari 18/24 adalah ...",
+    options: ["2/3", "3/4", "4/5", "5/6"],
+    correct: 1,
+    explanation: "FPB(18, 24) = 6. Bagi pembilang dan penyebut dengan 6: 18÷6 / 24÷6 = <strong>3/4</strong>. Nilai 18/24 = 0,75 = 3/4."
+  },
+  {
+    q: "Pecahan berikut yang senilai dengan 6/8 adalah ...",
+    options: ["1/2", "2/3", "3/4", "4/5"],
+    correct: 2,
+    explanation: "FPB(6, 8) = 2. Bagi keduanya dengan 2: 6÷2 / 8÷2 = 3/4. Jadi <strong>6/8 = 3/4</strong>. Cek: 6/8 = 0,75 dan 3/4 = 0,75 ✓"
+  },
+  {
+    q: "Jika 2/3 = x/15, maka nilai x adalah ...",
+    options: ["8", "9", "10", "12"],
+    correct: 2,
+    explanation: "2/3 = x/15. Penyebut dikali 5 (3×5=15), maka pembilang juga dikali 5: 2×5 = <strong>10</strong>. Jadi 2/3 = 10/15."
+  },
+  {
+    q: "Jika 7/9 = .../45, maka bilangan yang tepat untuk mengisi titik-titik adalah ...",
+    options: ["28", "35", "40", "42"],
+    correct: 1,
+    explanation: "7/9 = x/45. Penyebut dikali 5 (9×5=45), pembilang juga dikali 5: 7×5 = <strong>35</strong>. Jadi 7/9 = 35/45."
+  },
+  {
+    q: "Perbandingan umur A dan B adalah 3 : 5. Jika umur A = 12 tahun, maka umur B adalah ...",
+    options: ["15 tahun", "18 tahun", "20 tahun", "25 tahun"],
+    correct: 2,
+    explanation: "A : B = 3 : 5. A = 3 bagian = 12 tahun, maka 1 bagian = 12/3 = 4 tahun. B = 5 × 4 = <strong>20 tahun</strong>."
+  },
+  {
+    q: "Pecahan senilai dari 9/12 adalah ...",
+    options: ["1/2", "2/3", "3/4", "4/5"],
+    correct: 2,
+    explanation: "FPB(9, 12) = 3. Bagi keduanya dengan 3: 9÷3 / 12÷3 = <strong>3/4</strong>. Cek: 9/12 = 0,75 dan 3/4 = 0,75 ✓"
+  },
+  {
+    q: "Bentuk paling sederhana dari 15/20 adalah ...",
+    options: ["2/3", "3/4", "4/5", "5/6"],
+    correct: 1,
+    explanation: "FPB(15, 20) = 5. Bagi keduanya dengan 5: 15÷5 / 20÷5 = <strong>3/4</strong>. Cek: 15/20 = 0,75 dan 3/4 = 0,75 ✓"
+  },
+  {
+    q: "Jika 8/12 = x/3, maka nilai x adalah ...",
+    options: ["1", "2", "3", "4"],
+    correct: 1,
+    explanation: "8/12 = x/3. Penyebut dibagi 4 (12÷4=3), maka pembilang juga dibagi 4: 8÷4 = <strong>2</strong>. Jadi 8/12 = 2/3."
+  },
+  {
+    q: "Perbandingan 10 : 15 jika disederhanakan menjadi ...",
+    options: ["1 : 2", "2 : 3", "3 : 4", "3 : 5"],
+    correct: 1,
+    explanation: "FPB(10, 15) = 5. Bagi keduanya dengan 5: 10÷5 : 15÷5 = <strong>2 : 3</strong>. Cek: 10/15 = 2/3 ✓"
+  },
+  {
+    q: "Jika 4/7 = .../21, maka bilangan yang mengisi titik-titik adalah ...",
+    options: ["8", "10", "12", "14"],
+    correct: 2,
+    explanation: "4/7 = x/21. Penyebut dikali 3 (7×3=21), pembilang juga dikali 3: 4×3 = <strong>12</strong>. Jadi 4/7 = 12/21."
+  },
+  {
+    q: "Perbandingan umur Andi dan Budi adalah 4 : 5. Jika selisih umur mereka 3 tahun, maka umur Andi adalah ...",
+    options: ["9 tahun", "12 tahun", "15 tahun", "18 tahun"],
+    correct: 1,
+    explanation: "Selisih bagian = 5 − 4 = 1 bagian = 3 tahun. Umur Andi = 4 × 3 = <strong>12 tahun</strong>. (Umur Budi = 5 × 3 = 15 tahun)"
+  },
+  {
+    q: "Pecahan berikut yang senilai dengan 1/4 adalah ...",
+    options: ["2/6", "3/8", "4/16", "5/12"],
+    correct: 2,
+    explanation: "1/4 × 4/4 = <strong>4/16</strong>. Cek nilai: 1/4 = 0,25 dan 4/16 = 0,25 ✓. Pilihan lain memiliki nilai berbeda."
+  },
+  {
+    q: "Jika 6/10 = .../20, maka bilangan yang mengisi titik-titik adalah ...",
+    options: ["8", "10", "12", "15"],
+    correct: 2,
+    explanation: "6/10 = x/20. Penyebut dikali 2 (10×2=20), pembilang juga dikali 2: 6×2 = <strong>12</strong>. Jadi 6/10 = 12/20."
+  },
+  {
+    q: "Jika 5/8 = 15/x, maka nilai x adalah ...",
+    options: ["20", "22", "24", "25"],
+    correct: 2,
+    explanation: "5/8 = 15/x. Pembilang dikali 3 (5×3=15), penyebut juga dikali 3: 8×3 = <strong>24</strong>. Jadi 5/8 = 15/24. Cek: 5/8 = 0,625 dan 15/24 = 0,625 ✓"
+  },
+  {
+    q: "Perbandingan umur Ayah dan Ibu adalah 8 : 7. Jika selisih umur mereka 4 tahun, maka umur Ibu adalah ...",
+    options: ["24 tahun", "28 tahun", "32 tahun", "36 tahun"],
+    correct: 1,
+    explanation: "Selisih bagian = 8 − 7 = 1 bagian = 4 tahun. Umur Ibu = 7 × 4 = <strong>28 tahun</strong>. (Umur Ayah = 8 × 4 = 32 tahun)"
+  },
+  {
+    q: "Bentuk paling sederhana dari 12/18 adalah ...",
+    options: ["1/2", "2/3", "3/4", "4/5"],
+    correct: 1,
+    explanation: "FPB(12, 18) = 6. Bagi keduanya dengan 6: 12÷6 / 18÷6 = <strong>2/3</strong>. Cek: 12/18 = 0,667 dan 2/3 = 0,667 ✓"
+  }
+];
+
+// State for each quiz question
+const quizState = quizData.map(() => ({ selected: null, checked: false, isCorrect: false }));
+
+// =====================
+// SLIDE NAVIGATION
+// =====================
+function showSlide(index) {
+  if (index < 0 || index >= totalSlides) return;
+  currentSlide = index;
+  
+  document.querySelectorAll('.slide').forEach((s, i) => {
+    s.classList.toggle('active', i === index);
+  });
+  
+  // Update counter
+  document.getElementById('currentSlide').textContent = index + 1;
+  
+  // Update progress bar
+  const progress = ((index + 1) / totalSlides) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+  
+  // Update dots
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === index);
+  });
+  
+  // Update nav buttons
+  document.getElementById('prevBtn').disabled = index === 0;
+  document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSlide() {
+  if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+  if (currentSlide > 0) showSlide(currentSlide - 1);
+}
+
+// Build dots
+function buildDots() {
+  const dotsContainer = document.getElementById('dots');
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => showSlide(i));
+    dotsContainer.appendChild(dot);
+  }
+}
+
+// =====================
+// FRACTION VISUALIZER
+// =====================
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a || 1;
+}
+
+function updateFraction() {
+  const num = parseInt(document.getElementById('numSlider').value);
+  const den = parseInt(document.getElementById('denSlider').value);
+  
+  // Ensure num < den for proper visualization
+  let displayNum = num;
+  let displayDen = den;
+  
+  // Update labels
+  document.getElementById('numValue').textContent = num;
+  document.getElementById('denValue').textContent = den;
+  document.getElementById('pieNum').textContent = num;
+  document.getElementById('pieDen').textContent = den;
+  
+  // Update pie chart using conic gradient
+  const angle = (num / den) * 360;
+  const pie = document.getElementById('pieDisplay');
+  // Handle case where num >= den (full circle)
+  if (num >= den) {
+    pie.style.background = `conic-gradient(var(--gold) 0deg 360deg)`;
+  } else {
+    pie.style.background = `conic-gradient(var(--gold) 0deg ${angle}deg, rgba(255,255,255,0.06) ${angle}deg 360deg)`;
+  }
+  
+  // Generate equivalent fractions
+  const equivList = document.getElementById('equivalentList');
+  equivList.innerHTML = '';
+  for (let i = 2; i <= 5; i++) {
+    const chip = document.createElement('div');
+    chip.className = 'equivalent-chip';
+    chip.textContent = `${num * i}/${den * i}`;
+    equivList.appendChild(chip);
+  }
+  
+  // Simplest form
+  const g = gcd(num, den);
+  const simpleNum = num / g;
+  const simpleDen = den / g;
+  document.getElementById('simplestForm').textContent = `${simpleNum}/${simpleDen}`;
+}
+
+// =====================
+// EXERCISE SOLUTION TOGGLE
+// =====================
+function toggleSolution(id) {
+  const sol = document.getElementById(`solution-${id}`);
+  const btn = sol.previousElementSibling || sol.parentElement.querySelector('.toggle-solution');
+  sol.classList.toggle('show');
+  if (btn) {
+    btn.classList.toggle('open');
+    btn.textContent = sol.classList.contains('show') ? 'Sembunyikan Penyelesaian' : 'Lihat Penyelesaian';
+  }
+}
+
+// =====================
+// QUIZ RENDERING
+// =====================
+function renderQuiz() {
+  const grid = document.getElementById('quizGrid');
+  grid.innerHTML = '';
+  
+  quizData.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.id = `quiz-card-${idx}`;
+    
+    const letters = ['A', 'B', 'C', 'D'];
+    
+    card.innerHTML = `
+      <div class="quiz-number">Soal ${String(idx + 1).padStart(2, '0')}</div>
+      <div class="quiz-question">${item.q}</div>
+      <div class="quiz-options">
+        ${item.options.map((opt, i) => `
+          <label class="option" data-option="${i}">
+            <input type="radio" name="q${idx}" value="${i}" onchange="selectAnswer(${idx}, ${i})">
+            <span class="radio"></span>
+            <span class="option-letter">${letters[i]}</span>
+            <span>${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="quiz-actions">
+        <button class="btn-check" onclick="checkAnswer(${idx})" id="check-btn-${idx}">Cek Jawaban</button>
+        <button class="btn-explain" onclick="toggleExplanation(${idx})" id="explain-btn-${idx}">Pembahasan</button>
+      </div>
+      <div class="result-feedback" id="feedback-${idx}"></div>
+      <div class="explanation" id="explanation-${idx}">
+        <strong>Pembahasan:</strong> ${item.explanation}
+      </div>
+    `;
+    
+    grid.appendChild(card);
+  });
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (quizState[qIdx].checked) return; // Can't change after checking
+  quizState[qIdx].selected = optIdx;
+}
+
+function checkAnswer(qIdx) {
+  const state = quizState[qIdx];
+  if (state.selected === null) {
+    alert('Silakan pilih jawaban terlebih dahulu!');
+    return;
+  }
+  if (state.checked) return;
+  
+  state.checked = true;
+  state.isCorrect = (state.selected === quizData[qIdx].correct);
+  
+  const card = document.getElementById(`quiz-card-${qIdx}`);
+  const options = card.querySelectorAll('.option');
+  
+  options.forEach((opt, i) => {
+    const input = opt.querySelector('input');
+    input.disabled = true;
+    if (i === quizData[qIdx].correct) {
+      opt.classList.add('correct');
+    } else if (i === state.selected && !state.isCorrect) {
+      opt.classList.add('wrong');
+    }
+  });
+  
+  // Disable check button
+  const checkBtn = document.getElementById(`check-btn-${qIdx}`);
+  checkBtn.disabled = true;
+  checkBtn.textContent = 'Sudah Dicek';
+  
+  // Show feedback
+  const feedback = document.getElementById(`feedback-${qIdx}`);
+  feedback.classList.add('show');
+  if (state.isCorrect) {
+    feedback.classList.add('correct');
+    feedback.classList.remove('wrong');
+    feedback.textContent = '✓ Jawaban benar!';
+    card.classList.add('answered-correct');
+  } else {
+    feedback.classList.add('wrong');
+    feedback.classList.remove('correct');
+    feedback.textContent = `✗ Jawaban salah. Jawaban yang benar: ${['A','B','C','D'][quizData[qIdx].correct]}`;
+    card.classList.add('answered-wrong');
+  }
+  
+  updateScore();
+}
+
+function toggleExplanation(qIdx) {
+  const exp = document.getElementById(`explanation-${qIdx}`);
+  exp.classList.toggle('show');
+  const btn = document.getElementById(`explain-btn-${qIdx}`);
+  btn.textContent = exp.classList.contains('show') ? 'Sembunyikan' : 'Pembahasan';
+}
+
+function updateScore() {
+  let answered = 0, correct = 0, wrong = 0;
+  quizState.forEach(s => {
+    if (s.checked) {
+      answered++;
+      if (s.isCorrect) correct++;
+      else wrong++;
+    }
+  });
+  document.getElementById('answeredCount').textContent = answered;
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('wrongCount').textContent = wrong;
+}
+
+function resetQuiz() {
+  if (!confirm('Yakin ingin mereset semua jawaban kuis?')) return;
+  quizState.forEach((s, i) => {
+    s.selected = null;
+    s.checked = false;
+    s.isCorrect = false;
+  });
+  renderQuiz();
+  updateScore();
+}
+
+// =====================
+// KEYBOARD NAVIGATION
+// =====================
+document.addEventListener('keydown', (e) => {
+  // Don't trigger when typing in inputs
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    prevSlide();
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    showSlide(0);
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    showSlide(totalSlides - 1);
+  }
+});
+
+// =====================
+// INITIALIZATION
+// =====================
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('totalSlides').textContent = totalSlides;
+  buildDots();
+  renderQuiz();
+  
+  // Setup sliders
+  const numSlider = document.getElementById('numSlider');
+  const denSlider = document.getElementById('denSlider');
+  numSlider.addEventListener('input', updateFraction);
+  denSlider.addEventListener('input', updateFraction);
+  updateFraction();
+  
+  // Setup nav buttons
+  document.getElementById('prevBtn').addEventListener('click', prevSlide);
+  document.getElementById('nextBtn').addEventListener('click', nextSlide);
+  
+  // Initial state
+  showSlide(0);
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const swipeThreshold = 50;
+  const diff = touchEndX - touchStartX;
+  
+  if (Math.abs(diff) < swipeThreshold) return;
+  
+  // Don't swipe on quiz slide if interacting
+  if (e && e.target && e.target.closest('.quiz-card')) return;
+  
+  if (diff < 0) {
+    nextSlide();
+  } else {
+    prevSlide();
+  }
+}
+</script>
+
+</body>
+</html>
