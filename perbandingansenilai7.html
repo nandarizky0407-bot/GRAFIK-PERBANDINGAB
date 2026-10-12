@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Perbandingan Senilai — Matematika Kelas 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --violet:#7c3aed; --teal:#06b6d4; --amber:#f59e0b; --green:#10b981; --red:#ef4444;
+ --ink:#1e1b4b; --shadow:0 10px 30px rgba(76,29,149,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Nunito',sans-serif;color:var(--ink);background:linear-gradient(135deg,#ede9fe,#e0f2fe 55%,#dcfce7);overflow:hidden}
+h1,h2,h3,.fun{font-family:'Fredoka',sans-serif}
+.hidden{display:none!important}
+.muted{color:#8b87a8;font-size:13.5px;font-weight:700}
+.bignum{font-family:'Fredoka';font-size:22px;color:#6d28d9}
+
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);z-index:50;box-shadow:0 2px 12px rgba(76,29,149,.08)}
+.logo{font-family:'Fredoka';font-weight:700;color:var(--violet);font-size:17px;white-space:nowrap}
+.pwrap{flex:1;height:10px;background:#ede9fe;border-radius:99px;overflow:hidden}
+#progressBar{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#06b6d4,#f59e0b);border-radius:99px;transition:width .4s}
+#slideCounter{font-weight:800;font-size:13px;color:#6d28d9;background:#f3e8ff;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.iconbtn{border:none;background:#f3e8ff;font-size:18px;width:38px;height:38px;border-radius:12px;cursor:pointer}
+.iconbtn:hover{background:#e9d5ff}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;height:64px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);z-index:50;border-top:2px solid #ede9fe}
+.navbtn{font-family:'Fredoka';font-size:15px;border:none;padding:12px 22px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(124,58,237,.35);transition:.2s}
+.navbtn:hover{transform:translateY(-2px)}
+.navbtn.ghost{background:#fff;color:#6d28d9;border:2px solid #ddd6fe;box-shadow:none}
+
+.overlay{position:fixed;inset:0;background:rgba(30,27,75,.55);z-index:100;display:none;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.menu-card{background:#fff;border-radius:24px;padding:22px;max-width:430px;width:92%;max-height:82vh;overflow:auto}
+.menu-card h3{color:#6d28d9;margin-bottom:10px}
+.menu-item{display:block;width:100%;text-align:left;border:none;background:#f8fafc;margin:6px 0;padding:11px 14px;border-radius:12px;cursor:pointer;font-family:'Nunito';font-weight:700;color:#3730a3;font-size:14px}
+.menu-item:hover{background:#ede9fe}
+
+#deck{position:fixed;inset:56px 0 64px 0}
+.slide{position:absolute;inset:0;padding:18px 22px 30px;overflow-y:auto;opacity:0;transform:translateX(40px) scale(.98);pointer-events:none;transition:all .45s ease}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide-inner{max-width:1150px;margin:0 auto}
+.stitle{font-size:clamp(22px,3.4vw,32px);color:#4c1d95;margin-bottom:10px}
+
+.cover{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:16px 6px}
+.cover .float{font-size:44px;letter-spacing:10px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.cover h1{font-size:clamp(32px,5.6vw,54px);color:#4c1d95}
+.grad{background:linear-gradient(90deg,#7c3aed,#06b6d4,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{font-size:17px;color:#55517b;font-weight:700}
+.name-card{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;justify-content:center;background:#fff;border-radius:24px;padding:20px 24px;box-shadow:var(--shadow);margin:8px 0}
+.name-input{display:flex;flex-direction:column;gap:6px;min-width:210px;padding:14px;border-radius:18px;border:3px dashed}
+.name-input.p1{border-color:#c4b5fd;background:#faf5ff}
+.name-input.p2{border-color:#67e8f9;background:#ecfeff}
+.name-input label{font-weight:800;font-size:13px;color:#6d28d9}
+.name-input input{border:none;border-bottom:2px solid #c4b5fd;background:transparent;font-family:'Nunito';font-weight:800;font-size:17px;padding:6px 2px;outline:none;color:#1e1b4b;text-align:center}
+.vs{align-self:center;font-family:'Fredoka';font-weight:700;color:#f59e0b;font-size:24px}
+.btn-start{font-family:'Fredoka';font-size:19px;border:none;padding:16px 34px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(124,58,237,.4);transition:.2s}
+.btn-start:hover{transform:translateY(-3px) scale(1.02)}
+.hint{font-size:13px;color:#8b87a8;font-weight:700}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:2px solid #ddd6fe;background:#fff;padding:9px 16px;border-radius:99px;font-family:'Fredoka';font-weight:600;font-size:14px;cursor:pointer;color:#6d28d9}
+.tab.active{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;align-items:start}
+.card{background:#fff;border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h3{color:#6d28d9;margin-bottom:8px}
+.card ul{margin:6px 0 6px 20px;font-size:14.5px;line-height:1.7}
+.exbox{background:#fefce8;border-left:5px solid #f59e0b;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.warnbox{background:#fef2f2;border-left:5px solid #ef4444;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.okbox{background:#ecfdf5;border-left:5px solid #10b981;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.formula{background:#f5f3ff;border:2px dashed #c4b5fd;border-radius:14px;padding:10px 14px;text-align:center;font-weight:800;color:#6d28d9;margin:10px 0}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:10px 0}
+.kcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);font-weight:700;font-size:14.5px;line-height:1.6}
+.kcard b{color:#6d28d9}
+.goldstrip{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;padding:14px;text-align:center;font-weight:800;color:#92400e;font-size:15.5px;margin:12px 0}
+.steps .step{background:#f8fafc;border-left:4px solid #a78bfa;padding:8px 12px;margin:6px 0;border-radius:10px;font-weight:700;animation:rise .4s ease}
+.res{font-weight:800;color:#059669;margin-top:6px;font-size:15.5px;min-height:22px}
+.chain{background:#fdf4ff;border-radius:12px;padding:10px;font-weight:700;font-size:14px;line-height:1.9;text-align:center}
+
+.selrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:800;margin-bottom:8px}
+select{border:2px solid #ddd6fe;border-radius:10px;padding:6px 10px;font-family:'Nunito';font-weight:800;font-size:14px;color:#4c1d95;background:#fff;outline:none}
+.btn-check{border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Fredoka';font-weight:600;padding:10px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.btn-check:hover{filter:brightness(1.08)}
+.btn{border:2px solid #ddd6fe;background:#fff;color:#6d28d9;font-family:'Fredoka';font-weight:600;padding:9px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.zsbtns{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.zsbtn{border:2px solid #ddd6fe;background:#fff;border-radius:12px;padding:8px 12px;font-family:'Fredoka';font-weight:600;cursor:pointer;color:#6d28d9;font-size:14px}
+.zsbtn.sel{background:#7c3aed;color:#fff;border-color:#7c3aed}
+input[type=range]{accent-color:#7c3aed;width:170px}
+.rangev{font-weight:800;color:#6d28d9;min-width:52px;display:inline-block}
+.ratioOut{background:#f5f3ff;border-radius:12px;padding:10px;text-align:center;font-weight:700}
+.ubar{height:36px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin:5px 0}
+.ufill{height:100%;border-radius:10px;display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:800;transition:width .4s;white-space:nowrap}
+.f1{background:linear-gradient(90deg,#8b5cf6,#6d28d9)}
+.f2{background:linear-gradient(90deg,#22d3ee,#0891b2)}
+.fb{margin-top:8px;font-weight:800;min-height:20px;font-size:14.5px}
+.fb.good{color:#059669}.fb.bad{color:#dc2626}
+
+.kilat{background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.kdots{display:flex;gap:6px;margin-bottom:10px;justify-content:center}
+.kdot{width:12px;height:12px;border-radius:50%;background:#e2e8f0}
+.kdot.on{background:#7c3aed}.kdot.ok{background:#10b981}.kdot.no{background:#ef4444}
+.kq{font-weight:800;font-size:15.5px;margin-bottom:10px}
+
+.emorow{min-height:44px;font-size:26px;letter-spacing:3px;word-break:break-all;line-height:1.5;margin:4px 0;text-align:center}
+.emolabel{font-size:12px;font-weight:800;color:#8b87a8;text-align:center}
+.agebox{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.agecard{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:14px;padding:10px 16px;text-align:center;font-weight:800}
+.agecard b{font-family:'Fredoka';font-size:30px;color:#4c1d95;display:block}
+.agecard.shake{animation:shk .5s}
+@keyframes shk{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+
+.sortcard{background:linear-gradient(135deg,#faf5ff,#ecfeff);border:3px solid #c4b5fd;border-radius:18px;padding:22px 16px;text-align:center;font-weight:800;font-size:17px;min-height:110px;display:flex;align-items:center;justify-content:center}
+.bigbtns{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.bigbtn{border:none;border-radius:14px;padding:14px 22px;font-family:'Fredoka';font-weight:600;font-size:16px;cursor:pointer;color:#fff;transition:.15s}
+.bigbtn.yes{background:linear-gradient(135deg,#10b981,#059669)}
+.bigbtn.no{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.bigbtn:active{transform:scale(.95)}
+.bigbtn:disabled{opacity:.4;cursor:not-allowed}
+
+.nextstep{display:block;width:100%;margin-top:8px;border:none;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-family:'Fredoka';font-weight:600;font-size:15px;padding:12px;border-radius:12px;cursor:pointer}
+.nextstep:disabled{opacity:.35;cursor:not-allowed}
+
+.qcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);margin:12px 0;border-top:4px solid #c4b5fd}
+.qnum{display:inline-block;background:#7c3aed;color:#fff;font-weight:800;font-size:12px;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+.qtext{font-weight:800;font-size:15.5px;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{text-align:left;border:2px solid #e9d5ff;background:#faf5ff;border-radius:12px;padding:10px 12px;font-family:'Nunito';font-weight:700;font-size:14px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.opt:hover:not(:disabled){border-color:#7c3aed}
+.opt.sel{border-color:#7c3aed;background:#ede9fe;box-shadow:0 0 0 3px #ddd6fe}
+.opt.right{border-color:#10b981;background:#d1fae5}
+.opt.wrong{border-color:#ef4444;background:#fee2e2}
+.opt:disabled{cursor:default}
+.qact{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-exp{border:2px solid #f59e0b;background:#fffbeb;color:#b45309;font-family:'Fredoka';padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px}
+.exp{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px;animation:rise .3s ease}
+.pscore{background:#4c1d95;color:#fff;font-weight:800;text-align:center;padding:12px;border-radius:14px;margin-top:14px}
+
+.scoreboard{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.scard{background:#fff;border-radius:16px;padding:10px 18px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;font-weight:800;border-top:5px solid}
+.scard.s1{border-color:#8b5cf6}.scard.s2{border-color:#06b6d4}
+.scard b{font-family:'Fredoka';font-size:26px;color:#4c1d95}
+.vs2{font-family:'Fredoka';color:#f59e0b;font-weight:700;font-size:20px}
+.pickrow{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 10px;flex-wrap:wrap;font-weight:800;color:#4c1d95}
+.turnbtn{border:2px solid #e2e8f0;background:#fff;border-radius:99px;padding:8px 16px;font-family:'Fredoka';font-weight:600;cursor:pointer;transition:.15s}
+#turn1.active{background:#ede9fe;border-color:#8b5cf6;transform:scale(1.08)}
+#turn2.active{background:#ecfeff;border-color:#06b6d4;transform:scale(1.08)}
+.legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:800;margin-bottom:6px}
+.chip{padding:3px 10px;border-radius:99px}
+.chip.c0{background:#d1fae5;color:#065f46}.chip.c1{background:#fef3c7;color:#92400e}.chip.c2{background:#fee2e2;color:#991b1b}
+.numgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;margin:10px 0}
+.numb{height:48px;border-radius:12px;border:2px solid transparent;font-family:'Fredoka';font-weight:600;font-size:17px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.numb.lv0{background:#d1fae5;border-color:#6ee7b7}
+.numb.lv1{background:#fef3c7;border-color:#fcd34d}
+.numb.lv2{background:#fee2e2;border-color:#fca5a5}
+.numb:hover:not(:disabled){transform:translateY(-2px)}
+.numb.taken1{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.numb.taken2{background:#06b6d4;color:#fff;border-color:#06b6d4}
+.numb:disabled{cursor:not-allowed;opacity:.95}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.duel-panel{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);min-height:220px}
+.duel-panel.p1{border-top:6px solid #8b5cf6}
+.duel-panel.p2{border-top:6px solid #06b6d4}
+.dp-head{font-family:'Fredoka';font-weight:600;font-size:16px;color:#4c1d95;margin-bottom:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lvl{font-size:11px;padding:3px 9px;border-radius:99px;color:#fff;font-weight:700}
+.lvl.lv0{background:#10b981}.lvl.lv1{background:#f59e0b}.lvl.lv2{background:#ef4444}
+.dp-empty{color:#8b87a8;font-weight:700;text-align:center;padding:30px 8px}
+.dp-q{font-weight:800;margin-bottom:10px;font-size:15px}
+#quizProg{text-align:center;font-weight:800;color:#6d28d9;margin-top:8px}
+#quizResult{text-align:center;font-family:'Fredoka';font-size:20px;color:#b45309;min-height:28px;margin-top:6px}
+
+.game-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:start}
+.shopzone{background:linear-gradient(160deg,#fff7ed,#ffedd5);border:2px solid #fed7aa;border-radius:20px;padding:16px;text-align:center}
+.ordercard{background:#fff;border:3px dashed #f59e0b;border-radius:16px;padding:12px;font-weight:800;color:#92400e;margin-bottom:10px}
+.ingrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.ing{background:#fff;border:2px solid #fde68a;border-radius:14px;padding:10px 14px;min-width:110px}
+.ing .lab{font-size:12px;font-weight:800;color:#8b87a8}
+.ing b{font-family:'Fredoka';font-size:26px;color:#4c1d95;display:block}
+.gauge{height:16px;background:#fef3c7;border-radius:99px;overflow:hidden;margin-top:6px}
+.gauge div{height:100%;width:0;transition:width .3s;border-radius:99px}
+#gGaugeJ{background:linear-gradient(90deg,#fb923c,#ea580c)}
+#gGaugeG{background:linear-gradient(90deg,#facc15,#eab308)}
+.cuprow{font-size:26px;letter-spacing:2px;min-height:40px;word-break:break-all;margin:6px 0}
+.shake{animation:shk .5s}
+.gbtn{display:block;width:100%;margin:8px 0;border:none;border-radius:14px;padding:13px;font-family:'Fredoka';font-weight:600;font-size:15px;cursor:pointer;color:#fff;transition:.15s}
+.gbtn:active{transform:scale(.97)}
+.gbtn:disabled{opacity:.4;cursor:not-allowed}
+#gBtnJ{background:linear-gradient(135deg,#f97316,#ea580c)}
+#gBtnG{background:linear-gradient(135deg,#eab308,#ca8a04)}
+.btn-serve{background:linear-gradient(135deg,#ef4444,#dc2626)!important;font-size:17px!important}
+.gmsg{background:#f8fafc;border-radius:12px;padding:10px;font-weight:800;color:#4c1d95;min-height:46px;margin-top:8px}
+.gmsg.good{background:#d1fae5;color:#065f46}
+.gmsg.bad{background:#fee2e2;color:#991b1b}
+.gstat{display:flex;gap:10px;margin:8px 0;flex-wrap:wrap}
+.gstat .gs{flex:1;background:#f5f3ff;border-radius:12px;padding:8px;text-align:center;font-weight:800}
+.gs b{display:block;font-family:'Fredoka';font-size:24px;color:#6d28d9}
+.missioncard{background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.btn-reset{background:#64748b!important}
+
+.emoji-row{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.emo{font-size:32px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:16px;padding:8px 12px;cursor:pointer;transition:.15s}
+.emo:hover{transform:scale(1.15)}
+.emo.sel{border-color:#7c3aed;background:#ede9fe;transform:scale(1.15)}
+textarea{width:100%;min-height:110px;border:2px solid #ddd6fe;border-radius:14px;padding:12px;font-family:'Nunito';font-weight:600;font-size:14px;resize:vertical;outline:none}
+textarea:focus{border-color:#7c3aed}
+.check-row{display:flex;gap:14px;flex-wrap:wrap;font-weight:700;font-size:14px;margin:8px 0}
+.check-row label{display:flex;gap:6px;align-items:center;background:#f8fafc;padding:8px 12px;border-radius:12px;cursor:pointer}
+#refSaved{font-weight:800;color:#059669;margin-top:8px;min-height:22px}
+
+#toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1b4b;color:#fff;padding:11px 20px;border-radius:99px;font-weight:800;z-index:200;opacity:0;pointer-events:none;transition:.3s;font-size:14px;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.fxp{position:fixed;top:-50px;z-index:300;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg);opacity:.7}}
+
+@media(max-width:900px){
+ .grid2,.duel,.game-wrap{grid-template-columns:1fr}
+ .opts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+ <div class="logo">⚖️ Perbandingan Senilai</div>
+ <div class="pwrap"><div id="progressBar"></div></div>
+ <div id="slideCounter">1 / 11</div>
+ <button class="iconbtn" onclick="openMenu()">☰</button>
+</header>
+
+<div class="overlay" id="menuOv" onclick="if(event.target===this)closeMenu()">
+ <div class="menu-card"><h3>🗺️ Peta Slide</h3><div id="menuList"></div></div>
+</div>
+
+<main id="deck">
+
+<!-- 1. COVER -->
+<section class="slide active" id="s-cover" data-title="🏠 Sampul & Nama Siswa">
+ <div class="cover">
+  <div class="float">⚖️ 🍹 📈</div>
+  <h1>Petualangan <span class="grad">PERBANDINGAN SENILAI</span></h1>
+  <p class="subtitle">Matematika Kelas 7 SMP • Naik bersama, turun bersama — rasio selalu setia!</p>
+  <div class="name-card">
+   <div class="name-input p1">
+    <label>🟣 SISWA 1</label>
+    <input id="name1" maxlength="20" placeholder="Tulis nama Siswa 1">
+   </div>
+   <div class="vs">VS</div>
+   <div class="name-input p2">
+    <label>🔵 SISWA 2</label>
+    <input id="name2" maxlength="20" placeholder="Tulis nama Siswa 2">
+   </div>
+  </div>
+  <button class="btn-start" onclick="go(1)">🚀 Mulai Petualangan!</button>
+  <p class="hint">💡 Nama kalian akan muncul di kuis duel, game, dan slide penutup!<br>Gunakan tombol ← → di keyboard untuk berpindah slide.</p>
+ </div>
+</section>
+
+<!-- 2. REVIEW RASIO -->
+<section class="slide" id="s-review" data-title="🔁 Review: Rasio">
+ <div class="slide-inner">
+  <h2 class="stitle">🔁 Review Kilat — Masih Ingat Rasio?</h2>
+  <div class="grid2">
+   <div>
+    <div class="grid3" style="margin:0 0 12px">
+     <div class="kcard">🍎 <b>Rasio</b> = perbandingan dua besaran, satuan sama.<br><span class="muted">Notasi: a : b (dibaca "a banding b")</span></div>
+     <div class="kcard">➗ <b>Menyederhanakan</b>: bagi kedua suku dengan FPB.<br><span class="muted">24 : 36 = 2 : 3</span></div>
+     <div class="kcard">♾️ <b>Rasio ekuivalen</b>: kali/bagi kedua suku dengan bilangan sama.<br><span class="muted">2 : 3 = 4 : 6 = 6 : 9</span></div>
+     <div class="kcard">➕ <b>Jumlah &amp; selisih</b>: cari dulu nilai 1 bagian!<br><span class="muted">jumlah ÷ (a+b) • selisih ÷ (a−b)</span></div>
+    </div>
+    <div class="okbox">🔑 <b>Jembatan hari ini:</b> Rasio ekuivalen (2 : 3 = 4 : 6) adalah kunci perbandingan <b>SENILAI</b> — dua keadaan yang rasionya tetap! 👀</div>
+   </div>
+   <div class="kilat">
+    <h3>⚡ Kuis Kilat Rasio (6 soal)</h3>
+    <p class="muted">Jawab cepat! Ini pemanasan sebelum petualangan hari ini.</p>
+    <div class="kdots" id="kDots"></div>
+    <div id="kBody"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 3. TUJUAN -->
+<section class="slide" id="s-goal" data-title="🎯 Tujuan Pembelajaran">
+ <div class="slide-inner">
+  <h2 class="stitle">🎯 Tujuan Pembelajaran</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>🏁 Setelah pembelajaran ini, kalian dapat…</h3>
+    <ul>
+     <li>🎯 <b>Menjelaskan pengertian perbandingan senilai</b> beserta ciri-cirinya.</li>
+     <li>🔍 <b>Membedakan kasus senilai dan bukan senilai</b> dari kejadian sehari-hari.</li>
+     <li>🪜 <b>Menyelesaikan masalah senilai</b> dengan metode nilai 1 dan kali silang (multiplicando).</li>
+     <li>🧩 <b>Menerapkan</b> perbandingan senilai pada soal harga, resep, bensin, upah, dan peta.</li>
+    </ul>
+    <div class="okbox">✅ Bekal kalian lengkap: <b>Rasio</b> dan <b>Skala</b> sudah dikuasai. Senilai adalah "saudara kandung" keduanya! 💪</div>
+   </div>
+   <div class="card">
+    <h3>🗺️ Peta Perjalanan Bab Ini</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;font-weight:800">
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">1️⃣ Rasio — sudah kalian taklukkan! ✅</div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">2️⃣ Skala — juga sudah! ✅</div>
+     <div style="background:#ede9fe;border-radius:12px;padding:10px 14px">3️⃣ <b>Perbandingan Senilai</b> <span class="okc">← KITA DI SINI HARI INI! 📍</span></div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">4️⃣ Perbandingan Berbalik Nilai — satu naik, yang lain turun 🔜</div>
+    </div>
+    <p class="muted" style="margin-top:10px">Hari ini kita bedah 3 materi: <b>definisi → contoh senilai &amp; bukan → cara menyelesaikan soal</b>. Siap? 🚀</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 4. M1 DEFINISI -->
+<section class="slide" id="s-m1" data-title="🍹 M1: Definisi Perbandingan Senilai">
+ <div class="slide-inner">
+  <h2 class="stitle">🍹 Materi 1 — Definisi Perbandingan Senilai</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>💡 Apa itu Perbandingan Senilai?</h3>
+     <p style="font-size:14.5px;line-height:1.7">Dua besaran dikatakan <b>berbanding senilai</b> jika salah satu <b>bertambah</b>, maka yang lain ikut <b>bertambah</b> (atau jika salah satu <b>berkurang</b>, yang lain ikut <b>berkurang</b>) secara <b>sebanding</b> — sehingga <b>rasio keduanya selalu tetap</b>.</p>
+     <div class="formula">a₁ : b₁ = a₂ : b₂ &nbsp;&nbsp;atau&nbsp;&nbsp; a₁/b₁ = a₂/b₂<br><small>(kali silang: a₁ × b₂ = b₁ × a₂)</small></div>
+     <div class="exbox">🍹 Resep jus: 2 gelas butuh 6 jeruk → 4 gelas butuh 12 jeruk.<br>Rasio tetap: 2 : 6 = 4 : 12 = <b>1 : 3</b> ✅ <b>Senilai!</b></div>
+     <ul>
+      <li>Kata kuncinya: <b>"naik bersama, turun bersama, rasio tetap"</b>.</li>
+      <li>Contoh: harga &amp; banyak barang, jarak &amp; bensin, waktu &amp; hasil kerja.</li>
+     </ul>
+     <div class="warnbox">⚠️ Dua besaran yang "sama-sama naik" BELUM tentu senilai! Umur kakak &amp; adik sama-sama bertambah, tapi rasionya berubah — jadi bukan senilai. Buktikan di lab interaktif! 👉</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Lab Senilai vs Bukan</h3>
+     <div class="zsbtns">
+      <button class="zsbtn sel" id="sdBtnA" onclick="sdModeSet('senilai')">🍹 Demo SENILAI (jus)</button>
+      <button class="zsbtn" id="sdBtnB" onclick="sdModeSet('bukan')">🎂 Demo BUKAN (umur)</button>
+     </div>
+     <div id="sdSenilai">
+      <div class="selrow">Banyak gelas: <input type="range" id="sdGelas" min="1" max="8" value="2" oninput="sdRender()"><span class="rangev" id="sdGelasTxt">2 gelas</span></div>
+      <div class="emolabel">🥤 GELAS JUS</div>
+      <div class="emorow" id="sdGelasE"></div>
+      <div class="ubar"><div id="sdBarG" class="ufill f1" style="width:25%">gelas</div></div>
+      <div class="emolabel">🍊 JERUK (resep: 2 jeruk per gelas)</div>
+      <div class="emorow" id="sdJerukE"></div>
+      <div class="ubar"><div id="sdBarJ" class="ufill f2" style="width:25%">jeruk</div></div>
+      <div class="ratioOut" id="sdRatio"></div>
+      <div class="chain" id="sdTable"></div>
+      <div class="okbox" id="sdMsgA">👀 Geser slider: kedua batang tumbuh <b>sebanding</b> dan rasionya TIDAK PERNAH berubah — inilah senilai!</div>
+     </div>
+     <div id="sdBukan" class="hidden">
+      <p class="muted">Rina &amp; Kakaknya ulang tahun bersamaan. Klik +1 tahun dan amati rasionya!</p>
+      <div class="agebox">
+       <div class="agecard" id="ageK">Umur Kakak<b id="ageKv">12</b></div>
+       <div class="agecard" id="ageA">Umur Rina<b id="ageAv">8</b></div>
+      </div>
+      <div style="text-align:center"><button class="btn-check" onclick="umurAdd()">🎂 +1 tahun untuk keduanya!</button></div>
+      <div class="chain" id="sdChainB" style="margin-top:10px"></div>
+      <div class="warnbox" id="sdMsgB">Hmm, klik dulu tombolnya! 👆</div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr1"></div></div>
+ </div>
+</section>
+
+<!-- 5. M2 SENILAI ATAU BUKAN -->
+<section class="slide" id="s-m2" data-title="⚖️ M2: Senilai atau Bukan?">
+ <div class="slide-inner">
+  <h2 class="stitle">⚖️ Materi 2 — Contoh Kasus: Senilai atau Bukan?</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>🔍 Cara Mengujinya</h3>
+     <div class="steps">
+      <div class="step">1️⃣ Ambil <b>dua keadaan</b> dari pasangan besaran itu.</div>
+      <div class="step">2️⃣ Hitung <b>rasionya</b> (atau bagi satu dengan yang lain).</div>
+      <div class="step">3️⃣ Jika rasio <b>selalu tetap</b> → <b class="okc">SENILAI ✅</b> &nbsp;•&nbsp; jika berubah / saling bertolak belakang → <b class="fb bad">BUKAN ❌</b></div>
+     </div>
+     <div class="exbox">✅ <b>SENILAI:</b> bensin &amp; jarak (makin banyak bensin, makin jauh), buku &amp; harga, jam kerja &amp; upah, kue &amp; tepung.</div>
+     <div class="warnbox">❌ <b>BUKAN senilai (berbalik nilai):</b> kecepatan &amp; waktu tempuh (jarak tetap), jumlah pekerja &amp; waktu pengerjaan, persediaan makanan &amp; lama habis.</div>
+     <div class="warnbox">❌ <b>BUKAN senilai (tak sebanding):</b> umur kakak &amp; adik, umur &amp; tinggi badan — naik bersama tapi rasionya berubah-ubah.</div>
+     <div class="okbox">🤔 Kalau nanti ketemu "satu naik, yang lain TURUN" — itu adiknya: <b>Perbandingan Berbalik Nilai</b> (bab berikutnya)!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Wasit Senilai ⚖️ (10 kartu)</h3>
+     <p class="muted">Tentukan: kartu ini contoh <b>senilai</b> atau <b>bukan</b>? Kalian berdua boleh berdebat dulu! 🤝</p>
+     <div class="selrow" style="justify-content:space-between"><span id="sgProg">Kartu 1 / 10</span><b id="sgScore" style="color:#059669">✅ 0 benar</b></div>
+     <div class="sortcard" id="sgCard"></div>
+     <div class="bigbtns">
+      <button class="bigbtn yes" id="sgYes" onclick="sgAns(true)">✅ Senilai</button>
+      <button class="bigbtn no" id="sgNo" onclick="sgAns(false)">❌ Bukan Senilai</button>
+     </div>
+     <div class="fb" id="sgFb" style="text-align:center;min-height:44px"></div>
+     <div style="text-align:center"><button class="btn hidden" id="sgNext" onclick="sgNextKartu()">Kartu Berikutnya ▶</button></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr2"></div></div>
+ </div>
+</section>
+
+<!-- 6. M3 CARA MENYELESAIKAN -->
+<section class="slide" id="s-m3" data-title="🪜 M3: Cara Menyelesaikan Soal Senilai">
+ <div class="slide-inner">
+  <h2 class="stitle">🪜 Materi 3 — Cara Menyelesaikan Permasalahan Senilai</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>🪜 Langkah Emas + 2 Metode Andalan</h3>
+     <div class="steps">
+      <div class="step">1️⃣ Tulis <b>yang diketahui</b> dan <b>yang ditanya</b>.</div>
+      <div class="step">2️⃣ Uji jenisnya: <b>senilai?</b> (naik bersama, rasio tetap)</div>
+      <div class="step">3️⃣ Pilih metode &amp; hitung.</div>
+      <div class="step">4️⃣ <b>Cek kembali</b> dengan kali silang!</div>
+     </div>
+     <div class="exbox"><b>🍹 Metode Nilai 1 (Satuan):</b><br>3 kg apel = Rp45.000 → 1 kg = 45.000 ÷ 3 = <b>Rp15.000</b> → 5 kg = 5 × 15.000 = <b>Rp75.000</b> ✅</div>
+     <div class="exbox"><b>✖️ Metode Multiplicando (kali silang):</b><br>3/45.000 = 5/x → 3x = 45.000 × 5 → x = <b>Rp75.000</b> ✅<br><span class="muted">Ujung panah dikali, lalu dibagi ujung panah satunya!</span></div>
+     <div class="okbox">🎯 Metode nilai 1 paling cepat untuk soal cerita. Multiplicando paling aman untuk memeriksa jawaban!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Papan Langkah Emas 🪜</h3>
+     <div class="selrow">Pilih soal: <select id="m3Sel" onchange="m3Load(this.value)"></select></div>
+     <div id="m3Q" style="background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;padding:10px 12px;font-weight:800;margin-bottom:8px"></div>
+     <div class="steps" id="m3Steps"></div>
+     <button class="nextstep" id="m3NextBtn" onclick="m3Next()">▶ Tampilkan Langkah Berikutnya</button>
+     <div id="m3Fin" class="res"></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr3"></div></div>
+ </div>
+</section>
+
+<!-- 7. KUIS DUEL -->
+<section class="slide" id="s-quiz" data-title="⚔️ Kuis Duel Senilai">
+ <div class="slide-inner">
+  <h2 class="stitle">⚔️ Kuis Duel Senilai — Siapa Lebih Jago?</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Cara main:</b> pilih giliran siapa yang memilih → klik nomor soal → soal muncul di panel siswa tersebut → pilih jawaban → tekan <b>✔ Cek Jawaban</b> → lihat <b>📖 Pembahasan</b>. Soal yang sudah diambil <b>tidak bisa diambil lagi</b>! Jawaban benar = poin (Mudah +10, Sedang +20, HOTS +30). Yang berhasil menjawab boleh memilih soal berikutnya! 🏆</p>
+  </div>
+  <div class="scoreboard">
+   <div class="scard s1">🟣 <span data-n1>Siswa 1</span><b id="score1">0</b></div>
+   <div class="vs2">VS</div>
+   <div class="scard s2"><b id="score2">0</b><span data-n2>Siswa 2</span> 🔵</div>
+  </div>
+  <div class="pickrow">Giliran memilih:
+   <button class="turnbtn" id="turn1" onclick="setTurn(1)">🟣 <span data-n1>Siswa 1</span></button>
+   <button class="turnbtn" id="turn2" onclick="setTurn(2)">🔵 <span data-n2>Siswa 2</span></button>
+   <button class="btn" onclick="quizReset()">🔄 Reset Kuis</button>
+  </div>
+  <div class="legend"><span class="chip c0">Hijau = Mudah (+10)</span><span class="chip c1">Kuning = Sedang (+20)</span><span class="chip c2">Merah = HOTS (+30)</span></div>
+  <div class="numgrid" id="numGrid"></div>
+  <div id="quizProg">📊 Soal dikerjakan: 0 / 25</div>
+  <div class="duel" style="margin-top:10px">
+   <div class="duel-panel p1" id="panel1"></div>
+   <div class="duel-panel p2" id="panel2"></div>
+  </div>
+  <div id="quizResult"></div>
+ </div>
+</section>
+
+<!-- 8. GAME BARISTA -->
+<section class="slide" id="s-game" data-title="🍹 Game: Barista Jus Senilai (Kerja Sama!)">
+ <div class="slide-inner">
+  <h2 class="stitle">🍹 Exit Ticket: Barista Jus Senilai — Kerja Sama Tim!</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Aturan:</b> <span data-n1>Siswa 1</span> adalah <b>Penambah Jeruk 🟠</b>, <span data-n2>Siswa 2</span> adalah <b>Penambah Gula 🟡</b>. Resep wajib: <b>1 gelas jus = 2 jeruk + 1 takar gula</b> (rasio jeruk : gula = 2 : 1, selalu tetap — senilai!). Isi persis sesuai pesanan lalu tekan <b>SAJI-KAN</b>! Setelah klik, tombolmu rehat 1 detik — jadi <b>diskusikan &amp; hitung dulu</b> berapa yang dibutuhkan! 5 pesanan = 500 poin tim! 🧋</p>
+  </div>
+  <div class="game-wrap">
+   <div class="shopzone">
+    <div class="ordercard" id="gOrder">Pesanan: …</div>
+    <div class="ingrow">
+     <div class="ing"><span class="lab">🟠 JERUK (Siswa 1)</span><b id="gCntJ">0</b><div class="gauge"><div id="gGaugeJ"></div></div></div>
+     <div class="ing"><span class="lab">🟡 GULA (Siswa 2)</span><b id="gCntG">0</b><div class="gauge"><div id="gGaugeG"></div></div></div>
+    </div>
+    <div class="cuprow" id="gCups"></div>
+    <div class="gmsg" id="gMsg">Siapkan bahan sesuai pesanan, barista! 🔧</div>
+   </div>
+   <div>
+    <div class="missioncard" id="gMission"></div>
+    <div class="gstat">
+     <div class="gs">Skor Tim<b id="gScore">0</b></div>
+     <div class="gs">Pesanan Selesai<b id="gStars">☆☆☆☆☆</b></div>
+    </div>
+    <button class="gbtn" id="gBtnJ" onclick="bAdd('J')"></button>
+    <button class="gbtn" id="gBtnG" onclick="bAdd('G')"></button>
+    <button class="gbtn btn-serve" onclick="bServe()">🍹 SAJI-KAN!</button>
+    <button class="gbtn btn-reset" onclick="bResetM()">🔄 Kosongkan Gelas (ulangi pesanan ini)</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 9. KESIMPULAN -->
+<section class="slide" id="s-conclusion" data-title="📝 Kesimpulan">
+ <div class="slide-inner">
+  <h2 class="stitle">📝 Kesimpulan — Apa yang Kita Pelajari Hari Ini?</h2>
+  <div class="grid3">
+   <div class="kcard">⚖️ <b>Perbandingan senilai</b>: satu besaran naik → yang lain ikut naik <b>sebanding</b>, rasionya selalu tetap.</div>
+   <div class="kcard">🧪 Uji cepat: hitung rasio di dua keadaan. <b>Rasio sama = senilai</b>; rasio berubah = bukan.</div>
+   <div class="kcard">❌ <b>Bukan senilai</b>: kecepatan vs waktu, pekerja vs waktu, umur kakak vs adik (rasio berubah atau berbalik).</div>
+   <div class="kcard">🍹 <b>Metode Nilai 1</b>: nilai yang diketahui ÷ rasio itu → lalu × rasio yang ditanya.</div>
+   <div class="kcard">✖️ <b>Multiplicando</b>: a/b = c/d → a × d = b × c. Sekaligus alat cek jawaban paling aman!</div>
+   <div class="kcard">🤝 Semua soal cerita hari ini: harga, bensin, upah, resep, cat — polanya sama: <b>rasio tetap</b>!</div>
+  </div>
+  <div class="goldstrip">🌟 Langkah Emas: 1) Tulis diketahui &amp; ditanya → 2) Pastikan senilai → 3) Metode nilai 1 → 4) Cek dengan kali silang 🌟</div>
+  <div class="card">
+   <h3>🔜 Berikutnya…</h3>
+   <p style="font-size:14.5px;line-height:1.7">Kalian pasti pernah berpikir: "makin banyak pekerja, makin cepat selesai" — itu <b>Perbandingan Berbalik Nilai</b>, kembar yang jahil dari senilai: satu naik, yang lain justru TURUN! 💪</p>
+  </div>
+ </div>
+</section>
+
+<!-- 10. REFLEKSI -->
+<section class="slide" id="s-reflection" data-title="🪞 Refleksi">
+ <div class="slide-inner">
+  <h2 class="stitle">🪞 Refleksi — Bagaimana Perasaanmu Hari Ini?</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>😊 Pilih perasaanmu!</h3>
+    <div class="emoji-row">
+     <span class="emo" onclick="refMood(0)">🤩</span>
+     <span class="emo" onclick="refMood(1)">😄</span>
+     <span class="emo" onclick="refMood(2)">🙂</span>
+     <span class="emo" onclick="refMood(3)">😕</span>
+     <span class="emo" onclick="refMood(4)">😫</span>
+    </div>
+    <h3 style="margin-top:12px">✅ Yang paling kamu sukai (boleh pilih lebih dari satu):</h3>
+    <div class="check-row">
+     <label><input type="checkbox"> Review rasio ⚡</label>
+     <label><input type="checkbox"> Lab senilai vs bukan 🧪</label>
+     <label><input type="checkbox"> Wasit senilai ⚖️</label>
+     <label><input type="checkbox"> Kuis duel ⚔️</label>
+     <label><input type="checkbox"> Barista jus 🍹</label>
+    </div>
+   </div>
+   <div class="card">
+    <h3>💭 Tulis refleksimu!</h3>
+    <p class="muted">Hari ini aku belajar… / Bagian yang masih membingungkan adalah… / Aku ingin lebih banyak latihan tentang…</p>
+    <textarea id="refText" placeholder="Tulis pendapatmu di sini…"></textarea>
+    <div style="margin-top:10px"><button class="btn-start" style="font-size:15px;padding:12px 26px" onclick="refSave()">💾 Simpan Refleksi</button></div>
+    <div id="refSaved"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 11. THANKS -->
+<section class="slide" id="s-thanks" data-title="🎉 Terima Kasih!">
+ <div class="cover">
+  <div class="float">🎉 🌟 🎊</div>
+  <h1>Thank You <span class="grad">for Today!</span></h1>
+  <p class="subtitle">Kerja bagus, <b data-n1>Siswa 1</b> &amp; <b data-n2>Siswa 2</b>! 👏👏</p>
+  <div class="card" style="max-width:520px">
+   <p style="font-size:15px;line-height:1.8">Hari ini kalian sudah:<br>🔁 Mereview rasio dengan kuis kilat<br>🍹 Memahami definisi perbandingan senilai<br>⚖️ Membedakan kasus senilai dan bukan senilai<br>🪜 Menyelesaikan soal dengan nilai 1 &amp; kali silang<br>🧋 Menjadi barista jus yang hitungannya presisi!<br><br>Ingat: <b>naik bersama, rasio tetap = senilai!</b> Sampai jumpa di Perbandingan Berbalik Nilai! 🚀</p>
+  </div>
+  <button class="btn-start" onclick="go(0)">🏠 Kembali ke Sampul</button>
+ </div>
+</section>
+
+</main>
+
+<nav class="bottomnav">
+ <button class="navbtn ghost" onclick="go(S.cur-1)">← Sebelumnya</button>
+ <button class="navbtn" onclick="go(S.cur+1)">Berikutnya →</button>
+</nav>
+
+<div id="toast"></div>
+<div id="fx"></div>
+
+<script>
+/* ================= STATE & UTIL ================= */
+const S={names:['Siswa 1','Siswa 2'],cur:0};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const rep=(e,n)=>Array(Math.max(0,n)).fill(e).join(' ');
+
+/* Suara */
+let AC=null;
+function tone(f,d=0.12,type='sine',v=0.05,delay=0){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(AC.destination);const s=AC.currentTime+delay;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d+0.02);}catch(e){}}
+const sndClick=()=>tone(520,.06,'triangle',.03);
+const sndOK=()=>{tone(660,.12);tone(880,.18,'sine',.05,.11);};
+const sndNO=()=>tone(200,.22,'sawtooth',.04);
+
+function confetti(n){const E=['🎉','⭐','✨','🎈','🎊','🌟','🍹','🍊','⚖️'];for(let i=0;i<n;i++){const p=document.createElement('span');p.className='fxp';p.textContent=E[Math.floor(Math.random()*E.length)];p.style.left=Math.random()*100+'vw';p.style.fontSize=(14+Math.random()*18)+'px';p.style.animationDuration=(2+Math.random()*2.2)+'s';p.style.animationDelay=(Math.random()*.5)+'s';$('fx').appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ================= NAVIGASI ================= */
+function go(i){const sl=document.querySelectorAll('.slide');i=Math.max(0,Math.min(sl.length-1,i));sl[S.cur].classList.remove('active');S.cur=i;sl[i].classList.add('active');sl[i].scrollTop=0;$('progressBar').style.width=((i+1)/sl.length*100)+'%';$('slideCounter').textContent=(i+1)+' / '+sl.length;if(sl[i].id==='s-thanks')confetti(40);sndClick();}
+function buildMenu(){$('menuList').innerHTML=[...document.querySelectorAll('.slide')].map((s,i)=>`<button class="menu-item" onclick="closeMenu();go(${i})">${s.dataset.title||'Slide '+(i+1)}</button>`).join('');}
+const openMenu=()=>$('menuOv').classList.add('open');
+const closeMenu=()=>$('menuOv').classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight'||e.key==='PageDown')go(S.cur+1);else if(e.key==='ArrowLeft'||e.key==='PageUp')go(S.cur-1);});
+
+function refreshNames(){document.querySelectorAll('[data-n1]').forEach(e=>e.textContent=S.names[0]);document.querySelectorAll('[data-n2]').forEach(e=>e.textContent=S.names[1]);gLabels();}
+
+/* ================= MESIN LATIHAN ================= */
+const PRACTICE={};
+function renderPractice(cid,qs){PRACTICE[cid]={qs,picked:Array(qs.length).fill(-1),done:Array(qs.length).fill(false),correct:0};
+ let html='';qs.forEach((it,i)=>{html+=`<div class="qcard" id="${cid}-q${i}"><span class="qnum">Soal ${i+1}</span><div class="qtext">${it.q}</div><div class="opts">${it.opts.map((o,j)=>`<button class="opt" onclick="pickOpt('${cid}',${i},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="checkPr('${cid}',${i})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="${cid}-expbtn${i}" onclick="toggleExp('${cid}',${i})">📖 Pembahasan</button></div><div class="fb" id="${cid}-fb${i}"></div><div class="exp hidden" id="${cid}-exp${i}">💡 ${it.exp}</div></div>`;});
+ html+=`<div class="pscore" id="${cid}-score">📊 Progres: 0/${qs.length} dikerjakan • ✅ Benar: 0</div>`;
+ $(cid).innerHTML=html;}
+function pickOpt(cid,i,j){const P=PRACTICE[cid];if(P.done[i])return;P.picked[i]=j;$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>b.classList.toggle('sel',x===j));sndClick();}
+function checkPr(cid,i){const P=PRACTICE[cid];if(P.done[i])return;if(P.picked[i]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ P.done[i]=true;const it=P.qs[i];$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>{b.disabled=true;if(x===it.ans)b.classList.add('right');});
+ const fb=$(cid+'-fb'+i);
+ if(P.picked[i]===it.ans){fb.className='fb good';fb.textContent='🎉 Benar! Kerja bagus!';P.correct++;sndOK();confetti(8);}else{fb.className='fb bad';fb.textContent='😢 Belum tepat. Perhatikan pembahasan, ya!';sndNO();}
+ $(cid+'-expbtn'+i).classList.remove('hidden');$(cid+'-exp'+i).classList.remove('hidden');
+ const done=P.done.filter(Boolean).length;
+ $(cid+'-score').textContent=`📊 Progres: ${done}/${P.qs.length} dikerjakan • ✅ Benar: ${P.correct}`;}
+function toggleExp(cid,i){$(cid+'-exp'+i).classList.toggle('hidden');}
+
+/* ================= DATA LATIHAN (30 SOAL) ================= */
+const L1=[
+{q:"Jika nilai suatu komponen bertambah, maka komponen lain pada perbandingan senilai akan…",opts:["Berkurang","Bertambah","Tetap","Berubah tidak teratur"],ans:1,exp:"Inilah ciri perbandingan senilai: kedua besaran naik (atau turun) BERSAMA secara sebanding."},
+{q:"Dua besaran dikatakan berbanding senilai jika…",opts:["perbandingannya selalu tetap","selisihnya selalu tetap","jumlahnya selalu tetap","hasil kalinya selalu tetap"],ans:0,exp:"Senilai = rasio tetap. Contoh: 1 : 2 = 2 : 4 = 3 : 6. (Selisihnya justru berubah-ubah!)"},
+{q:"Manakah yang merupakan contoh perbandingan senilai dalam kehidupan sehari-hari?",opts:["Kecepatan dan waktu tempuh","Jumlah pekerja dan waktu penyelesaian","Jumlah bensin dan jarak tempuh kendaraan","Persediaan makanan dan waktu habis ternak"],ans:2,exp:"Makin banyak bensin, makin jauh jarak yang ditempuh — naik bersama dengan rasio tetap. Tiga lainnya berbalik nilai."},
+{q:"Dari tabel: 2 gelas jus → 6 jeruk; 4 gelas → 12 jeruk. Untuk 6 gelas dibutuhkan…",opts:["15 jeruk","18 jeruk","20 jeruk","24 jeruk"],ans:1,exp:"Rasio gelas : jeruk tetap 1 : 3 → 6 gelas × 3 = 18 jeruk."},
+{q:"Harga 1 buku tulis Rp4.000,00. Harga 7 buku adalah…",opts:["Rp24.000,00","Rp26.000,00","Rp28.000,00","Rp30.000,00"],ans:2,exp:"Metode nilai 1: 1 buku = Rp4.000 → 7 buku = 7 × 4.000 = Rp28.000,00."},
+{q:"Pasangan nilai (2, 10), (4, 20), (6, 30) memiliki hubungan…",opts:["Senilai, karena nilai kedua ÷ nilai pertama selalu 5","Bukan senilai, karena selisihnya tidak tetap","Bukan senilai, karena nilainya membesar","Senilai, karena selisihnya tetap"],ans:0,exp:"10÷2 = 20÷4 = 30÷6 = 5 (rasio tetap) → senilai. Perhatikan: selisihnya justru TIDAK tetap."},
+{q:"Pada perbandingan senilai, jika satu komponen berkurang maka komponen lain…",opts:["bertambah","berkurang sebanding","tetap","berubah acak"],ans:1,exp:"Senilai berlaku dua arah: naik bersama DAN turun bersama, dengan rasio tetap."},
+{q:"Perbandingan a : b = c : d disebut senilai jika memenuhi…",opts:["a × d = b × c","a + c = b + d","a × c = b × d","a − d = b − c"],ans:0,exp:"Sifat kali silang (multiplicando): ujung panah yang bersilangan hasil kalinya sama."},
+{q:"Manakah pasangan besaran yang berbanding SENILAI?",opts:["umur & tinggi badan","banyak botol & jumlah liter air (isi tiap botol sama)","kecepatan & waktu tempuh (jarak tetap)","umur kakak & umur adik"],ans:1,exp:"Tiap botol berisi sama → total air sebanding dengan banyak botol. Tiga lainnya bukan senilai."},
+{q:"'Naik bersama, turun bersama, dan rasionya tetap' adalah rumusan untuk…",opts:["perbandingan berbalik nilai","perbandingan senilai","skala","selisih"],ans:1,exp:"Itu definisi singkat perbandingan senilai. Berbalik nilai: satu naik, yang lain turun."}];
+const L2=[
+{q:"Banyaknya bensin dan jarak yang ditempuh mobil (kecepatan tetap) termasuk…",opts:["Senilai — makin banyak bensin, makin jauh jarak","Bukan senilai — saling meniadakan","Bukan senilai — satuannya berbeda","Senilai — karena selisihnya tetap"],ans:0,exp:"Dengan kecepatan tetap, jarak sebanding dengan bensin: 2× bensin → 2× jarak. Rasio tetap!"},
+{q:"Kecepatan kendaraan dan waktu tempuh untuk jarak yang SAMA termasuk…",opts:["Senilai — naik bersama","Bukan senilai — makin cepat, waktu makin singkat","Senilai — karena sama-sama berubah","Bukan senilai — karena angkanya kecil"],ans:1,exp:"Satu naik, yang lain turun. Ini perbandingan BERBALIK NILAI, bukan senilai."},
+{q:"Banyak pekerja dan waktu menyelesaikan satu pekerjaan yang sama termasuk…",opts:["Senilai — pekerja makin banyak, waktu makin lama","Bukan senilai — makin banyak pekerja, waktu makin singkat","Senilai — rasionya tetap","Bukan senilai — pekerja tidak bisa bekerja"],ans:1,exp:"Berbalik nilai: pekerja naik → waktu turun. Contoh: 2 pekerja 6 hari → 4 pekerja 3 hari."},
+{q:"Banyak kue yang dibuat dan takaran tepung (resep tetap) termasuk…",opts:["Senilai — makin banyak kue, makin banyak tepung","Bukan senilai — kue mengembang sendiri","Bukan senilai — resep bisa berubah","Senilai — karena sama-sama makanan"],ans:0,exp:"Resep tetap → tepung sebanding dengan kue. 2× kue → 2× tepung."},
+{q:"Umur seseorang dan tinggi badannya termasuk…",opts:["Senilai — sama-sama bertambah","Bukan senilai — tidak sebanding, rasionya berubah-ubah","Senilai — karena manusia tumbuh","Bukan senilai — karena satuan berbeda"],ans:1,exp:"Walaupun keduanya cenderung bertambah, pertambahannya tidak sebanding — rasionya terus berubah."},
+{q:"Persediaan pakan ternak dan lama waktu sampai habis termasuk…",opts:["Senilai — makin banyak pakan, makin cepat habis","Bukan senilai — makin banyak pakan, makin LAMA habis","Senilai — karena ternak makan terus","Bukan senilai — pakan tidak berhubungan"],ans:1,exp:"Berbalik nilai: pakan naik → lama habis justru bertambah lama."},
+{q:"Banyak lembar yang difotokopi dan biaya fotokopi (tarif per lembar tetap) termasuk…",opts:["Bukan senilai — mesin bisa rusak","Senilai — makin banyak lembar, makin mahal biayanya","Bukan senilai — biaya tetap","Senilai — karena selisihnya tetap"],ans:1,exp:"Tarif per lembar tetap → biaya sebanding dengan banyak lembar. Rasio tetap!"},
+{q:"Panjang dan lebar persegi panjang jika LUASNYA dibuat tetap termasuk…",opts:["Senilai — sama-sama panjang","Bukan senilai — kalau panjang naik, lebar harus turun","Senilai — karena luasnya tetap","Bukan senilai — karena bentuknya persegi panjang"],ans:1,exp:"Luas tetap: P × L = tetap → panjang naik, lebar wajib turun. Berbalik nilai!"},
+{q:"Jumlah jam les dan biaya les (tarif per jam tetap) termasuk…",opts:["Senilai — jam makin banyak, biaya makin besar","Bukan senilai — les itu gratis","Bukan senilai — jam bisa dibolos","Senilai — karena selisihnya tetap"],ans:0,exp:"Biaya = tarif × jam. Tarif tetap → biaya sebanding dengan jam. Senilai!"},
+{q:"Jumlah kantong beras dan berat totalnya (setiap kantong isinya sama) termasuk…",opts:["Bukan senilai — beras bisa habis","Senilai — kantong makin banyak, berat makin besar","Bukan senilai — kantongnya ringan","Senilai — karena sama-sama berat"],ans:1,exp:"Isi per kantong tetap → berat total sebanding dengan jumlah kantong."}];
+const L3=[
+{q:"Harga 3 kg buah apel adalah Rp45.000,00. Berapa harga untuk 5 kg buah apel?",opts:["Rp60.000,00","Rp75.000,00","Rp90.000,00","Rp150.000,00"],ans:1,exp:"Nilai 1 kg = 45.000 ÷ 3 = Rp15.000. Harga 5 kg = 5 × 15.000 = Rp75.000,00. (Cek: (5/3) × 45.000 = 75.000.)"},
+{q:"Sebuah mobil memerlukan 4 liter bensin untuk menempuh 60 km. Jika jaraknya 150 km, bensin yang diperlukan…",opts:["8 liter","9 liter","10 liter","12 liter"],ans:2,exp:"1 liter = 60 ÷ 4 = 15 km. Bensin = 150 ÷ 15 = 10 liter. (Cek: (150/60) × 4 = 10.)"},
+{q:"Upah untuk 4 jam kerja adalah Rp60.000,00. Upah untuk 7 jam kerja adalah…",opts:["Rp90.000,00","Rp100.000,00","Rp105.000,00","Rp120.000,00"],ans:2,exp:"Upah 1 jam = 60.000 ÷ 4 = Rp15.000. Upah 7 jam = 7 × 15.000 = Rp105.000,00."},
+{q:"Untuk membuat 12 buah kue dibutuhkan 300 gram tepung terigu. Untuk 20 kue, tepung yang diperlukan…",opts:["400 gram","450 gram","500 gram","600 gram"],ans:2,exp:"1 kue = 300 ÷ 12 = 25 gram. Tepung = 20 × 25 = 500 gram. (Cek: (20/12) × 300 = 500.)"},
+{q:"Dalam 5 menit, sebuah keran mengalirkan 40 liter air. Banyak air dalam 15 menit adalah…",opts:["80 liter","100 liter","120 liter","150 liter"],ans:2,exp:"1 menit = 40 ÷ 5 = 8 liter. Air = 15 × 8 = 120 liter. (Cek: (15/5) × 40 = 120.)"},
+{q:"Mesin fotokopi mencetak 180 lembar dalam 2 menit. Banyak lembar dalam 5 menit adalah…",opts:["360 lembar","400 lembar","450 lembar","500 lembar"],ans:2,exp:"1 menit = 180 ÷ 2 = 90 lembar. Hasil = 5 × 90 = 450 lembar. (Cek: (5/2) × 180 = 450.)"},
+{q:"Berat badan 4 orang anak adalah 120 kg (rata-rata sama). Berat badan 7 anak adalah…",opts:["180 kg","200 kg","210 kg","240 kg"],ans:2,exp:"1 anak = 120 ÷ 4 = 30 kg. Berat 7 anak = 7 × 30 = 210 kg. (Cek: (7/4) × 120 = 210.)"},
+{q:"Harga 3 meter kain adalah Rp75.000,00. Jika Ibu membeli 8 meter, uang yang harus dibayar…",opts:["Rp180.000,00","Rp200.000,00","Rp225.000,00","Rp240.000,00"],ans:1,exp:"Harga 1 m = 75.000 ÷ 3 = Rp25.000. Total = 8 × 25.000 = Rp200.000,00. (Cek: (8/3) × 75.000 = 200.000.)"},
+{q:"Sebuah pabrik menghasilkan 120 pasang sepatu dalam 4 hari. Banyak sepatu dalam 30 hari adalah…",opts:["800 pasang","900 pasang","1.000 pasang","1.200 pasang"],ans:1,exp:"1 hari = 120 ÷ 4 = 30 pasang. Hasil = 30 × 30 = 900 pasang. (Cek: (30/4) × 120 = 900.)"},
+{q:"Penggunaan cat untuk dinding seluas 12 m² adalah 3 liter. Untuk dinding 48 m², cat yang dibutuhkan…",opts:["9 liter","10 liter","12 liter","15 liter"],ans:2,exp:"1 liter untuk 12 ÷ 3 = 4 m². Cat = 48 ÷ 4 = 12 liter. (Cek: (48/12) × 3 = 12.)"}];
+
+/* ================= REVIEW KILAT (DIPERBAIKI) ================= */
+const REVQ=[
+{q:"Bentuk paling sederhana dari 18 : 24 adalah…",opts:["2 : 3","3 : 4","6 : 8","9 : 12"],ans:1,exp:"FPB 18 dan 24 = 6 → (18÷6):(24÷6) = 3 : 4."},
+{q:"Rasio ekuivalen dengan 2 : 5 adalah…",opts:["4 : 5","5 : 2","6 : 15","2 : 10"],ans:2,exp:"2 : 5 dikali 3 = 6 : 15. Ekuivalen!"},
+{q:"Rasio ayam : bebek = 3 : 5. Jika bebek 40 ekor, banyak ayam…",opts:["18 ekor","21 ekor","24 ekor","30 ekor"],ans:2,exp:"1 bagian = 40 ÷ 5 = 8 → ayam = 3 × 8 = 24 ekor."},
+{q:"Uang A : B = 2 : 5 dengan jumlah Rp70.000,00. Uang B…",opts:["Rp20.000,00","Rp30.000,00","Rp50.000,00","Rp70.000,00"],ans:2,exp:"Jumlah rasio = 7 → 1 bagian = 10.000 → B = 5 × 10.000 = Rp50.000,00."},
+{q:"Skala peta 1 : 200.000. Jarak pada peta 5 cm → jarak sebenarnya…",opts:["1 km","5 km","10 km","20 km"],ans:2,exp:"JS = 5 × 200.000 = 1.000.000 cm = 10 km."},
+{q:"Dua besaran disebut berbanding SENILAI jika…",opts:["selisihnya tetap","rasio/perbandingannya tetap","jumlahnya tetap","hasil kalinya tetap"],ans:1,exp:"Senilai = rasio tetap. Contoh: 1:2 = 2:4 = 3:6. Ini jembatan ke materi hari ini! 🎉"}];
+const rv={order:[],i:0,score:0,answered:false,pick:-1,marks:[]};
+function revStart(){rv.order=shuf(REVQ.map((_,i)=>i));rv.i=0;rv.score=0;rv.answered=false;rv.pick=-1;rv.marks=[];revRender();}
+function revRender(){const q=REVQ[rv.order[rv.i]];const answered=rv.answered;
+ $('kDots').innerHTML=REVQ.map((_,i)=>`<span class="kdot ${i<rv.i?(rv.marks[i]||'on'):''}"></span>`).join('');
+ $('kBody').innerHTML=`<div class="kq">${answered?'':('Soal '+(rv.i+1)+'. ')}${q.q}</div>`+
+  `<div class="opts">${q.opts.map((o,j)=>`<button class="opt ${answered?(j===q.ans?'right':(j===rv.pick?'wrong':'')):''}" ${answered?'disabled':''} onclick="revAns(${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div>`+
+  (answered?`<div class="fb ${rv.pick===q.ans?'good':'bad'}">${rv.pick===q.ans?'🎉 Benar!':'😢 Belum tepat.'} ${q.exp}</div><div style="text-align:center;margin-top:8px"><button class="btn-check" onclick="revNext()">${rv.i<REVQ.length-1?'Lanjut ▶':'Lihat Hasil 🏁'}</button></div>`:'');}
+function revAns(j){if(rv.answered)return;rv.answered=true;rv.pick=j;const good=j===REVQ[rv.order[rv.i]].ans;rv.marks[rv.i]=good?'ok':'no';if(good)rv.score++;revRender();good?sndOK():sndNO();}
+function revNext(){if(rv.i<REVQ.length-1){rv.i++;rv.answered=false;revRender();}else{
+ $('kDots').innerHTML=REVQ.map((_,i)=>`<span class="kdot ${rv.marks[i]}"></span>`).join('');
+ $('kBody').innerHTML=`<div class="notaBig" style="font-size:34px">${rv.score} / ${REVQ.length}</div><p style="text-align:center;font-weight:800">${rv.score>=5?'🔥 Pemanasan sempurna! Rasio kalian solid — siap masuk perbandingan senilai!':'💪 Tidak apa-apa! Perbandingan senilai akan mengulang konsep rasio ini.'}</p><div style="text-align:center;margin-top:10px"><button class="btn-check" onclick="revStart()">🔄 Ulangi Kuis Kilat</button></div>`;
+ if(rv.score>=5){confetti(16);sndOK();}}}
+
+/* ================= M1: LAB SENILAI ================= */
+let sd={mode:'senilai',adik:8,kakak:12,chain:[]};
+function sdModeSet(m){sd.mode=m;$('sdBtnA').classList.toggle('sel',m==='senilai');$('sdBtnB').classList.toggle('sel',m==='bukan');
+ $('sdSenilai').classList.toggle('hidden',m!=='senilai');$('sdBukan').classList.toggle('hidden',m!=='bukan');sndClick();}
+function sdRender(){const n=+$('sdGelas').value,j=n*2;
+ $('sdGelasTxt').textContent=n+' gelas';
+ $('sdGelasE').textContent=rep('🥤',n);$('sdJerukE').textContent=rep('🍊',j);
+ $('sdBarG').style.width=(n/8*100)+'%';$('sdBarG').textContent=n+' gelas';
+ $('sdBarJ').style.width=(j/16*100)+'%';$('sdBarJ').textContent=j+' jeruk';
+ $('sdRatio').innerHTML=`Rasio gelas : jeruk = <b class="bignum">${n} : ${j}</b> = 1 : 2 … <span class="okc">SELALU 1 : 2! ✅</span>`;
+ let t='';for(let k=1;k<=n;k++)t+=(k>1?' → ':'')+`${k}:${2*k}`;
+ $('sdTable').innerHTML='Rantai rasio: '+t+' <span class="okc">✓ semuanya senilai!</span>';}
+function umurAdd(){if(sd.kakak>=22){toast('Cukup! Sudah terlihat polanya 😄');return;}
+ sd.kakak++;sd.adik++;$('ageKv').textContent=sd.kakak;$('ageAv').textContent=sd.adik;
+ const g=gcd(sd.kakak,sd.adik),s=`${sd.kakak} : ${sd.adik}`+(g>1?` ( = ${sd.kakak/g} : ${sd.adik/g} )`:'');
+ sd.chain.push(s);
+ $('sdChainB').innerHTML='Rantai rasio kakak : Rina:<br>'+sd.chain.join(' → ');
+ $('sdMsgB').innerHTML=`⚠️ Selisih umur selalu <b>${sd.kakak-sd.adik} tahun</b> (tetap!), TAPI rasionya terus <b>BERUBAH</b> (${sd.chain[sd.chain.length-2]||''} ≠ ${s}) → <b>BUKAN senilai!</b>`;
+ sndClick();}
+
+/* ================= M2: WASIT SENILAI ================= */
+const SORTCASES=[
+{t:"🚗 Banyaknya bensin dan jarak tempuh (kecepatan tetap)",s:true,e:"Makin banyak bensin, makin jauh jarak — naik bersama, rasio tetap."},
+{t:"⏱️ Kecepatan kendaraan dan waktu tempuh (jarak tetap)",s:false,e:"Makin cepat, waktu makin SINGKAT — satu naik, satu turun (berbalik nilai)."},
+{t:"👷 Jumlah pekerja dan waktu menyelesaikan pekerjaan yang sama",s:false,e:"Makin banyak pekerja, waktu makin singkat — berbalik nilai."},
+{t:"🧁 Banyak kue yang dibuat dan takaran tepung (resep tetap)",s:true,e:"Makin banyak kue, makin banyak tepung — rasio tetap."},
+{t:"🎂 Umur kakak dan umur adik",s:false,e:"Sama-sama bertambah, tapi rasionya terus berubah (12:8 ≠ 13:9) — bukan senilai."},
+{t:"🌾 Persediaan pakan ternak dan lama waktu sampai habis",s:false,e:"Makin banyak pakan, makin LAMA habis — berbalik nilai."},
+{t:"📚 Banyak buku dan total harganya (harga satuan tetap)",s:true,e:"Harga satuan tetap → total harga sebanding dengan banyak buku."},
+{t:"🥤 Banyak gelas jus dan banyak jeruk (resep tetap)",s:true,e:"Resep tetap → jeruk sebanding dengan gelas. Senilai!"},
+{t:"📏 Panjang dan lebar persegi panjang jika luasnya tetap",s:false,e:"Panjang naik → lebar harus TURUN agar luas tetap. Berbalik nilai."},
+{t:"🧺 Jumlah kantong beras dan berat totalnya (isi tiap kantong sama)",s:true,e:"Kantong makin banyak, berat makin besar — rasio tetap. Senilai!"}];
+const sg={order:[],i:0,score:0,answered:false};
+function sgStart(){sg.order=shuf(SORTCASES.map((_,i)=>i));sg.i=0;sg.score=0;sg.answered=false;sgShow();}
+function sgShow(){const it=SORTCASES[sg.order[sg.i]];
+ $('sgProg').textContent=`Kartu ${sg.i+1} / 10`;$('sgScore').textContent=`✅ ${sg.score} benar`;
+ $('sgCard').textContent=it.t;
+ $('sgFb').className='fb';$('sgFb').textContent='';$('sgNext').classList.add('hidden');
+ $('sgYes').disabled=false;$('sgNo').disabled=false;}
+function sgAns(said){if(sg.answered)return;sg.answered=true;const it=SORTCASES[sg.order[sg.i]],good=said===it.s;
+ if(good){sg.score++;$('sgScore').textContent=`✅ ${sg.score} benar`;}
+ $('sgFb').className='fb '+(good?'good':'bad');
+ $('sgFb').innerHTML=`${good?'🎉 Tepat!':'❌ Kurang tepat!'} Kartu ini <b>${it.s?'SENILAI ✅':'BUKAN senilai ❌'}</b>.<br><span style="font-weight:700">${it.e}</span>`;
+ $('sgYes').disabled=true;$('sgNo').disabled=true;
+ $('sgNext').classList.remove('hidden');$('sgNext').textContent=sg.i<9?'Kartu Berikutnya ▶':'Lihat Hasil 🏁';
+ good?sndOK():sndNO();}
+function sgNextKartu(){if(sg.i<9){sg.i++;sg.answered=false;sgShow();}
+ else{$('sgCard').innerHTML=`🏁 Hasil: <span style="font-size:30px">${sg.score}/10</span><br>${sg.score>=8?'🏆 WASIT SENILAI PROFESIONAL!':'💪 Ulangi lagi supaya makin jago!'}<br><button class="btn-check" style="margin-top:10px" onclick="sgStart()">🔄 Main Lagi</button>`;
+ $('sgProg').textContent='Selesai!';$('sgFb').textContent='';$('sgNext').classList.add('hidden');
+ $('sgYes').disabled=true;$('sgNo').disabled=true;
+ if(sg.score>=8){confetti(20);sndOK();}}}
+
+/* ================= M3: PAPAN LANGKAH ================= */
+const PROBS=[
+{t:"🍎 Harga Apel",q:"Harga 3 kg apel Rp45.000,00. Berapa harga 5 kg apel?",
+ steps:["1️⃣ Diketahui: <b>3 kg → Rp45.000</b> • Ditanya: <b>5 kg → ?</b>",
+ "2️⃣ Uji jenis: makin banyak kg, makin mahal harganya — naik bersama → <b>SENILAI ✅</b>",
+ "3️⃣ Metode Nilai 1: harga 1 kg = 45.000 ÷ 3 = <b>Rp15.000,00</b>",
+ "4️⃣ Harga 5 kg = 5 × 15.000 = <b>Rp75.000,00</b>"],
+ fin:"🎉 Harga 5 kg apel = Rp75.000,00. Cek multiplicando: 3 × 75.000 = 45.000 × 5 = 225.000 ✓"},
+{t:"⛽ Bensin Mobil",q:"Mobil memerlukan 4 liter bensin untuk menempuh 60 km. Berapa liter untuk 150 km?",
+ steps:["1️⃣ Diketahui: <b>4 L → 60 km</b> • Ditanya: <b>? L → 150 km</b>",
+ "2️⃣ Uji jenis: makin jauh jarak, makin banyak bensin → <b>SENILAI ✅</b>",
+ "3️⃣ Metode Nilai 1: 1 liter = 60 ÷ 4 = <b>15 km</b>",
+ "4️⃣ Bensin = 150 ÷ 15 = <b>10 liter</b>"],
+ fin:"🎉 Bensin yang diperlukan = 10 liter. Cek multiplicando: 4 × 150 = 60 × 10 = 600 ✓"},
+{t:"🧁 Tepung Kue",q:"Untuk membuat 12 kue dibutuhkan 300 gram tepung. Berapa gram untuk 20 kue?",
+ steps:["1️⃣ Diketahui: <b>12 kue → 300 g</b> • Ditanya: <b>20 kue → ?</b>",
+ "2️⃣ Uji jenis: makin banyak kue, makin banyak tepung → <b>SENILAI ✅</b>",
+ "3️⃣ Metode Nilai 1: 1 kue = 300 ÷ 12 = <b>25 gram</b>",
+ "4️⃣ Tepung = 20 × 25 = <b>500 gram</b>"],
+ fin:"🎉 Tepung yang diperlukan = 500 gram. Cek multiplicando: 12 × 500 = 300 × 20 = 6.000 ✓"}];
+const m3={p:0,k:0};
+function m3Fill(){$('m3Sel').innerHTML=PROBS.map((p,i)=>`<option value="${i}">${p.t}</option>`).join('');}
+function m3Load(i){m3.p=+i;m3.k=0;$('m3Q').textContent=PROBS[m3.p].q;$('m3Steps').innerHTML='';$('m3Fin').textContent='';$('m3NextBtn').disabled=false;$('m3NextBtn').textContent='▶ Tampilkan Langkah Berikutnya';}
+function m3Next(){const P=PROBS[m3.p];
+ if(m3.k<P.steps.length){$('m3Steps').innerHTML+=`<div class="step">${P.steps[m3.k]}</div>`;m3.k++;sndClick();
+  if(m3.k===P.steps.length){$('m3NextBtn').disabled=true;$('m3NextBtn').textContent='✅ Selesai!';
+   $('m3Fin').textContent=P.fin;confetti(14);sndOK();}}}
+
+/* ================= KUIS DUEL (25 SOAL PDF) ================= */
+const LPTS=[10,20,30],LLVL=['Mudah','Sedang','HOTS'];
+const QUIZ=[
+{lvl:0,q:"Konsep dasar perbandingan senilai menyatakan bahwa jika nilai suatu komponen bertambah, maka komponen lain akan…",opts:["Berkurang","Bertambah","Tetap","Berubah tidak teratur"],ans:1,exp:"Jawaban: B — nilai komponen bertambah sebanding. Itulah ciri perbandingan senilai: naik bersama dengan rasio tetap."},
+{lvl:0,q:"Manakah yang merupakan contoh perbandingan senilai dalam kehidupan sehari-hari?",opts:["Kecepatan dan waktu tempuh","Jumlah pekerja dan waktu penyelesaian","Jumlah bensin dan jarak tempuh kendaraan","Persediaan makanan dan waktu habis ternak"],ans:2,exp:"Jawaban: C — makin jauh jarak, makin banyak bensin diperlukan (naik bersama). Tiga lainnya berbalik nilai."},
+{lvl:0,q:"Harga 3 kg buah apel adalah Rp45.000,00. Berapa harga untuk 5 kg buah apel?",opts:["Rp60.000,00","Rp75.000,00","Rp90.000,00","Rp150.000,00"],ans:1,exp:"Jawaban: B — (5/3) × Rp45.000 = Rp75.000,00."},
+{lvl:0,q:"Sebuah mobil memerlukan 4 liter bensin untuk menempuh 60 km. Jika jarak yang ditempuh 150 km, bensin yang diperlukan adalah…",opts:["8 liter","9 liter","10 liter","12 liter"],ans:2,exp:"Jawaban: C — (150/60) × 4 = 10 liter."},
+{lvl:0,q:"Upah untuk 4 jam kerja adalah Rp60.000,00. Berapa upah untuk 7 jam kerja?",opts:["Rp90.000,00","Rp100.000,00","Rp105.000,00","Rp120.000,00"],ans:2,exp:"Jawaban: C — (7/4) × Rp60.000 = Rp105.000,00."},
+{lvl:0,q:"Untuk membuat 12 buah kue dibutuhkan 300 gram tepung terigu. Jika ingin membuat 20 kue, tepung terigu yang diperlukan adalah…",opts:["400 gram","450 gram","500 gram","600 gram"],ans:2,exp:"Jawaban: C — (20/12) × 300 = 500 gram."},
+{lvl:1,q:"Perbandingan uang Ani dan Budi adalah 3 : 5. Jika uang Ani Rp45.000,00, berapakah uang Budi?",opts:["Rp60.000,00","Rp75.000,00","Rp90.000,00","Rp120.000,00"],ans:1,exp:"Jawaban: B — Uang Budi = (5/3) × 45.000 = Rp75.000,00. (Nilai 1 bagian = 15.000.)"},
+{lvl:1,q:"Suatu peta menggunakan skala 1 : 200.000. Jika jarak pada peta antara kota A dan B adalah 5 cm, jarak sebenarnya adalah…",opts:["1 km","5 km","10 km","20 km"],ans:2,exp:"Jawaban: C — 5 × 200.000 = 1.000.000 cm = 10 km. (Materi skala minggu lalu!)"},
+{lvl:1,q:"Dalam 5 menit, sebuah keran dapat mengalirkan 40 liter air. Banyak air yang mengalir dalam waktu 15 menit adalah…",opts:["80 liter","100 liter","120 liter","150 liter"],ans:2,exp:"Jawaban: C — (15/5) × 40 = 120 liter."},
+{lvl:1,q:"Harga 2 lusin buku tulis adalah Rp96.000,00. Harga 5 buah buku tulis tersebut adalah…",opts:["Rp15.000,00","Rp20.000,00","Rp24.000,00","Rp30.000,00"],ans:1,exp:"Jawaban: B — 1 lusin = 12 buah, 2 lusin = 24 buah. Harga 1 buku = 96.000/24 = 4.000. Harga 5 buku = 5 × 4.000 = Rp20.000,00."},
+{lvl:1,q:"Sebuah konveksi dapat menjahit 60 potong pakaian dalam waktu 3 hari. Banyak pakaian dalam 12 hari adalah…",opts:["180 potong","240 potong","300 potong","360 potong"],ans:1,exp:"Jawaban: B — (12/3) × 60 = 240 potong."},
+{lvl:2,q:"Jika 5 kg jeruk seharga Rp75.000,00, maka uang untuk membeli 8 kg jeruk dan 2 kg apel (harga 1 kg apel Rp20.000,00) adalah…",opts:["Rp140.000,00","Rp150.000,00","Rp160.000,00","Rp180.000,00"],ans:2,exp:"Jawaban: C — Jeruk = 8 × (75.000/5) = 120.000. Apel = 2 × 20.000 = 40.000. Total = Rp160.000,00."},
+{lvl:1,q:"Jarak 2 kota pada peta dengan skala 1 : 500.000 adalah 8 cm. Jarak sebenarnya kedua kota adalah…",opts:["4 km","20 km","40 km","80 km"],ans:2,exp:"Jawaban: C — 8 × 500.000 = 4.000.000 cm = 40 km."},
+{lvl:1,q:"Sebanyak 7 liter solar mampu membawa truk melaju sejauh 56 km. Jika truk menempuh 128 km, solar yang dihabiskan…",opts:["14 liter","16 liter","18 liter","20 liter"],ans:1,exp:"Jawaban: B — (128/56) × 7 = 16 liter."},
+{lvl:1,q:"Mesin fotokopi dapat mencetak 180 lembar dalam 2 menit. Banyak lembar dalam 5 menit adalah…",opts:["360 lembar","400 lembar","450 lembar","500 lembar"],ans:2,exp:"Jawaban: C — (5/2) × 180 = 450 lembar."},
+{lvl:1,q:"Perbandingan umur Ayah dan Anak adalah 7 : 2. Jika umur Ayah 49 tahun, umur Anak adalah…",opts:["12 tahun","14 tahun","16 tahun","18 tahun"],ans:1,exp:"Jawaban: B — Umur anak = (2/7) × 49 = 14 tahun."},
+{lvl:1,q:"Berat badan 4 orang anak adalah 120 kg. Berapa berat badan 7 orang anak (asumsi rata-rata sama)?",opts:["180 kg","200 kg","210 kg","240 kg"],ans:2,exp:"Jawaban: C — (7/4) × 120 = 210 kg."},
+{lvl:1,q:"Resep kue menggunakan 250 gram gula untuk setiap 400 gram tepung. Jika digunakan 600 gram tepung, gula yang diperlukan adalah…",opts:["300 gram","350 gram","375 gram","400 gram"],ans:2,exp:"Jawaban: C — Gula = (600/400) × 250 = 375 gram."},
+{lvl:2,q:"Harga 3 meter kain adalah Rp75.000,00. Jika Ibu membeli kain sepanjang 8 meter, uang yang harus dibayar adalah…",opts:["Rp180.000,00","Rp200.000,00","Rp225.000,00","Rp240.000,00"],ans:1,exp:"Jawaban: B — (8/3) × 75.000 = Rp200.000,00."},
+{lvl:2,q:"Kendaraan menghabiskan 15 liter bensin untuk 180 km. Jika bensin tersisa 5 liter, jarak yang dapat ditempuh lagi adalah…",opts:["40 km","50 km","60 km","75 km"],ans:2,exp:"Jawaban: C — Jarak = (5/15) × 180 = 60 km."},
+{lvl:2,q:"Tinggi tiang bendera pada bayangan 6 cm, sedangkan tinggi sebenarnya 3 meter. Jika tinggi pohon pada bayangan 10 cm, tinggi pohon sebenarnya adalah…",opts:["4 meter","5 meter","6 meter","8 meter"],ans:1,exp:"Jawaban: B — 3 m = 300 cm. Tinggi sebenarnya = (10/6) × 300 = 500 cm = 5 meter."},
+{lvl:1,q:"Banyak siswa laki-laki dan perempuan di kelas 7A berbanding 4 : 5. Jika jumlah siswa laki-laki 16 orang, jumlah siswa perempuan adalah…",opts:["18 orang","20 orang","22 orang","25 orang"],ans:1,exp:"Jawaban: B — Perempuan = (5/4) × 16 = 20 orang."},
+{lvl:2,q:"Sebuah pabrik menghasilkan 120 pasang sepatu dalam 4 hari. Banyak sepatu dalam 30 hari adalah…",opts:["800 pasang","900 pasang","1.000 pasang","1.200 pasang"],ans:1,exp:"Jawaban: B — (30/4) × 120 = 900 pasang."},
+{lvl:1,q:"Kurs USD ($1) setara dengan Rp15.000,00. Jika seseorang menukar uang $45, rupiah yang diterima adalah…",opts:["Rp650.000,00","Rp675.000,00","Rp700.000,00","Rp725.000,00"],ans:1,exp:"Jawaban: B — 45 × 15.000 = Rp675.000,00."},
+{lvl:2,q:"Penggunaan cat untuk dinding seluas 12 m² adalah 3 liter. Jika luas dinding yang akan dicat 48 m², cat yang dibutuhkan adalah…",opts:["9 liter","10 liter","12 liter","15 liter"],ans:2,exp:"Jawaban: C — Cat = (48/12) × 3 = 12 liter."}];
+
+const qz={taken:Array(25).fill(0),scores:[0,0],turn:1,cur:[null,null],sel:[-1,-1],fin:[false,false]};
+function buildGrid(){$('numGrid').innerHTML=QUIZ.map((q,i)=>`<button class="numb lv${q.lvl}" id="nb${i}" title="Level: ${LLVL[q.lvl]} • +${LPTS[q.lvl]} poin" onclick="pickQ(${i})">${i+1}</button>`).join('');}
+function setTurn(t){qz.turn=t;$('turn1').classList.toggle('active',t===1);$('turn2').classList.toggle('active',t===2);}
+function pickQ(i){if(qz.taken[i]){toast('Soal ini sudah diambil! 🚫');return;}
+ const s=qz.turn-1;
+ if(qz.cur[s]!==null&&!qz.fin[s]){toast('Selesaikan soalmu dulu, '+S.names[s]+'! ⏳');return;}
+ qz.cur[s]=i;qz.sel[s]=-1;qz.fin[s]=false;qz.taken[i]=s+1;
+ $('nb'+i).classList.add('taken'+(s+1));$('nb'+i).disabled=true;
+ renderPanel(s);setTurn(s===0?2:1);quizProg();sndClick();}
+function renderPanel(s){const i=qz.cur[s],q=QUIZ[i];
+ $('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span> • Soal ${i+1} <span class="lvl lv${q.lvl}">${LLVL[q.lvl]}</span> <span style="font-size:13px">+${LPTS[q.lvl]} poin</span></div><div class="dp-q">${q.q}</div><div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="dp${s}o${j}" onclick="dpSel(${s},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="dpCheck(${s})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="dpExpBtn${s}" onclick="dpExp(${s})">📖 Pembahasan</button></div><div class="fb" id="dpFb${s}"></div><div class="exp hidden" id="dpExp${s}">💡 ${q.exp}</div>`;
+ refreshNames();}
+function panelEmpty(s){$('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span></div><div class="dp-empty">👆 ${esc(S.names[s])}, pilih nomor soal di atas untuk mulai!<br><span style="font-size:13px">Bisakah kalahkan lawanmu? 😎</span></div>`;refreshNames();}
+function dpSel(s,j){if(qz.fin[s])return;qz.sel[s]=j;for(let x=0;x<4;x++)$('dp'+s+'o'+x).classList.toggle('sel',x===j);sndClick();}
+function dpCheck(s){if(qz.fin[s])return;const i=qz.cur[s];if(i===null)return;if(qz.sel[s]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ qz.fin[s]=true;const q=QUIZ[i],good=qz.sel[s]===q.ans,fb=$('dpFb'+s);
+ for(let j=0;j<4;j++){const ob=$('dp'+s+'o'+j);ob.disabled=true;if(j===q.ans)ob.classList.add('right');}
+ $('dpExpBtn'+s).classList.remove('hidden');$('dpExp'+s).classList.remove('hidden');
+ if(good){const pts=LPTS[q.lvl];qz.scores[s]+=pts;fb.className='fb good';fb.innerHTML=`🎉 Benar! +${pts} poin untuk ${esc(S.names[s])}!<br>👉 Pilih nomor lain untuk melanjutkan!`;sndOK();confetti(16);}
+ else{fb.className='fb bad';fb.innerHTML=`😢 Belum tepat, ${esc(S.names[s])}. 0 poin — semangat, pilih soal lain! 💪`;sndNO();}
+ $('score1').textContent=qz.scores[0];$('score2').textContent=qz.scores[1];quizProg();}
+function dpExp(s){$('dpExp'+s).classList.toggle('hidden');}
+function quizProg(){const n=qz.taken.filter(x=>x>0).length;$('quizProg').textContent=`📊 Soal dikerjakan: ${n} / 25`;
+ if(n===25){const[a,b]=qz.scores;let msg;
+  if(a===b)msg=`🤝 HASIL AKHIR: SERI! (${a} — ${b})`;
+  else{const w=a>b?0:1;msg=`🏆 HASIL AKHIR: ${esc(S.names[w])} MENANG dengan ${Math.max(a,b)} poin! 🎉`;}
+  $('quizResult').textContent=msg;confetti(45);}}
+function quizReset(){qz.taken=Array(25).fill(0);qz.scores=[0,0];qz.cur=[null,null];qz.sel=[-1,-1];qz.fin=[false,false];setTurn(1);buildGrid();$('score1').textContent=0;$('score2').textContent=0;$('quizProg').textContent='📊 Soal dikerjakan: 0 / 25';$('quizResult').textContent='';panelEmpty(0);panelEmpty(1);toast('Kuis direset. Selamat bertanding! ⚔️');}
+
+/* ================= GAME BARISTA ================= */
+const BORDERS=[3,5,4,6,8];
+const game={m:0,jeruk:0,gula:0,score:0,done:0,coolJ:false,coolG:false};
+function gLabels(){$('gBtnJ').innerHTML=`🟠 Tambah 1 Jeruk — <b>${esc(S.names[0])}</b>`;$('gBtnG').innerHTML=`🟡 Tambah 1 Takar Gula — <b>${esc(S.names[1])}</b>`;}
+function bStart(){game.m=0;game.score=0;game.done=0;$('gScore').textContent=0;$('gStars').textContent='☆☆☆☆☆';bRound();}
+function bRound(){game.jeruk=0;game.gula=0;
+ const N=BORDERS[game.m];
+ $('gMission').innerHTML=`<b>🍹 Pesanan ${game.m+1} / 5</b><br><b class="bignum">${N} gelas jus</b><br><span class="muted">Resep tetap: 1 gelas = 2 jeruk + 1 takar gula (rasio jeruk : gula = 2 : 1 — senilai!)</span>`;
+ $('gOrder').innerHTML=`🧾 PESANAN: <b>${N} gelas</b> jus<br><span style="font-size:13px">Butuh: ❓ jeruk & ❓ gula — hitung bersama!</span>`;
+ bRender();$('gMsg').className='gmsg';$('gMsg').textContent=`Pesanan ${N} gelas masuk! Diskusikan dulu berapa jeruk & gula… 🧮`;}
+function bRender(){const N=BORDERS[game.m],needJ=2*N,needG=N;
+ $('gCntJ').textContent=game.jeruk;$('gCntG').textContent=game.gula;
+ $('gGaugeJ').style.width=Math.min(100,game.jeruk/needJ*100)+'%';
+ $('gGaugeG').style.width=Math.min(100,game.gula/needG*100)+'%';
+ $('gCups').textContent=game.jeruk||game.gula?rep('🥤',Math.max(0,Math.min(N,Math.floor(game.jeruk/2)))):'';
+ $('gBtnJ').disabled=game.coolJ;$('gBtnG').disabled=game.coolG;
+ $('gScore').textContent=game.score;
+ $('gStars').textContent='⭐'.repeat(game.done)+'☆'.repeat(5-game.done);}
+function bAdd(w){if(w==='J'){if(game.coolJ)return;game.jeruk++;game.coolJ=true;setTimeout(()=>{game.coolJ=false;bRender();},1000);}
+ else{if(game.coolG)return;game.gula++;game.coolG=true;setTimeout(()=>{game.coolG=false;bRender();},1000);}
+ sndClick();bRender();}
+function bServe(){const N=BORDERS[game.m],box=$('gMsg');
+ if(game.jeruk===0&&game.gula===0){toast('Gelasnya masih kosong! Tambahkan bahan dulu 😄');return;}
+ if(game.jeruk===2*N&&game.gula===N){game.score+=100;game.done++;
+  $('gScore').textContent=game.score;$('gStars').textContent='⭐'.repeat(game.done)+'☆'.repeat(5-game.done);
+  $('gCups').textContent=rep('🧋',N);confetti(22);sndOK();
+  box.className='gmsg good';box.textContent=`🍹 SAJI! ${2*N} jeruk + ${N} takar gula = ${N} gelas sempurna! Rasio ${2*N}:${N} = 2:1 tetap! +100 poin tim!`;
+  setTimeout(()=>{if(game.m<4){game.m++;bRound();}else{box.className='gmsg good';box.textContent=`🏆 SEMUA PESANAN LUNAS! Skor tim akhir: ${game.score} poin. Kalian barista senilai sejati! 🧋⭐`;confetti(35);}},2100);}
+ else{sndNO();$('gCups').classList.add('shake');setTimeout(()=>$('gCups').classList.remove('shake'),600);
+  box.className='gmsg bad';
+  box.textContent=`❌ Isinya ${game.jeruk} jeruk & ${game.gula} gula — belum sesuai ${N} gelas! Ingat: jeruk = 2 × ${N} = <b>${2*N}</b>, gula = <b>${N}</b> takar. Perbaiki ya, barista! 🔧`;
+  $('gOrder').innerHTML=`🧾 PESANAN: <b>${N} gelas</b> jus<br><span style="font-size:13px">Butuh: <b>${2*N} jeruk</b> & <b>${N} takar gula</b></span>`;}}
+function bResetM(){game.jeruk=0;game.gula=0;bRender();$('gMsg').className='gmsg';$('gMsg').textContent='🔄 Gelas dikosongkan. Hitung ulang bersama!';}
+
+/* ================= REFLEKSI ================= */
+function refMood(n){document.querySelectorAll('.emo').forEach((e,i)=>e.classList.toggle('sel',i===n));sndClick();}
+function refSave(){const v=$('refText').value.trim();$('refSaved').textContent=v?`💜 Terima kasih, ${S.names[0]} & ${S.names[1]}! Refleksimu sudah tercatat.`:'💭 Tulis dulu pendapatmu di kolom, ya!';}
+
+/* ================= TAB ================= */
+document.querySelectorAll('.slide').forEach(sec=>{const tabs=sec.querySelectorAll('.tab'),panes=sec.querySelectorAll('.tabpane');
+ tabs.forEach((t,i)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');panes.forEach(p=>p.classList.remove('active'));if(panes[i])panes[i].classList.add('active');}));});
+
+/* ================= INIT ================= */
+window.addEventListener('DOMContentLoaded',()=>{
+ renderPractice('pr1',L1);renderPractice('pr2',L2);renderPractice('pr3',L3);
+ buildMenu();buildGrid();setTurn(1);panelEmpty(0);panelEmpty(1);quizProg();
+ revStart();sdRender();sgStart();m3Fill();m3Load(0);bStart();
+ ['name1','name2'].forEach((id,idx)=>{$(id).addEventListener('input',()=>{const v=$(id).value.trim();S.names[idx]=v||('Siswa '+(idx+1));refreshNames();panelEmptyIfFree(idx);});});
+ $('progressBar').style.width=(1/11*100)+'%';
+});
+function panelEmptyIfFree(s){if(qz.cur[s]===null)panelEmpty(s);}
+</script>
+</body>
+</html>
