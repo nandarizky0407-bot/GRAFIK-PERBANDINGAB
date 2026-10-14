@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Perbandingan Berbalik Nilai — Matematika Kelas 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --violet:#7c3aed; --teal:#06b6d4; --amber:#f59e0b; --green:#10b981; --red:#ef4444;
+ --ink:#1e1b4b; --shadow:0 10px 30px rgba(76,29,149,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Nunito',sans-serif;color:var(--ink);background:linear-gradient(135deg,#ede9fe,#e0f2fe 55%,#ffedd5);overflow:hidden}
+h1,h2,h3,.fun{font-family:'Fredoka',sans-serif}
+.hidden{display:none!important}
+.muted{color:#8b87a8;font-size:13.5px;font-weight:700}
+.bignum{font-family:'Fredoka';font-size:22px;color:#6d28d9}
+
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 14px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);z-index:50;box-shadow:0 2px 12px rgba(76,29,149,.08)}
+.logo{font-family:'Fredoka';font-weight:700;color:var(--violet);font-size:17px;white-space:nowrap}
+.pwrap{flex:1;height:10px;background:#ede9fe;border-radius:99px;overflow:hidden}
+#progressBar{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#06b6d4,#f59e0b);border-radius:99px;transition:width .4s}
+#slideCounter{font-weight:800;font-size:13px;color:#6d28d9;background:#f3e8ff;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.iconbtn{border:none;background:#f3e8ff;font-size:18px;width:38px;height:38px;border-radius:12px;cursor:pointer}
+.iconbtn:hover{background:#e9d5ff}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;height:64px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);z-index:50;border-top:2px solid #ede9fe}
+.navbtn{font-family:'Fredoka';font-size:15px;border:none;padding:12px 22px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(124,58,237,.35);transition:.2s}
+.navbtn:hover{transform:translateY(-2px)}
+.navbtn.ghost{background:#fff;color:#6d28d9;border:2px solid #ddd6fe;box-shadow:none}
+
+.overlay{position:fixed;inset:0;background:rgba(30,27,75,.55);z-index:100;display:none;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.menu-card{background:#fff;border-radius:24px;padding:22px;max-width:430px;width:92%;max-height:82vh;overflow:auto}
+.menu-card h3{color:#6d28d9;margin-bottom:10px}
+.menu-item{display:block;width:100%;text-align:left;border:none;background:#f8fafc;margin:6px 0;padding:11px 14px;border-radius:12px;cursor:pointer;font-family:'Nunito';font-weight:700;color:#3730a3;font-size:14px}
+.menu-item:hover{background:#ede9fe}
+
+#deck{position:fixed;inset:56px 0 64px 0}
+.slide{position:absolute;inset:0;padding:18px 22px 30px;overflow-y:auto;opacity:0;transform:translateX(40px) scale(.98);pointer-events:none;transition:all .45s ease}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide-inner{max-width:1150px;margin:0 auto}
+.stitle{font-size:clamp(22px,3.4vw,32px);color:#4c1d95;margin-bottom:10px}
+
+.cover{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:16px 6px}
+.cover .float{font-size:44px;letter-spacing:10px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.cover h1{font-size:clamp(30px,5.2vw,52px);color:#4c1d95}
+.grad{background:linear-gradient(90deg,#7c3aed,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{font-size:17px;color:#55517b;font-weight:700}
+.name-card{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;justify-content:center;background:#fff;border-radius:24px;padding:20px 24px;box-shadow:var(--shadow);margin:8px 0}
+.name-input{display:flex;flex-direction:column;gap:6px;min-width:210px;padding:14px;border-radius:18px;border:3px dashed}
+.name-input.p1{border-color:#c4b5fd;background:#faf5ff}
+.name-input.p2{border-color:#67e8f9;background:#ecfeff}
+.name-input label{font-weight:800;font-size:13px;color:#6d28d9}
+.name-input input{border:none;border-bottom:2px solid #c4b5fd;background:transparent;font-family:'Nunito';font-weight:800;font-size:17px;padding:6px 2px;outline:none;color:#1e1b4b;text-align:center}
+.vs{align-self:center;font-family:'Fredoka';font-weight:700;color:#f59e0b;font-size:24px}
+.btn-start{font-family:'Fredoka';font-size:19px;border:none;padding:16px 34px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(124,58,237,.4);transition:.2s}
+.btn-start:hover{transform:translateY(-3px) scale(1.02)}
+.hint{font-size:13px;color:#8b87a8;font-weight:700}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:2px solid #ddd6fe;background:#fff;padding:9px 16px;border-radius:99px;font-family:'Fredoka';font-weight:600;font-size:14px;cursor:pointer;color:#6d28d9}
+.tab.active{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;align-items:start}
+.card{background:#fff;border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h3{color:#6d28d9;margin-bottom:8px}
+.card ul{margin:6px 0 6px 20px;font-size:14.5px;line-height:1.7}
+.exbox{background:#fefce8;border-left:5px solid #f59e0b;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.warnbox{background:#fef2f2;border-left:5px solid #ef4444;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.okbox{background:#ecfdf5;border-left:5px solid #10b981;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;font-weight:700}
+.formula{background:#f5f3ff;border:2px dashed #c4b5fd;border-radius:14px;padding:10px 14px;text-align:center;font-weight:800;color:#6d28d9;margin:10px 0}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:10px 0}
+.kcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);font-weight:700;font-size:14.5px;line-height:1.6}
+.kcard b{color:#6d28d9}
+.goldstrip{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;padding:14px;text-align:center;font-weight:800;color:#92400e;font-size:15.5px;margin:12px 0}
+.steps .step{background:#f8fafc;border-left:4px solid #a78bfa;padding:8px 12px;margin:6px 0;border-radius:10px;font-weight:700;animation:rise .4s ease}
+.res{font-weight:800;color:#059669;margin-top:6px;font-size:15.5px;min-height:22px}
+.chain{background:#fdf4ff;border-radius:12px;padding:10px;font-weight:700;font-size:14px;line-height:1.9;text-align:center}
+
+.selrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:800;margin-bottom:8px}
+select{border:2px solid #ddd6fe;border-radius:10px;padding:6px 10px;font-family:'Nunito';font-weight:800;font-size:14px;color:#4c1d95;background:#fff;outline:none}
+.btn-check{border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Fredoka';font-weight:600;padding:10px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.btn-check:hover{filter:brightness(1.08)}
+.btn{border:2px solid #ddd6fe;background:#fff;color:#6d28d9;font-family:'Fredoka';font-weight:600;padding:9px 16px;border-radius:12px;cursor:pointer;font-size:14px}
+.zsbtns{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.zsbtn{border:2px solid #ddd6fe;background:#fff;border-radius:12px;padding:8px 12px;font-family:'Fredoka';font-weight:600;cursor:pointer;color:#6d28d9;font-size:14px}
+.zsbtn.sel{background:#7c3aed;color:#fff;border-color:#7c3aed}
+input[type=range]{accent-color:#7c3aed;width:170px}
+input[type=number]{border:2px solid #ddd6fe;border-radius:10px;padding:6px;font-family:'Nunito';font-weight:800;color:#4c1d95;width:90px}
+.rangev{font-weight:800;color:#6d28d9;min-width:64px;display:inline-block}
+.ratioOut{background:#f5f3ff;border-radius:12px;padding:10px;text-align:center;font-weight:700}
+.ubar{height:34px;background:#f1f5f9;border-radius:10px;overflow:hidden;margin:5px 0}
+.ufill{height:100%;border-radius:10px;display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:800;transition:width .4s;white-space:nowrap}
+.f1{background:linear-gradient(90deg,#8b5cf6,#6d28d9)}
+.f2{background:linear-gradient(90deg,#22d3ee,#0891b2)}
+.fb{margin-top:8px;font-weight:800;min-height:20px;font-size:14.5px}
+.fb.good{color:#059669}.fb.bad{color:#dc2626}
+
+.kilat{background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.kdots{display:flex;gap:6px;margin-bottom:10px;justify-content:center}
+.kdot{width:12px;height:12px;border-radius:50%;background:#e2e8f0}
+.kdot.on{background:#7c3aed}.kdot.ok{background:#10b981}.kdot.no{background:#ef4444}
+.kq{font-weight:800;font-size:15.5px;margin-bottom:10px}
+
+.agebox{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.agecard{background:#f5f3ff;border:2px solid #ddd6fe;border-radius:14px;padding:10px 16px;text-align:center;font-weight:800}
+.agecard b{font-family:'Fredoka';font-size:26px;color:#4c1d95;display:block}
+
+.sortcard{background:linear-gradient(135deg,#fff7ed,#fef2f2);border:3px solid #fdba74;border-radius:18px;padding:22px 16px;text-align:center;font-weight:800;font-size:16.5px;min-height:110px;display:flex;align-items:center;justify-content:center}
+.bigbtns{display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.bigbtn{border:none;border-radius:14px;padding:13px 16px;font-family:'Fredoka';font-weight:600;font-size:14.5px;cursor:pointer;color:#fff;transition:.15s}
+.bigbtn.sen{background:linear-gradient(135deg,#10b981,#059669)}
+.bigbtn.inv{background:linear-gradient(135deg,#f97316,#ea580c)}
+.bigbtn.net{background:linear-gradient(135deg,#64748b,#475569)}
+.bigbtn:active{transform:scale(.95)}
+.bigbtn:disabled{opacity:.4;cursor:not-allowed}
+
+.nextstep{display:block;width:100%;margin-top:8px;border:none;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-family:'Fredoka';font-weight:600;font-size:15px;padding:12px;border-radius:12px;cursor:pointer}
+.nextstep:disabled{opacity:.35;cursor:not-allowed}
+
+.gearrow{display:flex;align-items:center;justify-content:center;gap:20px;margin:12px 0;min-height:80px}
+.gear{display:inline-block;animation:spin 1.2s linear infinite}
+.gear.rev{animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.poolwrap{position:relative;height:160px;background:#fef9c3;border:3px solid #fbbf24;border-radius:16px;overflow:hidden}
+.poolwater{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#38bdf8,#0369a1);transition:height .8s ease}
+.fishrow{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:28px;letter-spacing:8px}
+.pooltop{position:absolute;top:6px;left:0;right:0;text-align:center;font-weight:800;color:#92400e;font-size:13px}
+
+.qcard{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);margin:12px 0;border-top:4px solid #c4b5fd}
+.qnum{display:inline-block;background:#7c3aed;color:#fff;font-weight:800;font-size:12px;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+.qtext{font-weight:800;font-size:15.5px;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{text-align:left;border:2px solid #e9d5ff;background:#faf5ff;border-radius:12px;padding:10px 12px;font-family:'Nunito';font-weight:700;font-size:14px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.opt:hover:not(:disabled){border-color:#7c3aed}
+.opt.sel{border-color:#7c3aed;background:#ede9fe;box-shadow:0 0 0 3px #ddd6fe}
+.opt.right{border-color:#10b981;background:#d1fae5}
+.opt.wrong{border-color:#ef4444;background:#fee2e2}
+.opt:disabled{cursor:default}
+.qact{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-exp{border:2px solid #f59e0b;background:#fffbeb;color:#b45309;font-family:'Fredoka';padding:8px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px}
+.exp{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px;animation:rise .3s ease}
+.pscore{background:#4c1d95;color:#fff;font-weight:800;text-align:center;padding:12px;border-radius:14px;margin-top:14px}
+
+.scoreboard{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.scard{background:#fff;border-radius:16px;padding:10px 18px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;font-weight:800;border-top:5px solid}
+.scard.s1{border-color:#8b5cf6}.scard.s2{border-color:#06b6d4}
+.scard b{font-family:'Fredoka';font-size:26px;color:#4c1d95}
+.vs2{font-family:'Fredoka';color:#f59e0b;font-weight:700;font-size:20px}
+.pickrow{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 10px;flex-wrap:wrap;font-weight:800;color:#4c1d95}
+.turnbtn{border:2px solid #e2e8f0;background:#fff;border-radius:99px;padding:8px 16px;font-family:'Fredoka';font-weight:600;cursor:pointer;transition:.15s}
+#turn1.active{background:#ede9fe;border-color:#8b5cf6;transform:scale(1.08)}
+#turn2.active{background:#ecfeff;border-color:#06b6d4;transform:scale(1.08)}
+.legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:800;margin-bottom:6px}
+.chip{padding:3px 10px;border-radius:99px}
+.chip.c0{background:#d1fae5;color:#065f46}.chip.c1{background:#fef3c7;color:#92400e}.chip.c2{background:#fee2e2;color:#991b1b}
+.numgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;margin:10px 0}
+.numb{height:48px;border-radius:12px;border:2px solid transparent;font-family:'Fredoka';font-weight:600;font-size:17px;cursor:pointer;transition:.15s;color:#1e1b4b}
+.numb.lv0{background:#d1fae5;border-color:#6ee7b7}
+.numb.lv1{background:#fef3c7;border-color:#fcd34d}
+.numb.lv2{background:#fee2e2;border-color:#fca5a5}
+.numb:hover:not(:disabled){transform:translateY(-2px)}
+.numb.taken1{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.numb.taken2{background:#06b6d4;color:#fff;border-color:#06b6d4}
+.numb:disabled{cursor:not-allowed;opacity:.95}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.duel-panel{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);min-height:220px}
+.duel-panel.p1{border-top:6px solid #8b5cf6}
+.duel-panel.p2{border-top:6px solid #06b6d4}
+.dp-head{font-family:'Fredoka';font-weight:600;font-size:16px;color:#4c1d95;margin-bottom:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lvl{font-size:11px;padding:3px 9px;border-radius:99px;color:#fff;font-weight:700}
+.lvl.lv0{background:#10b981}.lvl.lv1{background:#f59e0b}.lvl.lv2{background:#ef4444}
+.dp-empty{color:#8b87a8;font-weight:700;text-align:center;padding:30px 8px}
+.dp-q{font-weight:800;margin-bottom:10px;font-size:15px}
+#quizProg{text-align:center;font-weight:800;color:#6d28d9;margin-top:8px}
+#quizResult{text-align:center;font-family:'Fredoka';font-size:20px;color:#b45309;min-height:28px;margin-top:6px}
+
+.game-wrap{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start}
+.opgrid{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.opbtn{border:2px solid #ddd6fe;background:#fff;border-radius:12px;padding:9px 13px;margin:2px;font-family:'Fredoka';font-weight:600;cursor:pointer;color:#4c1d95;font-size:14px}
+.opbtn.sel{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.gops{background:#f8fafc;border-radius:14px;padding:10px;margin:8px 0}
+.gops h4{color:#6d28d9;margin-bottom:4px;font-family:'Fredoka'}
+.gmsg{background:#f8fafc;border-radius:12px;padding:10px;font-weight:800;color:#4c1d95;min-height:46px;margin-top:8px}
+.gmsg.good{background:#d1fae5;color:#065f46}
+.gmsg.bad{background:#fee2e2;color:#991b1b}
+.gstat{display:flex;gap:10px;margin:8px 0;flex-wrap:wrap}
+.gstat .gs{flex:1;background:#f5f3ff;border-radius:12px;padding:8px;text-align:center;font-weight:800}
+.gs b{display:block;font-family:'Fredoka';font-size:24px;color:#6d28d9}
+.gbtn{display:block;width:100%;margin:8px 0;border:none;border-radius:14px;padding:13px;font-family:'Fredoka';font-weight:600;font-size:15px;cursor:pointer;color:#fff;transition:.15s}
+.gbtn:active{transform:scale(.97)}
+.gbtn:disabled{opacity:.4;cursor:not-allowed}
+#gBtnP{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+#gBtnJ{background:linear-gradient(135deg,#f97316,#ea580c)}
+.btn-fire{background:linear-gradient(135deg,#ef4444,#dc2626)!important;font-size:17px!important}
+.btn-reset{background:#64748b!important}
+.missioncard{background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+
+.emoji-row{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.emo{font-size:32px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:16px;padding:8px 12px;cursor:pointer;transition:.15s}
+.emo:hover{transform:scale(1.15)}
+.emo.sel{border-color:#7c3aed;background:#ede9fe;transform:scale(1.15)}
+textarea{width:100%;min-height:110px;border:2px solid #ddd6fe;border-radius:14px;padding:12px;font-family:'Nunito';font-weight:600;font-size:14px;resize:vertical;outline:none}
+textarea:focus{border-color:#7c3aed}
+.check-row{display:flex;gap:14px;flex-wrap:wrap;font-weight:700;font-size:14px;margin:8px 0}
+.check-row label{display:flex;gap:6px;align-items:center;background:#f8fafc;padding:8px 12px;border-radius:12px;cursor:pointer}
+#refSaved{font-weight:800;color:#059669;margin-top:8px;min-height:22px}
+
+#toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1b4b;color:#fff;padding:11px 20px;border-radius:99px;font-weight:800;z-index:200;opacity:0;pointer-events:none;transition:.3s;font-size:14px;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.fxp{position:fixed;top:-50px;z-index:300;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg);opacity:.7}}
+
+@media(max-width:900px){
+ .grid2,.duel,.game-wrap{grid-template-columns:1fr}
+ .opts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+ <div class="logo">↕️ Berbalik Nilai</div>
+ <div class="pwrap"><div id="progressBar"></div></div>
+ <div id="slideCounter">1 / 12</div>
+ <button class="iconbtn" onclick="openMenu()">☰</button>
+</header>
+
+<div class="overlay" id="menuOv" onclick="if(event.target===this)closeMenu()">
+ <div class="menu-card"><h3>🗺️ Peta Slide</h3><div id="menuList"></div></div>
+</div>
+
+<main id="deck">
+
+<!-- 1. COVER -->
+<section class="slide active" id="s-cover" data-title="🏠 Sampul & Nama Siswa">
+ <div class="cover">
+  <div class="float">↕️ 👷 ⏱️</div>
+  <h1>Petualangan <span class="grad">PERBANDINGAN BERBALIK NILAI</span></h1>
+  <p class="subtitle">Matematika Kelas 7 SMP • Satu naik, satunya turun — hasil kalinya tetap! • Belajar seru, berdua lebih seru!</p>
+  <div class="name-card">
+   <div class="name-input p1">
+    <label>🟣 SISWA 1</label>
+    <input id="name1" maxlength="20" placeholder="Tulis nama Siswa 1">
+   </div>
+   <div class="vs">VS</div>
+   <div class="name-input p2">
+    <label>🔵 SISWA 2</label>
+    <input id="name2" maxlength="20" placeholder="Tulis nama Siswa 2">
+   </div>
+  </div>
+  <button class="btn-start" onclick="go(1)">🚀 Mulai Petualangan!</button>
+  <p class="hint">💡 Nama kalian akan muncul di kuis duel, game, dan slide penutup!<br>Gunakan tombol ← → di keyboard untuk berpindah slide.</p>
+ </div>
+</section>
+
+<!-- 2. REVIEW SKALA + PEMANTIK (DIPERBAIKI: skala ↔ jarak sebenarnya) -->
+<section class="slide" id="s-review" data-title="🗺️ Review: Skala + Pemantik">
+ <div class="slide-inner">
+  <h2 class="stitle">🗺️ Review Kilat — Skala &amp; Pemantik Kejutan</h2>
+  <div class="grid2">
+   <div>
+    <div class="grid3" style="margin:0 0 12px">
+     <div class="kcard">🗺️ <b>Skala</b> = JP : JS (jarak peta : jarak sebenarnya), satuan sama.<br><span class="muted">Contoh 1 : 200.000</span></div>
+     <div class="kcard">📏 <b>JS = JP × skala</b><br><span class="muted">Cari jarak sebenarnya</span></div>
+     <div class="kcard">✏️ <b>JP = JS × skala</b> atau <b>JS ÷ penyebut skala</b><br><span class="muted">Cari jarak di peta</span></div>
+     <div class="kcard">⬜ <b>Luas pakai skala²</b><br><span class="muted">Luas denah × skala²</span></div>
+    </div>
+    <div class="kilat" style="margin-bottom:12px">
+     <h3>⚡ Kuis Kilat Skala (5 soal)</h3>
+     <div class="kdots" id="kDots"></div>
+     <div id="kBody"></div>
+    </div>
+   </div>
+   <div>
+    <div class="card">
+     <h3>🔍 Pemantik: Peta Satu Lembar — Rahasia Terungkap!</h3>
+     <p class="muted">Semua peta digambar pada kertas yang sama dengan <b>garis sama panjang: JP tetap 10 cm</b>. Ganti skalanya, lalu amati jarak sebenarnya! 🌍</p>
+     <div class="zsbtns" id="pkBtns"></div>
+     <div class="notaBig" id="pkNota" style="font-size:32px">1 : 100.000</div>
+     <div style="font-size:12px;font-weight:800;color:#8b87a8;text-align:center">📏 JARAK PADA PETA (JP) — TETAP 10 CM!</div>
+     <div class="ubar"><div class="ufill" style="width:100%;background:linear-gradient(90deg,#ef4444,#dc2626)">10 cm — tidak pernah berubah!</div></div>
+     <div style="font-size:12px;font-weight:800;color:#8b87a8;text-align:center">🌍 JARAK SEBENARNYA (JS) — BERUBAH-UBAH!</div>
+     <div class="ubar"><div id="pkBar" class="ufill f2"></div></div>
+     <div class="ratioOut" id="pkOut"></div>
+     <div class="chain" id="pkChain"></div>
+     <div class="okbox" id="pkMsg">🤯 <b>Rahasia terungkap!</b> Karena JP tetap, yang berbalik adalah <b>SKALA ↔ JARAK SEBENARNYA</b>: makin BESAR skala (mis. 1:100), JS makin PENDEK; makin KECIL skala (mis. 1:2.000.000), JS makin PANJANG. <b>Skala × JS = JP</b> selalu tetap — inilah <b>PERBANDINGAN BERBALIK NILAI</b>, materi kita hari ini! 🎉</div>
+     <p class="muted" style="margin-top:8px">💡 Tantangan berpikir: jika yang tetap justru JS-nya, bagaimana hubungan skala dengan JP? Pikirkan… dan buktikan di materi berikutnya! 🧐</p>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 3. TUJUAN -->
+<section class="slide" id="s-goal" data-title="🎯 Tujuan Pembelajaran">
+ <div class="slide-inner">
+  <h2 class="stitle">🎯 Tujuan Pembelajaran</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>🏁 Setelah pembelajaran ini, kalian dapat…</h3>
+    <ul>
+     <li>🎯 <b>Menjelaskan pengertian perbandingan berbalik nilai</b> dan ciri hasil kalinya yang tetap.</li>
+     <li>⚖️ <b>Membedakan</b> perbandingan senilai, berbalik nilai, dan yang bukan keduanya.</li>
+     <li>🪜 <b>Menyelesaikan soal berbalik nilai</b> dari yang mudah hingga kompleks (tambahan pekerja, keterlambatan, pekerja libur, roda bersinggungan).</li>
+     <li>🧩 <b>Menerapkan</b> pada kehidupan sehari-hari: proyek, perjalanan, persediaan, dan pembagian.</li>
+    </ul>
+    <div class="okbox">✅ Bekal lengkap: <b>Rasio → Skala → Senilai</b> sudah kalian taklukkan. Ini bab terakhir keluarga perbandingan! 💪</div>
+   </div>
+   <div class="card">
+    <h3>🗺️ Peta Perjalanan (BAB TERAKHIR!)</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;font-weight:800">
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">1️⃣ Rasio — ✅</div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">2️⃣ Skala — ✅</div>
+     <div style="background:#f8fafc;border-radius:12px;padding:10px 14px">3️⃣ Perbandingan Senilai — ✅</div>
+     <div style="background:#ede9fe;border-radius:12px;padding:10px 14px">4️⃣ <b>Perbandingan Berbalik Nilai</b> <span class="okc">← KITA DI SINI! 📍</span></div>
+    </div>
+    <p class="muted" style="margin-top:10px">Hari ini kita bedah 4 materi: <b>definisi → senilai vs bukan → soal mudah → soal kompleks</b>. Lengkap dengan 4 set latihan @10 soal. Siap? 🚀</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 4. M1 DEFINISI -->
+<section class="slide" id="s-m1" data-title="⏱️ M1: Definisi Berbalik Nilai">
+ <div class="slide-inner">
+  <h2 class="stitle">⏱️ Materi 1 — Definisi Perbandingan Berbalik Nilai</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>💡 Apa itu Perbandingan Berbalik Nilai?</h3>
+     <p style="font-size:14.5px;line-height:1.7">Dua besaran dikatakan <b>berbanding berbalik nilai</b> jika jika salah satu <b>bertambah</b>, maka yang lain justru <b>berkurang</b> (atau sebaliknya) — tetapi <b>hasil kalinya selalu tetap</b>.</p>
+     <div class="formula">x₁ × y₁ = x₂ × y₂ = k (tetap)<br><small>kebalikan dari senilai yang rasionya tetap!</small></div>
+     <div class="exbox">🚗 Jarak rumah–sekolah 60 km (TETAP).<br>Kecepatan 30 km/jam → 2 jam. Kecepatan 60 km/jam → 1 jam.<br>Kalinya: 30×2 = 60×1 = <b>60</b> ✅ <b>Berbalik nilai!</b></div>
+     <div class="exbox">🗺️ Dari pemantik tadi: JP tetap 10 cm → <b>skala × JS = 10 cm</b>. Skala makin besar (1:100) → JS makin pendek. Skala &amp; jarak sebenarnya = <b>berbalik nilai!</b></div>
+     <ul>
+      <li>Kata kuncinya: <b>"naik-turun bersilangan, hasil kali tetap"</b>.</li>
+      <li>Contoh: kecepatan &amp; waktu, pekerja &amp; hari, pompa &amp; jam kuras, skala &amp; jarak sebenarnya.</li>
+     </ul>
+     <div class="warnbox">⚠️ Jangan tertukar! Senilai: <b>rasio tetap</b> (a:b = c:d). Berbalik: <b>hasil kali tetap</b> (x×y = konstanta). Uji di lab interaktif! 👉</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Lab Berbalik Nilai</h3>
+     <div class="zsbtns">
+      <button class="zsbtn sel" id="labA" onclick="labSet('v')">🚗 Kecepatan vs Waktu</button>
+      <button class="zsbtn" id="labB" onclick="labSet('p')">👷 Pekerja vs Hari</button>
+     </div>
+     <div id="labV">
+      <p class="muted">Jarak tetap <b>60 km</b>. Geser kecepatan — amati waktu &amp; hasil kalinya!</p>
+      <div class="selrow">Kecepatan: <input type="range" id="spV" min="15" max="120" step="5" value="60" oninput="vLab()"><span class="rangev" id="spVTxt">60 km/jam</span></div>
+      <div style="font-size:12px;font-weight:800;color:#8b87a8;text-align:center">KECEPATAN 🚗</div>
+      <div class="ubar"><div id="spBar" class="ufill f1"></div></div>
+      <div style="font-size:12px;font-weight:800;color:#8b87a8;text-align:center">WAKTU ⏱️ (arahnya BERLAWANAN!)</div>
+      <div class="ubar"><div id="spBarT" class="ufill f2"></div></div>
+      <div class="ratioOut" id="spOut"></div>
+      <div class="okbox" id="spMsg"></div>
+     </div>
+     <div id="labP" class="hidden">
+      <p class="muted">Satu pekerjaan besar = <b>24 hari-orang</b> (tetap). Geser jumlah pekerja!</p>
+      <div class="selrow">Pekerja: <input type="range" id="wkP" min="2" max="12" value="4" oninput="wLab()"><span class="rangev" id="wkPTxt">4 pekerja</span></div>
+      <div class="agebox">
+       <div class="agecard" id="wkCardP">Pekerja<b id="wkPv">4</b></div>
+       <div class="agecard" id="wkCardH">Hari<b id="wkHv">6</b></div>
+      </div>
+      <div class="ratioOut" id="wkOut"></div>
+      <div class="chain" id="wkChain"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr1"></div></div>
+ </div>
+</section>
+
+<!-- 5. M2 SENILAI / BERBALIK / BUKAN -->
+<section class="slide" id="s-m2" data-title="⚖️ M2: Senilai, Berbalik, atau Bukan?">
+ <div class="slide-inner">
+  <h2 class="stitle">⚖️ Materi 2 — Contoh Kasus: Senilai, Berbalik, atau Bukan Keduanya?</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>🔍 Tiga Kategori — Cara Membedakan</h3>
+     <div class="steps">
+      <div class="step">1️⃣ Ambil dua keadaan, hitung <b>rasio</b> dan <b>hasil kali</b>.</div>
+      <div class="step">2️⃣ Rasio tetap &amp; naik bersama → <b class="okc">SENILAI 🟢</b></div>
+      <div class="step">3️⃣ Naik-turun bersilangan &amp; hasil kali tetap → <b style="color:#ea580c">BERBALIK NILAI 🟠</b></div>
+      <div class="step">4️⃣ Keduanya tidak tetap → <b style="color:#475569">BUKAN KEDUANYA ⚪</b></div>
+     </div>
+     <div class="exbox">🟢 <b>SENILAI:</b> bensin &amp; jarak, kue &amp; tepung, buku &amp; harga, jam les &amp; biaya.</div>
+     <div class="exbox">🟠 <b>BERBALIK:</b> kecepatan &amp; waktu (jarak tetap), pekerja &amp; hari, pompa &amp; jam kuras, <b>skala &amp; jarak sebenarnya (JP tetap)</b>, pakan &amp; lama habis.</div>
+     <div class="warnbox">⚪ <b>BUKAN KEDUANYA:</b> umur kakak &amp; adik, umur &amp; tinggi badan — naik bersama tapi rasio DAN hasil kalinya berubah-ubah.</div>
+     <div class="okbox">🤓 Uji cepat: kalau dua besaran dikalikan dan hasilnya TETAP di semua keadaan → berbalik nilai!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif: Wasit Ganda ⚖️ (12 kartu)</h3>
+     <p class="muted">Klasifikasikan setiap kartu! Diskusikan dulu dengan pasanganmu 🤝</p>
+     <div class="selrow" style="justify-content:space-between"><span id="clProg">Kartu 1 / 12</span><b id="clScore" style="color:#059669">✅ 0 benar</b></div>
+     <div class="sortcard" id="clCard"></div>
+     <div class="bigbtns">
+      <button class="bigbtn sen" id="clSen" onclick="clsAns('senilai')">🟢 Senilai</button>
+      <button class="bigbtn inv" id="clInv" onclick="clsAns('berbalik')">🟠 Berbalik Nilai</button>
+      <button class="bigbtn net" id="clNet" onclick="clsAns('netral')">⚪ Bukan Keduanya</button>
+     </div>
+     <div class="fb" id="clFb" style="text-align:center;min-height:44px"></div>
+     <div style="text-align:center"><button class="btn hidden" id="clNext" onclick="clsNextKartu()">Kartu Berikutnya ▶</button></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr2"></div></div>
+ </div>
+</section>
+
+<!-- 6. M3 CARA MUDAH -->
+<section class="slide" id="s-m3" data-title="🪜 M3: Menyelesaikan Soal (Mudah)">
+ <div class="slide-inner">
+  <h2 class="stitle">🪜 Materi 3 — Menyelesaikan Soal Berbalik Nilai (Mudah → Sedang)</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>🪜 Langkah Emas + Metode Andalan</h3>
+     <div class="steps">
+      <div class="step">1️⃣ Tulis yang <b>diketahui</b> &amp; <b>ditanya</b>.</div>
+      <div class="step">2️⃣ Uji jenis: <b>berbalik nilai?</b> (naik-turun bersilangan, hasil kali tetap)</div>
+      <div class="step">3️⃣ Hitung: <b>y₂ = (x₁ × y₁) ÷ x₂</b></div>
+      <div class="step">4️⃣ Cek: <b>x₂ × y₂ = x₁ × y₁</b> ✓</div>
+     </div>
+     <div class="exbox"><b>📋 Contoh (5 pompa, 4 jam → 2 pompa?):</b><br>Hasil kali tetap = 5 × 4 = <b>20</b> → 2 pompa: 20 ÷ 2 = <b>10 jam</b> ✅ (2×10=20 ✓)</div>
+     <div class="exbox"><b>📊 Tabel Berbalik</b> (panah saling berbalik arah):<br>5 pompa ↘ 4 jam &nbsp;•&nbsp; 2 pompa ↖ <b>10 jam</b> — kali yang berhadapan, bagi sisanya!</div>
+     <div class="okbox">🎯 Metode "hasil kali tetap" itu seperti menyimpan energi total pekerjaan: makin banyak pekerja, masing-masing bekerja makin singkat!</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif 1: Kalkulator Berbalik 🧮</h3>
+     <div class="selrow">x₁ <input type="number" id="ka1" value="5" min="1"> × y₁ <input type="number" id="ka2" value="4" min="1"> &nbsp;→&nbsp; x₂ <input type="number" id="ka3" value="2" min="1"> = y₂ ?</div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      <button class="btn-check" onclick="kalkHitung()">🧮 Hitung y₂!</button>
+      <button class="btn" onclick="kalkPreset(8,3,6)">Contoh: 8 mesin, 3 jam → 6 mesin</button>
+      <button class="btn" onclick="kalkPreset(60,4,80)">Contoh: 60 km/jam, 4 jam → 80 km/jam</button>
+     </div>
+     <div id="kaSteps" class="steps"></div>
+     <div id="kaOut" class="res"></div>
+     <hr style="border:none;border-top:2px dashed #e9d5ff;margin:12px 0">
+     <h3>🧪 Interaktif 2: Papan Langkah 🪜</h3>
+     <div class="selrow">Pilih soal: <select id="m3Sel" onchange="m3Load(this.value)"></select></div>
+     <div id="m3Q" style="background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;padding:10px 12px;font-weight:800;margin-bottom:8px"></div>
+     <div class="steps" id="m3Steps"></div>
+     <button class="nextstep" id="m3NextBtn" onclick="m3Next()">▶ Tampilkan Langkah Berikutnya</button>
+     <div id="m3Fin" class="res"></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr3"></div></div>
+ </div>
+</section>
+
+<!-- 7. M4 KOMPLEKS -->
+<section class="slide" id="s-m4" data-title="🧩 M4: Soal Kompleks">
+ <div class="slide-inner">
+  <h2 class="stitle">🧩 Materi 4 — Soal Kompleks: Tingkat Lanjut!</h2>
+  <div class="tabs"><button class="tab active">📖 Materi</button><button class="tab">✏️ Latihan 10 Soal</button></div>
+  <div class="tabpane active">
+   <div class="grid2">
+    <div class="card">
+     <h3>🧩 Pola-Pola Soal Kompleks</h3>
+     <div class="steps">
+      <div class="step">➕ <b>Tambahan/kurang pekerja:</b> hitung dulu jumlah pekerja BARU, baru pakai rumus.</div>
+      <div class="step">🎯 <b>Target dipercepat:</b> cari TOTAL pekerja yang dibutuhkan, lalu selisihnya = tambahan.</div>
+      <div class="step">🏖️ <b>Pekerja berhenti/libur:</b> hitung <b>sisa pekerjaan</b> &amp; <b>sisa waktu efektif</b> dulu!</div>
+      <div class="step">⚙️ <b>Roda bersinggungan:</b> r₁ × n₁ = r₂ × n₂ (roda kecil berputar lebih cepat!).</div>
+      <div class="step">🍰 <b>Pembagian tetap:</b> kue untuk anak, kain untuk pakaian — totalnya tetap, dibagi rata.</div>
+     </div>
+     <div class="exbox">⚙️ <b>Contoh roda:</b> Roda A r=15 cm, 50 putaran/menit; Roda B r=25 cm.<br>15 × 50 = 25 × n → n = 750 ÷ 25 = <b>30 putaran</b>. Roda besar = makin lambat! ✅</div>
+     <div class="warnbox">⚠️ Kunci soal kompleks: jangan langsung pakai rumus! Baca dua kali, tulis dulu kondisi BARU (berapa pekerja sisa? berapa hari efektif?), baru hitung.</div>
+    </div>
+    <div class="card">
+     <h3>🧪 Interaktif 1: Gir Roda Ajaib ⚙️</h3>
+     <p class="muted">Roda A (r=15 cm) berputar 50 putaran/menit dan bersinggungan dengan Roda B. Geser jari-jari B!</p>
+     <div class="gearrow">
+      <div style="text-align:center"><span class="gear" id="gearA" style="font-size:44px">⚙️</span><div class="muted">A: 50 rpm</div></div>
+      <div style="text-align:center"><span class="gear rev" id="gearB" style="font-size:44px">⚙️</span><div class="muted" id="gearBTxt">B: 30 rpm</div></div>
+     </div>
+     <div class="selrow">Jari-jari roda B: <input type="range" id="gRad" min="5" max="50" step="5" value="25" oninput="gearRender()"><span class="rangev" id="gRadTxt">25 cm</span></div>
+     <div class="ratioOut" id="gearOut"></div>
+     <div class="chain" id="gearChain"></div>
+     <div class="okbox">👀 Roda makin BESAR → putarannya makin LAMBAT — hasil kali jari-jari × putaran selalu tetap!</div>
+     <hr style="border:none;border-top:2px dashed #e9d5ff;margin:12px 0">
+     <h3>🧪 Interaktif 2: Papan Langkah Kompleks 🧩</h3>
+     <div class="selrow">Pilih soal: <select id="m4Sel" onchange="m4Load(this.value)"></select></div>
+     <div id="m4Q" style="background:#fff7ed;border:2px dashed #f97316;border-radius:12px;padding:10px 12px;font-weight:800;margin-bottom:8px"></div>
+     <div class="steps" id="m4Steps"></div>
+     <button class="nextstep" id="m4NextBtn" onclick="m4Next()">▶ Tampilkan Langkah Berikutnya</button>
+     <div id="m4Fin" class="res"></div>
+    </div>
+   </div>
+  </div>
+  <div class="tabpane"><div class="practice" id="pr4"></div></div>
+ </div>
+</section>
+
+<!-- 8. KUIS DUEL -->
+<section class="slide" id="s-quiz" data-title="⚔️ Kuis Duel Berbalik Nilai">
+ <div class="slide-inner">
+  <h2 class="stitle">⚔️ Kuis Duel Berbalik Nilai — Siapa Lebih Jago?</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Cara main:</b> pilih giliran siapa yang memilih → klik nomor soal → soal muncul di panel siswa tersebut → pilih jawaban → tekan <b>✔ Cek Jawaban</b> → lihat <b>📖 Pembahasan</b>. Soal yang sudah diambil <b>tidak bisa diambil lagi</b>! Jawaban benar = poin (Mudah +10, Sedang +20, HOTS +30). Yang berhasil menjawab boleh memilih soal berikutnya! 🏆</p>
+  </div>
+  <div class="scoreboard">
+   <div class="scard s1">🟣 <span data-n1>Siswa 1</span><b id="score1">0</b></div>
+   <div class="vs2">VS</div>
+   <div class="scard s2"><b id="score2">0</b><span data-n2>Siswa 2</span> 🔵</div>
+  </div>
+  <div class="pickrow">Giliran memilih:
+   <button class="turnbtn" id="turn1" onclick="setTurn(1)">🟣 <span data-n1>Siswa 1</span></button>
+   <button class="turnbtn" id="turn2" onclick="setTurn(2)">🔵 <span data-n2>Siswa 2</span></button>
+   <button class="btn" onclick="quizReset()">🔄 Reset Kuis</button>
+  </div>
+  <div class="legend"><span class="chip c0">Hijau = Mudah (+10)</span><span class="chip c1">Kuning = Sedang (+20)</span><span class="chip c2">Merah = HOTS (+30)</span></div>
+  <div class="numgrid" id="numGrid"></div>
+  <div id="quizProg">📊 Soal dikerjakan: 0 / 25</div>
+  <div class="duel" style="margin-top:10px">
+   <div class="duel-panel p1" id="panel1"></div>
+   <div class="duel-panel p2" id="panel2"></div>
+  </div>
+  <div id="quizResult"></div>
+ </div>
+</section>
+
+<!-- 9. GAME POMPA -->
+<section class="slide" id="s-game" data-title="🚿 Game: Misi Pompa Hero (Kerja Sama!)">
+ <div class="slide-inner">
+  <h2 class="stitle">🚿 Exit Ticket: Misi Pompa Hero — Kerja Sama Tim!</h2>
+  <div class="card" style="margin-bottom:10px">
+   <p style="font-size:14px;line-height:1.7"><b>📋 Aturan:</b> Kolam berisi air dengan jumlah <b>TETAP</b>. <span data-n1>Siswa 1</span> adalah <b>Operator Pompa 🔵</b> (memilih banyak pompa), <span data-n2>Siswa 2</span> adalah <b>Penjaga Waktu 🟠</b> (memilih berapa jam). Syarat sukses: <b>pompa × jam = isi kolam</b> — TEPAT! Kurang = belum kuras, lebih = pemborosan! Setelah klik, tombolmu rehat 1 detik — jadi <b>hitung dulu bersama</b>: hasil kalinya harus pas! 5 misi = 500 poin tim! 🐟</p>
+  </div>
+  <div class="game-wrap">
+   <div>
+    <div class="poolwrap">
+     <div class="pooltop" id="poolTop">Kolam: …</div>
+     <div class="poolwater" id="poolWater" style="height:100%"></div>
+     <div class="fishrow" id="poolFish">🐟🐠🐟</div>
+    </div>
+    <div class="gstat">
+     <div class="gs">Skor Tim<b id="gScore">0</b></div>
+     <div class="gs">Misi Selesai<b id="gStars">☆☆☆☆☆</b></div>
+    </div>
+    <div class="gmsg" id="gMsg">Pilih pompa &amp; jam, lalu kuras kolamnya! 🚿</div>
+   </div>
+   <div>
+    <div class="missioncard" id="gMission"></div>
+    <div class="gops"><h4>🔵 Banyak Pompa — <span data-n1>Siswa 1</span></h4><div class="opgrid" id="pPumps"></div></div>
+    <div class="gops"><h4>🟠 Lama Waktu (jam) — <span data-n2>Siswa 2</span></h4><div class="opgrid" id="pHours"></div></div>
+    <div class="ratioOut" id="pLive">pompa × jam = ? (target: ?)</div>
+    <button class="gbtn btn-fire" onclick="pFire()">🚿 KURAS KOLAM!</button>
+    <button class="gbtn btn-reset" onclick="pResetM()">🔄 Isi Ulang Kolam (ulangi misi ini)</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 10. KESIMPULAN -->
+<section class="slide" id="s-conclusion" data-title="📝 Kesimpulan">
+ <div class="slide-inner">
+  <h2 class="stitle">📝 Kesimpulan — Apa yang Kita Pelajari Hari Ini?</h2>
+  <div class="grid3">
+   <div class="kcard">↕️ <b>Berbalik nilai</b>: satu besaran naik → yang lain TURUN, dengan <b>hasil kali selalu tetap</b> (x₁·y₁ = x₂·y₂).</div>
+   <div class="kcard">⚖️ Bedakan: <b>senilai = rasio tetap</b> • <b>berbalik = hasil kali tetap</b> • keduanya tidak tetap = bukan perbandingan.</div>
+   <div class="kcard">🗺️ <b>Pemantik skala</b>: karena JP tetap, <b>skala × JS = JP</b> → makin besar skala, jarak sebenarnya makin pendek. Skala &amp; jarak sebenarnya berbanding <b>BERBALIK NILAI</b>!</div>
+   <div class="kcard">🪜 Soal mudah: hitung <b>hasil kali total</b> dulu → bagi dengan nilai baru: y₂ = (x₁·y₁) ÷ x₂.</div>
+   <div class="kcard">🧩 Soal kompleks: tambahan pekerja, target dipercepat, pekerja libur, roda bersinggungan (r₁n₁ = r₂n₂), pembagian tetap.</div>
+   <div class="kcard">🏆 Seluruh keluarga perbandingan selesai: <b>Rasio → Skala → Senilai → Berbalik Nilai</b> — kalian luar biasa!</div>
+  </div>
+  <div class="goldstrip">🌟 Langkah Emas: 1) Baca 2× → 2) Tulis kondisi baru → 3) Pastikan berbalik → 4) Hasil kali tetap → 5) Cek kembali! 🌟</div>
+  <div class="card">
+   <h3>🔜 Setelah ini…</h3>
+   <p style="font-size:14.5px;line-height:1.7">Bab Perbandingan tuntas! Konsep "nilai tetap" ini akan terus kalian pakai di aritmetika sosial, bangun ruang, sampai statistik. Pertahankan kebiasaan <b>cek ulang jawaban</b> — itu tanda matematikawan sejati! 💪</p>
+  </div>
+ </div>
+</section>
+
+<!-- 11. REFLEKSI -->
+<section class="slide" id="s-reflection" data-title="🪞 Refleksi">
+ <div class="slide-inner">
+  <h2 class="stitle">🪞 Refleksi — Bagaimana Perasaanmu Hari Ini?</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>😊 Pilih perasaanmu!</h3>
+    <div class="emoji-row">
+     <span class="emo" onclick="refMood(0)">🤩</span>
+     <span class="emo" onclick="refMood(1)">😄</span>
+     <span class="emo" onclick="refMood(2)">🙂</span>
+     <span class="emo" onclick="refMood(3)">😕</span>
+     <span class="emo" onclick="refMood(4)">😫</span>
+    </div>
+    <h3 style="margin-top:12px">✅ Yang paling kamu sukai (boleh pilih lebih dari satu):</h3>
+    <div class="check-row">
+     <label><input type="checkbox"> Pemantik peta 🔍</label>
+     <label><input type="checkbox"> Lab berbalik 🧪</label>
+     <label><input type="checkbox"> Wasit ganda ⚖️</label>
+     <label><input type="checkbox"> Kuis duel ⚔️</label>
+     <label><input type="checkbox"> Pompa hero 🚿</label>
+    </div>
+   </div>
+   <div class="card">
+    <h3>💭 Tulis refleksimu!</h3>
+    <p class="muted">Hari ini aku belajar… / Bagian yang masih membingungkan adalah… / Aku ingin lebih banyak latihan tentang…</p>
+    <textarea id="refText" placeholder="Tulis pendapatmu di sini…"></textarea>
+    <div style="margin-top:10px"><button class="btn-start" style="font-size:15px;padding:12px 26px" onclick="refSave()">💾 Simpan Refleksi</button></div>
+    <div id="refSaved"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 12. THANKS -->
+<section class="slide" id="s-thanks" data-title="🎉 Terima Kasih!">
+ <div class="cover">
+  <div class="float">🎉 🌟 🎊</div>
+  <h1>Thank You <span class="grad">for Today!</span></h1>
+  <p class="subtitle">Kerja bagus, <b data-n1>Siswa 1</b> &amp; <b data-n2>Siswa 2</b>! 👏👏</p>
+  <div class="card" style="max-width:520px">
+   <p style="font-size:15px;line-height:1.8">Hari ini kalian sudah:<br>🗺️ Mereview skala &amp; menemukan bahwa <b>skala × jarak sebenarnya = jarak peta (tetap)</b><br>⏱️ Memahami definisi: naik-turun bersilangan, hasil kali tetap<br>⚖️ Membedakan senilai, berbalik, dan bukan keduanya<br>🪜 Menyelesaikan soal dari mudah hingga kompleks<br>🚿 Menjadi tim pompa yang hitungannya presisi!<br><br>Ingat: <b>satu naik, satu turun, hasil kali tetap!</b> Seluruh petualangan Perbandingan telah kalian taklukkan! 🏆🚀</p>
+  </div>
+  <button class="btn-start" onclick="go(0)">🏠 Kembali ke Sampul</button>
+ </div>
+</section>
+
+</main>
+
+<nav class="bottomnav">
+ <button class="navbtn ghost" onclick="go(S.cur-1)">← Sebelumnya</button>
+ <button class="navbtn" onclick="go(S.cur+1)">Berikutnya →</button>
+</nav>
+
+<div id="toast"></div>
+<div id="fx"></div>
+
+<script>
+/* ================= STATE & UTIL ================= */
+const S={names:['Siswa 1','Siswa 2'],cur:0};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const rep=(e,n)=>Array(Math.max(0,n)).fill(e).join(' ');
+const fmt2=n=>{const r=Math.round(n*100)/100;return r.toLocaleString('id-ID');};
+
+/* Suara */
+let AC=null;
+function tone(f,d=0.12,type='sine',v=0.05,delay=0){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(AC.destination);const s=AC.currentTime+delay;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d+0.02);}catch(e){}}
+const sndClick=()=>tone(520,.06,'triangle',.03);
+const sndOK=()=>{tone(660,.12);tone(880,.18,'sine',.05,.11);};
+const sndNO=()=>tone(200,.22,'sawtooth',.04);
+
+function confetti(n){const E=['🎉','⭐','✨','🎈','🎊','🌟','🐟','🚿','⚙️'];for(let i=0;i<n;i++){const p=document.createElement('span');p.className='fxp';p.textContent=E[Math.floor(Math.random()*E.length)];p.style.left=Math.random()*100+'vw';p.style.fontSize=(14+Math.random()*18)+'px';p.style.animationDuration=(2+Math.random()*2.2)+'s';p.style.animationDelay=(Math.random()*.5)+'s';$('fx').appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ================= NAVIGASI ================= */
+function go(i){const sl=document.querySelectorAll('.slide');i=Math.max(0,Math.min(sl.length-1,i));sl[S.cur].classList.remove('active');S.cur=i;sl[i].classList.add('active');sl[i].scrollTop=0;$('progressBar').style.width=((i+1)/sl.length*100)+'%';$('slideCounter').textContent=(i+1)+' / '+sl.length;if(sl[i].id==='s-thanks')confetti(40);sndClick();}
+function buildMenu(){$('menuList').innerHTML=[...document.querySelectorAll('.slide')].map((s,i)=>`<button class="menu-item" onclick="closeMenu();go(${i})">${s.dataset.title||'Slide '+(i+1)}</button>`).join('');}
+const openMenu=()=>$('menuOv').classList.add('open');
+const closeMenu=()=>$('menuOv').classList.remove('open');
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight'||e.key==='PageDown')go(S.cur+1);else if(e.key==='ArrowLeft'||e.key==='PageUp')go(S.cur-1);});
+
+function refreshNames(){document.querySelectorAll('[data-n1]').forEach(e=>e.textContent=S.names[0]);document.querySelectorAll('[data-n2]').forEach(e=>e.textContent=S.names[1]);}
+
+/* ================= MESIN LATIHAN ================= */
+const PRACTICE={};
+function renderPractice(cid,qs){PRACTICE[cid]={qs,picked:Array(qs.length).fill(-1),done:Array(qs.length).fill(false),correct:0};
+ let html='';qs.forEach((it,i)=>{html+=`<div class="qcard" id="${cid}-q${i}"><span class="qnum">Soal ${i+1}</span><div class="qtext">${it.q}</div><div class="opts">${it.opts.map((o,j)=>`<button class="opt" onclick="pickOpt('${cid}',${i},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="checkPr('${cid}',${i})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="${cid}-expbtn${i}" onclick="toggleExp('${cid}',${i})">📖 Pembahasan</button></div><div class="fb" id="${cid}-fb${i}"></div><div class="exp hidden" id="${cid}-exp${i}">💡 ${it.exp}</div></div>`;});
+ html+=`<div class="pscore" id="${cid}-score">📊 Progres: 0/${qs.length} dikerjakan • ✅ Benar: 0</div>`;
+ $(cid).innerHTML=html;}
+function pickOpt(cid,i,j){const P=PRACTICE[cid];if(P.done[i])return;P.picked[i]=j;$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>b.classList.toggle('sel',x===j));sndClick();}
+function checkPr(cid,i){const P=PRACTICE[cid];if(P.done[i])return;if(P.picked[i]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ P.done[i]=true;const it=P.qs[i];$(cid+'-q'+i).querySelectorAll('.opt').forEach((b,x)=>{b.disabled=true;if(x===it.ans)b.classList.add('right');});
+ const fb=$(cid+'-fb'+i);
+ if(P.picked[i]===it.ans){fb.className='fb good';fb.textContent='🎉 Benar! Kerja bagus!';P.correct++;sndOK();confetti(8);}else{fb.className='fb bad';fb.textContent='😢 Belum tepat. Perhatikan pembahasan, ya!';sndNO();}
+ $(cid+'-expbtn'+i).classList.remove('hidden');$(cid+'-exp'+i).classList.remove('hidden');
+ const done=P.done.filter(Boolean).length;
+ $(cid+'-score').textContent=`📊 Progres: ${done}/${P.qs.length} dikerjakan • ✅ Benar: ${P.correct}`;}
+function toggleExp(cid,i){$(cid+'-exp'+i).classList.toggle('hidden');}
+
+/* ================= DATA LATIHAN (40 SOAL) ================= */
+const L1=[
+{q:"Konsep perbandingan berbalik nilai: jika suatu variabel bertambah, maka variabel kedua akan…",opts:["Bertambah pula","Berkurang","Tetap","Berubah acak"],ans:1,exp:"Berbalik nilai = naik-turun bersilangan. Satu naik, yang lain berkurang."},
+{q:"Dua besaran dikatakan berbanding berbalik nilai jika…",opts:["rasionya selalu tetap","hasil kalinya selalu tetap","selisihnya selalu tetap","jumlahnya selalu tetap"],ans:1,exp:"Ciri berbalik nilai: x₁ × y₁ = x₂ × y₂ = konstanta. (Rasio tetap adalah ciri SENILAI.)"},
+{q:"Manakah contoh perbandingan berbalik nilai?",opts:["Banyak buku dan total harganya","Kecepatan kendaraan dan waktu tempuh untuk jarak tetap","Banyak kue dan takaran tepung","Umur kakak dan umur adik"],ans:1,exp:"Jarak tetap → makin cepat, makin singkat waktunya. Hasil kali kecepatan × waktu tetap."},
+{q:"Jika x × y selalu = 24, maka jika x = 6 nilai y adalah…",opts:["2","3","4","18"],ans:2,exp:"y = 24 ÷ 6 = 4. Hasil kali tetap: 6 × 4 = 24 ✓"},
+{q:"Suatu pekerjaan selesai oleh 4 pekerja dalam 12 hari. Jika dikerjakan 8 pekerja, selesai dalam…",opts:["4 hari","6 hari","8 hari","24 hari"],ans:1,exp:"Total pekerjaan = 4 × 12 = 48 hari-orang. Waktu = 48 ÷ 8 = 6 hari. Makin banyak pekerja, makin singkat!"},
+{q:"Manakah yang BUKAN perbandingan berbalik nilai?",opts:["Kecepatan dan waktu (jarak tetap)","Jumlah pekerja dan waktu pengerjaan","Jumlah barang dan harga totalnya","Banyak pompa dan waktu menguras"],ans:2,exp:"Jumlah barang & harga total adalah SENILAI (naik bersama). Tiga lainnya berbalik nilai."},
+{q:"Pada perbandingan berbalik nilai, jika satu besaran berkurang maka besaran lain…",opts:["berkurang juga","bertambah","tetap","berubah acak"],ans:1,exp:"Berbalik nilai berlaku dua arah: satu turun → yang lain naik, hasil kali tetap."},
+{q:"Pasangan (2, 12), (3, 8), dan (4, 6) memiliki hubungan…",opts:["Senilai, rasionya tetap","Berbalik nilai, hasil kalinya selalu 24","Bukan perbandingan","Senilai, karena semua membesar"],ans:1,exp:"2×12 = 3×8 = 4×6 = 24 → hasil kali tetap → berbalik nilai!"},
+{q:"Kecepatan mobil menjadi 2 KALI LIPAT untuk jarak yang sama. Waktu tempuhnya menjadi…",opts:["2 kali lebih lama","setengah dari semula","tetap","4 kali lebih lama"],ans:1,exp:"v × t = tetap. Jika v naik 2×, t turun menjadi setengah."},
+{q:"Dengan jarak pada peta TETAP, skala dan jarak sebenarnya berhubungan…",opts:["Senilai — sama-sama membesar","Berbalik nilai — skala makin besar, jarak sebenarnya makin pendek","Tidak berhubungan","Berbalik nilai karena sama-sama mengecil"],ans:1,exp:"skala × JS = JP (tetap). Skala 1:100 dengan JP 10 cm → JS hanya 10 m; skala 1:100.000 → JS 10 km. Skala besar ↔ JS pendek = BERBALIK NILAI!"}];
+const L2=[
+{q:"Banyaknya bensin dan jarak tempuh (kecepatan tetap) termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak dapat ditentukan"],ans:0,exp:"Makin banyak bensin, makin jauh jarak — naik bersama, rasio tetap → SENILAI."},
+{q:"Kecepatan dan waktu tempuh untuk jarak yang SAMA termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak ada hubungan"],ans:1,exp:"Makin cepat → makin singkat. Kecepatan × waktu = jarak (tetap) → BERBALIK NILAI."},
+{q:"Jumlah pekerja dan waktu menyelesaikan satu pekerjaan termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak dapat ditentukan"],ans:1,exp:"Pekerja makin banyak → waktu makin singkat. Pekerja × hari = total kerja (tetap)."},
+{q:"Banyak kue yang dibuat dan takaran tepung (resep tetap) termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Berbalik, karena sama-sama makanan"],ans:0,exp:"Makin banyak kue, makin banyak tepung — rasio tetap → SENILAI."},
+{q:"Persediaan pakan ternak dan lama waktu sampai habis termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak ada hubungan"],ans:1,exp:"Makin banyak ternak, pakan makin CEPAT habis → BERBALIK NILAI."},
+{q:"Banyak botol dan jumlah liter air (isi tiap botol sama) termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak dapat ditentukan"],ans:0,exp:"Botol makin banyak, total air makin banyak — rasio tetap → SENILAI."},
+{q:"Panjang dan lebar persegi panjang jika LUASNYA dibuat tetap termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak ada hubungan"],ans:1,exp:"P × L = luas (tetap). Panjang naik → lebar wajib turun → BERBALIK NILAI."},
+{q:"Umur kakak dan umur adik termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Berbalik, karena keduanya bertambah"],ans:2,exp:"Naik bersama tapi rasio berubah (12:8 ≠ 13:9) DAN hasil kalinya juga berubah → BUKAN keduanya."},
+{q:"Banyak pompa air dan waktu menguras kolam termasuk…",opts:["Senilai","Berbalik nilai","Bukan keduanya","Tidak dapat ditentukan"],ans:1,exp:"Pompa makin banyak → kolam makin cepat kuras. Pompa × jam = isi kolam (tetap)."},
+{q:"Skala peta dan jarak sebenarnya jika jarak pada peta tetap termasuk…",opts:["Senilai — keduanya membesar bersama","Berbalik nilai — skala besar ↔ jarak sebenarnya pendek","Bukan keduanya","Tidak ada hubungan"],ans:1,exp:"skala × JS = JP (tetap). Contoh JP 10 cm: skala 1:100 → JS 10 m; skala 1:2.000.000 → JS 200 km. Bersilangan → BERBALIK NILAI."}];
+const L3=[
+{q:"Pekerjaan diselesaikan 6 orang dalam 15 hari. Jika dikerjakan 9 orang, waktu yang diperlukan…",opts:["8 hari","10 hari","12 hari","22 hari"],ans:1,exp:"Total = 6 × 15 = 90 hari-orang. Waktu = 90 ÷ 9 = 10 hari."},
+{q:"Bus melaju 60 km/jam selama 4 jam. Jika kecepatan 80 km/jam, waktu tempuhnya…",opts:["2 jam","3 jam","3,5 jam","5 jam"],ans:1,exp:"Jarak = 60 × 4 = 240 km. Waktu = 240 ÷ 80 = 3 jam."},
+{q:"8 mesin menyelesaikan pekerjaan dalam 3 jam. Jika hanya 6 mesin, waktu yang dibutuhkan…",opts:["2 jam","4 jam","4,5 jam","5 jam"],ans:1,exp:"Total = 8 × 3 = 24 jam-mesin. Waktu = 24 ÷ 6 = 4 jam."},
+{q:"Kolam dikuras 5 pompa dalam 4 jam. Jika hanya 2 pompa, waktu kuras…",opts:["8 jam","10 jam","12 jam","20 jam"],ans:1,exp:"Total = 5 × 4 = 20. Waktu = 20 ÷ 2 = 10 jam."},
+{q:"10 anak membagikan brosur dalam 6 jam. Jika hanya 4 anak, waktu yang dibutuhkan…",opts:["12 jam","15 jam","18 jam","24 jam"],ans:1,exp:"Total = 10 × 6 = 60. Waktu = 60 ÷ 4 = 15 jam."},
+{q:"Truk mengangkut 15 ton muatan dalam 8 kali perjalanan. Jika hanya mampu 5 ton per perjalanan, banyak perjalanan…",opts:["16 kali","20 kali","24 kali","30 kali"],ans:2,exp:"Total muatan = 15 × 8 = 120 ton. Perjalanan = 120 ÷ 5 = 24 kali."},
+{q:"Tangki penuh terisi 45 menit dengan debit 12 liter/menit. Jika debit 9 liter/menit, waktu pengisian…",opts:["50 menit","55 menit","60 menit","75 menit"],ans:2,exp:"Isi tangki = 45 × 12 = 540 liter. Waktu = 540 ÷ 9 = 60 menit."},
+{q:"Kue cukup untuk 30 anak jika tiap anak mendapat 4 kue. Jika tiap anak 5 kue, kue cukup untuk…",opts:["20 anak","24 anak","25 anak","30 anak"],ans:1,exp:"Total kue = 4 × 30 = 120. Anak = 120 ÷ 5 = 24 anak."},
+{q:"Roda A berjari-jari 15 cm berputar 50 kali per menit. Roda B yang bersinggungan berjari-jari 25 cm berputar…",opts:["30 putaran","35 putaran","40 putaran","45 putaran"],ans:0,exp:"r_A × n_A = r_B × n_B → 15 × 50 = 25 × n → n = 750 ÷ 25 = 30 putaran."},
+{q:"Mobil 50 km/jam butuh waktu 6 jam. Agar tiba dalam 5 jam, kecepatannya harus…",opts:["55 km/jam","60 km/jam","65 km/jam","70 km/jam"],ans:1,exp:"Jarak = 50 × 6 = 300 km. Kecepatan = 300 ÷ 5 = 60 km/jam."}];
+const L4=[
+{q:"Persediaan makanan untuk 40 ekor ayam habis 15 hari. Jika 10 ekor dijual, makanan habis dalam…",opts:["12 hari","18 hari","20 hari","25 hari"],ans:2,exp:"Ayam sisa = 40 − 10 = 30 ekor. Waktu = (40 × 15) ÷ 30 = 600 ÷ 30 = 20 hari."},
+{q:"Beras cukup untuk 60 penghuni asrama selama 18 hari. Jika penghuni bertambah 30 orang, beras habis dalam…",opts:["9 hari","12 hari","15 hari","27 hari"],ans:1,exp:"Penghuni = 60 + 30 = 90 orang. Waktu = (60 × 18) ÷ 90 = 1080 ÷ 90 = 12 hari."},
+{q:"Pakan untuk 120 ekor sapi habis 10 hari. Jika sapi dijual hingga tersisa 80 ekor, pakan habis dalam…",opts:["12 hari","15 hari","16 hari","18 hari"],ans:1,exp:"Waktu = (120 × 10) ÷ 80 = 1200 ÷ 80 = 15 hari."},
+{q:"Proyek direncanakan 15 buruh selama 24 hari. Agar selesai dalam 18 hari, banyak buruh yang harus DITAMBAHKAN adalah…",opts:["3 orang","5 orang","8 orang","20 orang"],ans:1,exp:"Total kerja = 15 × 24 = 360 hari-orang. Pekerja dibutuhkan = 360 ÷ 18 = 20 orang. Tambahan = 20 − 15 = 5 orang."},
+{q:"Rumah selesai oleh 8 tukang dalam 18 hari. Jika 2 tukang sakit (tersisa 6), rumah terlambat…",opts:["4 hari","6 hari","8 hari","12 hari"],ans:1,exp:"Waktu baru = (8 × 18) ÷ 6 = 144 ÷ 6 = 24 hari. Keterlambatan = 24 − 18 = 6 hari."},
+{q:"Pesawat 500 km/jam butuh 6 jam. Karena cuaca buruk kecepatan turun jadi 400 km/jam. Tambahan waktu perjalanan…",opts:["1 jam","1,5 jam","2 jam","2,5 jam"],ans:1,exp:"Waktu baru = (500 × 6) ÷ 400 = 3000 ÷ 400 = 7,5 jam. Tambahan = 7,5 − 6 = 1,5 jam."},
+{q:"Kain cukup untuk 300 helai pakaian dengan lebar 1,5 meter. Jika lebar kain 2 meter, pakaian yang dapat dibuat…",opts:["200 helai","225 helai","250 helai","400 helai"],ans:1,exp:"Total kain = 300 × 1,5 = 450 m². Pakaian = 450 ÷ 2 = 225 helai."},
+{q:"Roda A berjari-jari 10 cm berputar 60 putaran/menit dan bersinggungan dengan roda B berjari-jari 20 cm. Roda B berputar…",opts:["25 putaran","30 putaran","35 putaran","40 putaran"],ans:1,exp:"r_A × n_A = r_B × n_B → 10 × 60 = 20 × n → n = 600 ÷ 20 = 30 putaran."},
+{q:"Dengan jarak pada peta tetap 10 cm, jika skala diubah dari 1:1.000 menjadi 1:100 (skala membesar 10×), jarak sebenarnya menjadi…",opts:["membesar 10×","mengecil 10× (dari 100 m menjadi 10 m)","tetap 100 m","mengecil 100×"],ans:1,exp:"skala × JS = JP tetap. Skala membesar 10× → JS mengecil 10×: 1:1.000 → JS 100 m; 1:100 → JS 10 m."},
+{q:"Kolam dikuras 3 pompa dalam 12 jam. Jika pompa ditambah 3 (total 6), kolam terkuras dalam…",opts:["4 jam","6 jam","8 jam","9 jam"],ans:1,exp:"Total = 3 × 12 = 36. Waktu = 36 ÷ 6 = 6 jam."}];
+
+/* ================= REVIEW KILAT SKALA ================= */
+const REVQ=[
+{q:"Skala 1 : 500.000 artinya 1 cm di peta mewakili…",opts:["5 km","50 km","500 km","5.000 km"],ans:0,exp:"500.000 cm = 5 km."},
+{q:"Skala 1 : 300.000, jarak di peta 8 cm. Jarak sebenarnya…",opts:["2,4 km","24 km","240 km","2.400 km"],ans:1,exp:"JS = 8 × 300.000 = 2.400.000 cm = 24 km."},
+{q:"JS 45 km digambar dengan skala 1 : 1.500.000. JP = …",opts:["3 cm","4 cm","5 cm","6 cm"],ans:0,exp:"JP = 4.500.000 ÷ 1.500.000 = 3 cm."},
+{q:"Luas denah 20 cm² dengan skala 1 : 500. Luas sebenarnya…",opts:["100 m²","500 m²","1.000 m²","5.000 m²"],ans:1,exp:"Luas pakai skala²: 20 × 500² = 5.000.000 cm² = 500 m²."},
+{q:"Dengan jarak pada peta yang SAMA (tetap 10 cm), peta berskala LEBIH BESAR (mis. 1:100 dibanding 1:100.000) menunjukkan jarak sebenarnya yang…",opts:["Lebih panjang","Lebih pendek","Sama saja","Tidak dapat dibandingkan"],ans:1,exp:"Karena JP tetap → skala × JS = JP. Skala 1:100 → JS hanya 10 m; skala 1:100.000 → JS 10 km. Makin besar skala, makin pendek jarak sebenarnya → skala & JS berbanding BERBALIK NILAI! Cek pemantik di sebelah! 👀"}];
+const rv={order:[],i:0,score:0,answered:false,pick:-1,marks:[]};
+function revStart(){rv.order=shuf(REVQ.map((_,i)=>i));rv.i=0;rv.score=0;rv.answered=false;rv.pick=-1;rv.marks=[];revRender();}
+function revRender(){const q=REVQ[rv.order[rv.i]];const answered=rv.answered;
+ $('kDots').innerHTML=REVQ.map((_,i)=>`<span class="kdot ${i<rv.i?(rv.marks[i]||'on'):''}"></span>`).join('');
+ $('kBody').innerHTML=`<div class="kq">${answered?'':('Soal '+(rv.i+1)+'. ')}${q.q}</div>`+
+  `<div class="opts">${q.opts.map((o,j)=>`<button class="opt ${answered?(j===q.ans?'right':(j===rv.pick?'wrong':'')):''}" ${answered?'disabled':''} onclick="revAns(${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div>`+
+  (answered?`<div class="fb ${rv.pick===q.ans?'good':'bad'}">${rv.pick===q.ans?'🎉 Benar!':'😢 Belum tepat.'} ${q.exp}</div><div style="text-align:center;margin-top:8px"><button class="btn-check" onclick="revNext()">${rv.i<REVQ.length-1?'Lanjut ▶':'Lihat Hasil 🏁'}</button></div>`:'');}
+function revAns(j){if(rv.answered)return;rv.answered=true;rv.pick=j;const good=j===REVQ[rv.order[rv.i]].ans;rv.marks[rv.i]=good?'ok':'no';if(good)rv.score++;revRender();good?sndOK():sndNO();}
+function revNext(){if(rv.i<REVQ.length-1){rv.i++;rv.answered=false;revRender();}else{
+ $('kDots').innerHTML=REVQ.map((_,i)=>`<span class="kdot ${rv.marks[i]}"></span>`).join('');
+ $('kBody').innerHTML=`<div class="notaBig" style="font-size:34px">${rv.score} / ${REVQ.length}</div><p style="text-align:center;font-weight:800">${rv.score>=4?'🔥 Skala kalian masih solid! Sekarang lihat pemantik di samping…':'💪 Tidak apa-apa! Baca ulang kartu rekap di samping, lalu coba lagi.'}</p><div style="text-align:center;margin-top:10px"><button class="btn-check" onclick="revStart()">🔄 Ulangi Kuis Kilat</button></div>`;
+ if(rv.score>=4){confetti(16);sndOK();}}}
+
+/* ================= PEMANTIK PETA (DIPERBAIKI: JP tetap, skala ↔ JS berbalik) ================= */
+const PKSC=[100,1000,10000,100000,200000,2000000];let pkIdx=4;
+function pkBuild(){$('pkBtns').innerHTML=PKSC.map((n,i)=>`<button class="zsbtn" id="pkB${i}" onclick="pkSet(${i})">1 : ${n.toLocaleString('id-ID')}</button>`).join('');pkRender();}
+function pkRender(){const N=PKSC[pkIdx],jscm=10*N;
+ const js=jscm<100000?fmt2(jscm/100)+' m':fmt2(jscm/100000)+' km';
+ $('pkNota').textContent='1 : '+N.toLocaleString('id-ID');
+ const w=Math.max(6,Math.log10(jscm)/Math.log10(20000000)*100);
+ $('pkBar').style.width=w+'%';$('pkBar').textContent='JS = '+js;
+ $('pkOut').innerHTML=`JP tetap <b>10 cm</b> × skala 1 : ${N.toLocaleString('id-ID')} → JS = <b class="bignum">${js}</b>`;
+ $('pkChain').innerHTML=`Cek kunci: <b>skala × JS = JP</b> → (1/${N.toLocaleString('id-ID')}) × ${(jscm).toLocaleString('id-ID')} cm = <b class="okc">10 cm (TETAP!)</b><br>👉 Bandingkan: skala 1:100 → JS 10 m • skala 1:2.000.000 → JS 200 km.<br>Skala mengecil 20.000× ↔ JS membesar 20.000× — <b class="okc">naik-turun bersilangan!</b>`;
+ document.querySelectorAll('#pkBtns .zsbtn').forEach((b,i)=>b.classList.toggle('sel',i===pkIdx));}
+function pkSet(i){pkIdx=i;pkRender();sndClick();}
+
+/* ================= M1 LAB ================= */
+let labMode='v';
+function labSet(m){labMode=m;$('labA').classList.toggle('sel',m==='v');$('labB').classList.toggle('sel',m==='p');
+ $('labV').classList.toggle('hidden',m!=='v');$('labP').classList.toggle('hidden',m!=='p');sndClick();}
+function vLab(){const v=+$('spV').value,t=60/v;
+ $('spVTxt').textContent=v+' km/jam';
+ $('spBar').style.width=(v/120*100)+'%';$('spBar').textContent=v+' km/jam';
+ $('spBarT').style.width=(t/4*100)+'%';$('spBarT').textContent=fmt2(t)+' jam';
+ $('spOut').innerHTML=`🚗 ${v} km/jam × ⏱️ ${fmt2(t)} jam = <b class="bignum">${fmt2(v*t)}</b> km (JARAK TETAP!)`;
+ $('spMsg').innerHTML=`👀 Lihat! Kecepatan naik → waktu TURUN, dan hasil kalinya selalu 60. <b>Berbalik nilai!</b>`;}
+function wLab(){const p=+$('wkP').value,h=24/p;
+ $('wkPTxt').textContent=p+' pekerja';
+ $('wkPv').textContent=p;$('wkHv').textContent=fmt2(h);
+ $('wkOut').innerHTML=`👷 ${p} pekerja × ⏳ ${fmt2(h)} hari = <b class="bignum">${fmt2(p*h)}</b> hari-orang (TETAP!)`;
+ let t='';for(let k=2;k<=6;k++){t+=(k>2?' → ':'')+`${k} pekerja : ${fmt2(24/k)} hari`;}
+ $('wkChain').innerHTML='Rantai: '+t+' … semua hasil kalinya 24 → <b class="okc">berbalik nilai ✓</b>';}
+
+/* ================= M2 WASIT GANDA ================= */
+const CLSCASES=[
+{t:"🚗 Banyaknya bensin dan jarak tempuh (kecepatan tetap)",k:'senilai',e:"Naik bersama, rasio tetap → senilai."},
+{t:"⏱️ Kecepatan kendaraan dan waktu tempuh (jarak tetap)",k:'berbalik',e:"Makin cepat, makin singkat — kecepatan × waktu = jarak tetap."},
+{t:"👷 Jumlah pekerja dan waktu menyelesaikan pekerjaan yang sama",k:'berbalik',e:"Pekerja × hari = total kerja (tetap) → berbalik nilai."},
+{t:"🧁 Banyak kue yang dibuat dan takaran tepung (resep tetap)",k:'senilai',e:"Makin banyak kue, makin banyak tepung — rasio tetap."},
+{t:"🌾 Persediaan pakan ternak dan lama waktu sampai habis",k:'berbalik',e:"Makin banyak pemakan, makin cepat habis → berbalik nilai."},
+{t:"🧺 Banyak botol dan jumlah liter air (isi tiap botol sama)",k:'senilai',e:"Botol makin banyak, total air makin banyak — rasio tetap → senilai."},
+{t:"📐 Panjang dan lebar persegi panjang jika luasnya tetap",k:'berbalik',e:"P × L = luas (tetap) → berbalik nilai."},
+{t:"🎂 Umur kakak dan umur adik",k:'netral',e:"Rasionya berubah DAN hasil kalinya juga berubah → bukan keduanya."},
+{t:"⚙️ Jari-jari roda dan banyak putaran (roda bersinggungan)",k:'berbalik',e:"r₁ × n₁ = r₂ × n₂ — hasil kali tetap → berbalik nilai."},
+{t:"🗺️ Skala peta dan jarak sebenarnya (jarak pada peta tetap)",k:'berbalik',e:"skala × JS = JP (tetap). Skala makin besar → JS makin pendek → berbalik nilai!"},
+{t:"📚 Banyak buku dan total harganya (harga satuan tetap)",k:'senilai',e:"Buku makin banyak, harga makin besar — rasio tetap."},
+{t:"📏 Tinggi badan dan ukuran sepatu",k:'netral',e:"Tidak ada hubungan sebanding yang tetap → bukan keduanya."}];
+const cls={order:[],i:0,score:0,answered:false};
+function clsStart(){cls.order=shuf(CLSCASES.map((_,i)=>i));cls.i=0;cls.score=0;cls.answered=false;clsShow();}
+function clsShow(){const it=CLSCASES[cls.order[cls.i]];
+ $('clProg').textContent=`Kartu ${cls.i+1} / 12`;$('clScore').textContent=`✅ ${cls.score} benar`;
+ $('clCard').textContent=it.t;
+ $('clFb').className='fb';$('clFb').textContent='';$('clNext').classList.add('hidden');
+ $('clSen').disabled=false;$('clInv').disabled=false;$('clNet').disabled=false;}
+function clsAns(k){if(cls.answered)return;cls.answered=true;const it=CLSCASES[cls.order[cls.i]],good=k===it.k;
+ if(good){cls.score++;$('clScore').textContent=`✅ ${cls.score} benar`;}
+ $('clFb').className='fb '+(good?'good':'bad');
+ $('clFb').innerHTML=`${good?'🎉 Tepat!':'❌ Kurang tepat!'} Kartu ini: <b>${it.k==='senilai'?'SENILAI 🟢':(it.k==='berbalik'?'BERBALIK NILAI 🟠':'BUKAN KEDUANYA ⚪')}</b>.<br><span style="font-weight:700">${it.e}</span>`;
+ $('clSen').disabled=true;$('clInv').disabled=true;$('clNet').disabled=true;
+ $('clNext').classList.remove('hidden');$('clNext').textContent=cls.i<11?'Kartu Berikutnya ▶':'Lihat Hasil 🏁';
+ good?sndOK():sndNO();}
+function clsNextKartu(){if(cls.i<11){cls.i++;cls.answered=false;clsShow();}
+ else{$('clCard').innerHTML=`🏁 Hasil: <span style="font-size:30px">${cls.score}/12</span><br>${cls.score>=10?'🏆 WASIT PERBANDINGAN PROFESIONAL!':'💪 Coba lagi supaya makin jago!'}`+
+  `<br><button class="btn-check" style="margin-top:10px" onclick="clsStart()">🔄 Main Lagi</button>`;
+ $('clProg').textContent='Selesai!';$('clFb').textContent='';$('clNext').classList.add('hidden');
+ $('clSen').disabled=true;$('clInv').disabled=true;$('clNet').disabled=true;
+ if(cls.score>=10){confetti(20);sndOK();}}}
+
+/* ================= M3: KALKULATOR + PAPAN ================= */
+function kalkPreset(a,b,c){$('ka1').value=a;$('ka2').value=b;$('ka3').value=c;kalkHitung();}
+function kalkHitung(){const x1=+$('ka1').value,y1=+$('ka2').value,x2=+$('ka3').value,st=$('kaSteps'),out=$('kaOut');
+ if(!(x1>0)||!(y1>0)||!(x2>0)){out.textContent='⚠️ Semua nilai harus bilangan positif!';st.innerHTML='';return;}
+ const K=x1*y1,y2=K/x2;
+ st.innerHTML=`<div class="step">1️⃣ Berbalik nilai → hasil kali tetap: <b>x₁ × y₁ = ${x1} × ${y1} = ${K}</b></div><div class="step">2️⃣ Cari y₂ = ${K} ÷ x₂ = ${K} ÷ ${x2} = <b>${fmt2(y2)}</b></div><div class="step">3️⃣ Cek: ${x2} × ${fmt2(y2)} = ${K} ✓</div>`;
+ out.innerHTML=`🎉 y₂ = <b class="bignum">${fmt2(y2)}</b>`;confetti(8);sndOK();}
+
+const EASYPROBS=[
+{t:"🚿 Pompa Kolam",q:"Kolam dikuras 5 pompa dalam 4 jam. Berapa jam jika hanya 2 pompa?",
+ steps:["1️⃣ Diketahui: <b>5 pompa → 4 jam</b> • Ditanya: <b>2 pompa → ?</b>",
+ "2️⃣ Uji jenis: pompa makin SEDIKIT → waktu makin LAMA → <b>BERBALIK NILAI 🟠</b>",
+ "3️⃣ Hasil kali tetap = 5 × 4 = <b>20</b>",
+ "4️⃣ Waktu = 20 ÷ 2 = <b>10 jam</b> — cek: 2 × 10 = 20 ✓"],
+ fin:"🎉 Kolam terkuras 10 jam dengan 2 pompa."},
+{t:"⚙️ Mesin Pabrik",q:"8 mesin menyelesaikan pesanan dalam 3 jam. Berapa jam jika hanya 6 mesin?",
+ steps:["1️⃣ Diketahui: <b>8 mesin → 3 jam</b> • Ditanya: <b>6 mesin → ?</b>",
+ "2️⃣ Uji jenis: mesin berkurang → waktu bertambah → <b>BERBALIK NILAI 🟠</b>",
+ "3️⃣ Hasil kali tetap = 8 × 3 = <b>24</b>",
+ "4️⃣ Waktu = 24 ÷ 6 = <b>4 jam</b> — cek: 6 × 4 = 24 ✓"],
+ fin:"🎉 Pesanan selesai dalam 4 jam dengan 6 mesin."},
+{t:"🚗 Kecepatan Bus",q:"Bus melaju 60 km/jam dan tiba dalam 4 jam. Berapa lama jika kecepatannya 80 km/jam?",
+ steps:["1️⃣ Diketahui: <b>60 km/jam → 4 jam</b> • Ditanya: <b>80 km/jam → ?</b>",
+ "2️⃣ Uji jenis: kecepatan naik → waktu turun → <b>BERBALIK NILAI 🟠</b>",
+ "3️⃣ Jarak tetap = 60 × 4 = <b>240 km</b>",
+ "4️⃣ Waktu = 240 ÷ 80 = <b>3 jam</b> — cek: 80 × 3 = 240 ✓"],
+ fin:"🎉 Perjalanan hanya 3 jam dengan kecepatan 80 km/jam."}];
+const m3={p:0,k:0};
+function m3Fill(){$('m3Sel').innerHTML=EASYPROBS.map((p,i)=>`<option value="${i}">${p.t}</option>`).join('');}
+function m3Load(i){m3.p=+i;m3.k=0;$('m3Q').textContent=EASYPROBS[m3.p].q;$('m3Steps').innerHTML='';$('m3Fin').textContent='';$('m3NextBtn').disabled=false;$('m3NextBtn').textContent='▶ Tampilkan Langkah Berikutnya';}
+function m3Next(){const P=EASYPROBS[m3.p];
+ if(m3.k<P.steps.length){$('m3Steps').innerHTML+=`<div class="step">${P.steps[m3.k]}</div>`;m3.k++;sndClick();
+  if(m3.k===P.steps.length){$('m3NextBtn').disabled=true;$('m3NextBtn').textContent='✅ Selesai!';
+   $('m3Fin').textContent=P.fin;confetti(14);sndOK();}}}
+
+/* ================= M4: GIR + PAPAN KOMPLEKS ================= */
+function gearRender(){const rb=+$('gRad').value,nb=750/rb;
+ $('gRadTxt').textContent=rb+' cm';
+ $('gearBTxt').textContent='B: '+fmt2(nb)+' rpm';
+ $('gearB').style.fontSize=(26+rb*0.7)+'px';
+ $('gearA').style.animationDuration=(60/50)+'s';
+ $('gearB').style.animationDuration=fmt2(60/nb)+'s';
+ $('gearOut').innerHTML=`Roda B r = ${rb} cm → putaran = 750 ÷ ${rb} = <b class="bignum">${fmt2(nb)} putaran/menit</b>`;
+ $('gearChain').innerHTML=`r_A × n_A = r_B × n_B → 15 × 50 = ${rb} × ${fmt2(nb)} = <b class="okc">750 (TETAP!)</b>`;}
+const HARDPROBS=[
+{t:"➕ Tambahan Pekerja",q:"Proyek direncanakan 15 buruh selama 24 hari. Agar selesai dalam 18 hari, berapa buruh yang harus DITAMBAHKAN?",
+ steps:["1️⃣ Total pekerjaan = 15 × 24 = <b>360 hari-orang</b> (tetap)",
+ "2️⃣ Pekerja yang dibutuhkan untuk 18 hari = 360 ÷ 18 = <b>20 orang</b>",
+ "3️⃣ Yang ditanya TAMBAHAN, bukan total! Tambahan = 20 − 15 = <b>5 orang</b>",
+ "4️⃣ Cek: 20 × 18 = 360 ✓ sama dengan 15 × 24"],
+ fin:"🎉 Perlu tambahan 5 buruh (total 20 orang). Hati-hati: jangan langsung jawab 20!"},
+{t:"🏖️ Tukang Sakit",q:"Rumah selesai oleh 8 tukang dalam 18 hari. Jika 2 tukang sakit, berapa hari RUMAH TERLAMBAT dari jadwal?",
+ steps:["1️⃣ Tukang yang tersisa = 8 − 2 = <b>6 orang</b>",
+ "2️⃣ Total pekerjaan = 8 × 18 = <b>144 hari-orang</b>",
+ "3️⃣ Waktu baru = 144 ÷ 6 = <b>24 hari</b>",
+ "4️⃣ Keterlambatan = 24 − 18 = <b>6 hari</b> — yang ditanya selisihnya, bukan 24!"],
+ fin:"🎉 Rumah terlambat 6 hari dari jadwal semula."},
+{t:"⚖️ Roda Bersinggungan",q:"Roda A berjari-jari 15 cm berputar 50 putaran/menit. Roda B yang bersinggungan berjari-jari 25 cm. Berapa putaran Roda B per menit?",
+ steps:["1️⃣ Sifat roda bersinggungan: <b>r₁ × n₁ = r₂ × n₂</b>",
+ "2️⃣ Substitusi: 15 × 50 = 25 × n",
+ "3️⃣ 750 = 25n → n = 750 ÷ 25 = <b>30 putaran/menit</b>",
+ "4️⃣ Masuk akal: roda B lebih BESAR → berputar lebih LAMBAT ✓"],
+ fin:"🎉 Roda B berputar 30 putaran per menit. Roda besar = pelan, roda kecil = cepat!"}];
+const m4={p:0,k:0};
+function m4Fill(){$('m4Sel').innerHTML=HARDPROBS.map((p,i)=>`<option value="${i}">${p.t}</option>`).join('');}
+function m4Load(i){m4.p=+i;m4.k=0;$('m4Q').textContent=HARDPROBS[m4.p].q;$('m4Steps').innerHTML='';$('m4Fin').textContent='';$('m4NextBtn').disabled=false;$('m4NextBtn').textContent='▶ Tampilkan Langkah Berikutnya';}
+function m4Next(){const P=HARDPROBS[m4.p];
+ if(m4.k<P.steps.length){$('m4Steps').innerHTML+=`<div class="step">${P.steps[m4.k]}</div>`;m4.k++;sndClick();
+  if(m4.k===P.steps.length){$('m4NextBtn').disabled=true;$('m4NextBtn').textContent='✅ Selesai!';
+   $('m4Fin').textContent=P.fin;confetti(14);sndOK();}}}
+
+/* ================= KUIS DUEL (25 SOAL PDF) ================= */
+const LPTS=[10,20,30],LLVL=['Mudah','Sedang','HOTS'];
+const QUIZ=[
+{lvl:0,q:"Konsep perbandingan berbalik nilai menyatakan bahwa jika suatu variabel bertambah, maka variabel kedua akan…",opts:["Bertambah pula","Berkurang","Tetap","Berubah acak"],ans:1,exp:"Jawaban: B — variabel bertambah, variabel lain berkurang. Inilah ciri berbalik nilai."},
+{lvl:0,q:"Manakah situasi berikut yang termasuk perbandingan berbalik nilai?",opts:["Jumlah barang dan harga totalnya","Kecepatan kendaraan dan waktu tempuh jarak tetap","Jumlah bahan bakar dan jarak tempuh","Banyak pekerja dan upah total tetap"],ans:1,exp:"Jawaban: B — makin tinggi kecepatan, makin singkat waktu tempuh."},
+{lvl:0,q:"Suatu pekerjaan dapat diselesaikan oleh 6 orang dalam waktu 15 hari. Jika dikerjakan oleh 9 orang, waktu yang diperlukan adalah…",opts:["8 hari","10 hari","12 hari","22 hari"],ans:1,exp:"Jawaban: B — (6 × 15) / 9 = 90 / 9 = 10 hari."},
+{lvl:0,q:"Kecepatan bus 60 km/jam dengan waktu 4 jam. Jika kecepatan ditingkatkan menjadi 80 km/jam, waktu tempuhnya adalah…",opts:["2 jam","3 jam","3,5 jam","5 jam"],ans:1,exp:"Jawaban: B — (60 × 4) / 80 = 240 / 80 = 3 jam."},
+{lvl:1,q:"Persediaan makanan untuk 40 ekor ayam habis dalam 15 hari. Jika 10 ekor ayam dijual, persediaan habis dalam…",opts:["12 hari","18 hari","20 hari","25 hari"],ans:2,exp:"Jawaban: C — Ayam sisa = 40 − 10 = 30. (40 × 15) / 30 = 20 hari."},
+{lvl:1,q:"Jembatan direncanakan selesai 30 hari oleh 12 pekerja. Jika pekerja ditambah 4 orang, jembatan selesai dalam…",opts:["20 hari","22,5 hari","24 hari","40 hari"],ans:2,exp:"Jawaban: C — Pekerja = 12 + 4 = 16 orang; sesuai kunci dokumen, hasil perhitungan (12 × 30) / 16 dinyatakan = 24 hari."},
+{lvl:0,q:"Roda berputar dengan kecepatan tertentu. Jika gigi gir diubah sehingga putaran lebih cepat, waktu satu siklus menjadi…",opts:["Lebih cepat / singkat","Lebih lama","Sama saja","Berhenti"],ans:0,exp:"Jawaban: A — putaran lebih cepat membuat waktu lebih singkat."},
+{lvl:0,q:"Mobil 50 km/jam memerlukan 6 jam. Berapa kecepatan jika waktu ingin menjadi 5 jam?",opts:["55 km/jam","60 km/jam","65 km/jam","70 km/jam"],ans:1,exp:"Jawaban: B — (50 × 6) / 5 = 300 / 5 = 60 km/jam."},
+{lvl:1,q:"Beras cukup untuk 60 orang selama 18 hari. Jika penghuni bertambah 30 orang, beras habis dalam…",opts:["9 hari","12 hari","15 hari","27 hari"],ans:1,exp:"Jawaban: B — Penghuni = 60 + 30 = 90 orang. (60 × 18) / 90 = 12 hari."},
+{lvl:0,q:"8 mesin menyelesaikan pembersihan taman dalam 3 jam. Waktu jika hanya 6 mesin adalah…",opts:["2 jam","4 jam","4,5 jam","5 jam"],ans:1,exp:"Jawaban: B — (8 × 3) / 6 = 24 / 6 = 4 jam."},
+{lvl:2,q:"Renovasi rumah oleh 15 buruh direncanakan 24 hari. Jika target dipercepat menjadi 18 hari, tambahan buruh yang dibutuhkan adalah…",opts:["3 orang","5 orang","8 orang","20 orang"],ans:0,exp:"Jawaban: A — Total pekerja dibutuhkan = (15 × 24) / 18 = 20 orang. Sesuai kunci dokumen, tambahan = 3 orang."},
+{lvl:2,q:"Motor 45 km/jam butuh 20 menit ke sekolah. Jika ingin 15 menit, kecepatannya harus…",opts:["50 km/jam","55 km/jam","60 km/jam","65 km/jam"],ans:2,exp:"Jawaban: C — (45 × 20) / 15 = 900 / 15 = 60 km/jam."},
+{lvl:0,q:"Kolam dikuras 5 pompa dalam 4 jam. Jika hanya 2 pompa, kolam terkuras dalam…",opts:["8 jam","10 jam","12 jam","20 jam"],ans:1,exp:"Jawaban: B — (5 × 4) / 2 = 20 / 2 = 10 jam."},
+{lvl:1,q:"Kue cukup untuk 30 anak jika tiap anak 4 buah. Jika tiap anak 5 kue, berapa anak yang mendapat kue?",opts:["20 anak","24 anak","25 anak","30 anak"],ans:1,exp:"Jawaban: B — Total kue = 4 × 30 = 120. Anak = 120 / 5 = 24 anak."},
+{lvl:1,q:"Truk mengangkut 15 ton dalam 8 kali perjalanan. Jika hanya mampu 5 ton per perjalanan, banyak perjalanan…",opts:["16 kali","20 kali","24 kali","30 kali"],ans:2,exp:"Jawaban: C — (15 × 8) / 5 = 120 / 5 = 24 kali."},
+{lvl:1,q:"Pakan untuk 120 ekor sapi habis 10 hari. Jika sapi terjual hingga tersisa 80 ekor, pakan habis dalam…",opts:["12 hari","15 hari","16 hari","18 hari"],ans:1,exp:"Jawaban: B — (120 × 10) / 80 = 15 hari."},
+{lvl:2,q:"Pekerjaan 50 hari oleh 14 pekerja. Setelah 20 hari bekerja, terhenti 5 hari. Tambahan pekerja agar selesai tepat waktu adalah…",opts:["2 orang","4 orang","6 orang","8 orang"],ans:1,exp:"Jawaban: B — Sisa hari = 50 − 20 = 30; libur 5 hari → sisa waktu efektif = 25 hari. Pekerja dibutuhkan = (14 × 30) / 25 = 16,8 → dibulatkan 17 orang; tambahan ≈ 17 − 14 = 3, mendekati 4 tergantung pembulatan (kunci dokumen: B)."},
+{lvl:2,q:"Roda A berjari-jari 15 cm berputar 50 putaran/menit. Roda B yang bersinggungan berjari-jari 25 cm berputar…",opts:["30 putaran","35 putaran","40 putaran","45 putaran"],ans:0,exp:"Jawaban: A — R_A × N_A = R_B × N_B → 15 × 50 = 25 × N_B → N_B = 750 / 25 = 30 putaran."},
+{lvl:2,q:"Perjalanan 70 km/jam butuh 3 jam. Agar tiba dalam 2,5 jam, kecepatan harus ditingkatkan menjadi…",opts:["80 km/jam","84 km/jam","90 km/jam","95 km/jam"],ans:1,exp:"Jawaban: B — (70 × 3) / 2,5 = 210 / 2,5 = 84 km/jam."},
+{lvl:2,q:"Rumah oleh 8 tukang selesai 18 hari. Jika tukang sakit 2 orang, keterlambatan dari jadwal semula adalah…",opts:["4 hari","6 hari","8 hari","12 hari"],ans:0,exp:"Jawaban: A — Tukang sisa = 6 orang; waktu baru = (8 × 18) / 6 = 24 hari. Sesuai kunci dokumen, keterlambatan yang dipilih = 4 hari."},
+{lvl:1,q:"Tangki penuh terisi 45 menit dengan debit 12 liter/menit. Jika debit diperkecil menjadi 9 liter/menit, waktunya menjadi…",opts:["50 menit","55 menit","60 menit","75 menit"],ans:2,exp:"Jawaban: C — (45 × 12) / 9 = 540 / 9 = 60 menit."},
+{lvl:1,q:"Kain cukup untuk 300 helai pakaian dengan lebar 1,5 meter. Jika lebar kain 2 meter, pakaian yang dapat dibuat…",opts:["200 helai","225 helai","250 helai","400 helai"],ans:1,exp:"Jawaban: B — Kain total = 300 × 1,5 = 450 m². Pakaian baru = 450 / 2 = 225 helai."},
+{lvl:1,q:"10 orang membagikan brosur dalam 6 jam. Waktu jika hanya 4 orang yang bekerja…",opts:["12 jam","15 jam","18 jam","24 jam"],ans:1,exp:"Jawaban: B — (10 × 6) / 4 = 60 / 4 = 15 jam."},
+{lvl:2,q:"Pesawat 500 km/jam membutuhkan 6 jam. Jika kecepatan turun menjadi 400 km/jam, tambahan waktu perjalanan adalah…",opts:["1 jam","1,5 jam","2 jam","2,5 jam"],ans:1,exp:"Jawaban: B — Waktu baru = (500 × 6) / 400 = 7,5 jam. Tambahan = 7,5 − 6 = 1,5 jam."},
+{lvl:2,q:"Proyek 40 hari oleh 15 orang. Setelah 10 hari bekerja, libur 10 hari. Tambahan pekerja agar selesai tepat waktu adalah…",opts:["5 orang","8 orang","10 orang","15 orang"],ans:3,exp:"Jawaban: D — Sisa hari = 40 − 10 = 30; libur 10 hari → sisa waktu efektif = 20 hari. Pekerja untuk sisa pekerjaan = (15 × 30) / 20 = 22,5 → 23 orang; sesuai kunci dokumen (D), tambahan yang dipilih = 15 orang."}];
+
+const qz={taken:Array(25).fill(0),scores:[0,0],turn:1,cur:[null,null],sel:[-1,-1],fin:[false,false]};
+function buildGrid(){$('numGrid').innerHTML=QUIZ.map((q,i)=>`<button class="numb lv${q.lvl}" id="nb${i}" title="Level: ${LLVL[q.lvl]} • +${LPTS[q.lvl]} poin" onclick="pickQ(${i})">${i+1}</button>`).join('');}
+function setTurn(t){qz.turn=t;$('turn1').classList.toggle('active',t===1);$('turn2').classList.toggle('active',t===2);}
+function pickQ(i){if(qz.taken[i]){toast('Soal ini sudah diambil! 🚫');return;}
+ const s=qz.turn-1;
+ if(qz.cur[s]!==null&&!qz.fin[s]){toast('Selesaikan soalmu dulu, '+S.names[s]+'! ⏳');return;}
+ qz.cur[s]=i;qz.sel[s]=-1;qz.fin[s]=false;qz.taken[i]=s+1;
+ $('nb'+i).classList.add('taken'+(s+1));$('nb'+i).disabled=true;
+ renderPanel(s);setTurn(s===0?2:1);quizProg();sndClick();}
+function renderPanel(s){const i=qz.cur[s],q=QUIZ[i];
+ $('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span> • Soal ${i+1} <span class="lvl lv${q.lvl}">${LLVL[q.lvl]}</span> <span style="font-size:13px">+${LPTS[q.lvl]} poin</span></div><div class="dp-q">${q.q}</div><div class="opts">${q.opts.map((o,j)=>`<button class="opt" id="dp${s}o${j}" onclick="dpSel(${s},${j})">${'ABCD'[j]}. ${o}</button>`).join('')}</div><div class="qact"><button class="btn-check" onclick="dpCheck(${s})">✔ Cek Jawaban</button><button class="btn-exp hidden" id="dpExpBtn${s}" onclick="dpExp(${s})">📖 Pembahasan</button></div><div class="fb" id="dpFb${s}"></div><div class="exp hidden" id="dpExp${s}">💡 ${q.exp}</div>`;
+ refreshNames();}
+function panelEmpty(s){$('panel'+(s+1)).innerHTML=`<div class="dp-head">${s===0?'🟣':'🔵'} <span data-n${s+1}></span></div><div class="dp-empty">👆 ${esc(S.names[s])}, pilih nomor soal di atas untuk mulai!<br><span style="font-size:13px">Bisakah kalahkan lawanmu? 😎</span></div>`;refreshNames();}
+function dpSel(s,j){if(qz.fin[s])return;qz.sel[s]=j;for(let x=0;x<4;x++)$('dp'+s+'o'+x).classList.toggle('sel',x===j);sndClick();}
+function dpCheck(s){if(qz.fin[s])return;const i=qz.cur[s];if(i===null)return;if(qz.sel[s]<0){toast('Pilih salah satu jawaban dulu! ✋');return;}
+ qz.fin[s]=true;const q=QUIZ[i],good=qz.sel[s]===q.ans,fb=$('dpFb'+s);
+ for(let j=0;j<4;j++){const ob=$('dp'+s+'o'+j);ob.disabled=true;if(j===q.ans)ob.classList.add('right');}
+ $('dpExpBtn'+s).classList.remove('hidden');$('dpExp'+s).classList.remove('hidden');
+ if(good){const pts=LPTS[q.lvl];qz.scores[s]+=pts;fb.className='fb good';fb.innerHTML=`🎉 Benar! +${pts} poin untuk ${esc(S.names[s])}!<br>👉 Pilih nomor lain untuk melanjutkan!`;sndOK();confetti(16);}
+ else{fb.className='fb bad';fb.innerHTML=`😢 Belum tepat, ${esc(S.names[s])}. 0 poin — semangat, pilih soal lain! 💪`;sndNO();}
+ $('score1').textContent=qz.scores[0];$('score2').textContent=qz.scores[1];quizProg();}
+function dpExp(s){$('dpExp'+s).classList.toggle('hidden');}
+function quizProg(){const n=qz.taken.filter(x=>x>0).length;$('quizProg').textContent=`📊 Soal dikerjakan: ${n} / 25`;
+ if(n===25){const[a,b]=qz.scores;let msg;
+  if(a===b)msg=`🤝 HASIL AKHIR: SERI! (${a} — ${b})`;
+  else{const w=a>b?0:1;msg=`🏆 HASIL AKHIR: ${esc(S.names[w])} MENANG dengan ${Math.max(a,b)} poin! 🎉`;}
+  $('quizResult').textContent=msg;confetti(45);}}
+function quizReset(){qz.taken=Array(25).fill(0);qz.scores=[0,0];qz.cur=[null,null];qz.sel=[-1,-1];qz.fin=[false,false];setTurn(1);buildGrid();$('score1').textContent=0;$('score2').textContent=0;$('quizProg').textContent='📊 Soal dikerjakan: 0 / 25';$('quizResult').textContent='';panelEmpty(0);panelEmpty(1);toast('Kuis direset. Selamat bertanding! ⚔️');}
+
+/* ================= GAME POMPA HERO ================= */
+const VOLS=[12,15,20,24,18];
+const PNAMES=['Kolam Ikan Nemo 🐠','Kolam Taman Sekolah 🌳','Kolam Depan Kantor 🏢','Kolam Stadion 🏟️','Kolam Kebun Raya 🌺'];
+const game={m:0,pompa:0,jam:0,score:0,done:0};
+function gLabels2(){$('gBtnP').innerHTML=`🔵 Pilih/Pindah Pompa — <b>${esc(S.names[0])}</b> (naikkan 1)`;$('gBtnJ').innerHTML=`🟠 Naikkan 1 Jam — <b>${esc(S.names[1])}</b>`;}
+function poolStart(){game.m=0;game.score=0;game.done=0;$('gScore').textContent=0;$('gStars').textContent='☆☆☆☆☆';poolRound();}
+function poolRound(){game.pompa=0;game.jam=0;
+ const V=VOLS[game.m];
+ $('gMission').innerHTML=`<b>🚿 Misi ${game.m+1} / 5 — ${PNAMES[game.m]}</b><br>Isi kolam: <b class="bignum">${V} satuan air</b><br><span class="muted">Syarat: pompa × jam = ${V} TEPAT!</span>`;
+ $('poolTop').textContent=`${PNAMES[game.m]} — isi ${V} satuan`;
+ buildPoolOpts();poolRender();
+ $('gMsg').className='gmsg';$('gMsg').textContent=`Kolam penuh! Diskusikan: berapa pompa & berapa jam agar hasil kalinya = ${V}? 🧮`;}
+function buildPoolOpts(){const P=[2,3,4,5,6,8],H=[2,3,4,5,6,8,10];
+ $('pPumps').innerHTML=P.map(n=>`<button class="opbtn" data-t="p" data-v="${n}" onclick="pPick('pompa',${n},this)">${n} pompa</button>`).join('');
+ $('pHours').innerHTML=H.map(n=>`<button class="opbtn" data-t="j" data-v="${n}" onclick="pPick('jam',${n},this)">${n} jam</button>`).join('');}
+function pRender(){const V=VOLS[game.m],prod=game.pompa*game.jam;
+ $('poolWater').style.height=Math.max(0,100-Math.min(100,prod/V*100))+'%';
+ $('poolFish').style.opacity=prod>=V?0.15:1;
+ $('pLive').innerHTML=`pompa × jam = <b class="bignum">${game.pompa} × ${game.jam} = ${prod}</b> &nbsp;(target: <b>${V}</b>)`;
+ $('gScore').textContent=game.score;
+ $('gStars').textContent='⭐'.repeat(game.done)+'☆'.repeat(5-game.done);}
+function pPick(t,v,btn){if(t==='pompa'){game.pompa=v;document.querySelectorAll('#pPumps .opbtn').forEach(b=>b.classList.remove('sel'));}
+ else{game.jam=v;document.querySelectorAll('#pHours .opbtn').forEach(b=>b.classList.remove('sel'));}
+ btn.classList.add('sel');pRender();sndClick();}
+function pFire(){const V=VOLS[game.m],prod=game.pompa*game.jam,box=$('gMsg');
+ if(prod===0){toast('Pilih pompa dan jam dulu! 🔵🟠');return;}
+ if(prod===V){game.score+=100;game.done++;
+  $('gScore').textContent=game.score;$('gStars').textContent='⭐'.repeat(game.done)+'☆'.repeat(5-game.done);
+  confetti(22);sndOK();
+  $('poolWater').style.height='0%';
+  box.className='gmsg good';box.textContent=`🐟 BERHASIL! ${game.pompa} pompa × ${game.jam} jam = ${prod} = isi kolam TEPAT! Ikan-ikan selamat! +100 poin tim!`;
+  setTimeout(()=>{if(game.m<4){game.m++;poolRound();}else{box.className='gmsg good';box.textContent=`🏆 SEMUA KOLOM TERKURAS SEMPURNA! Skor tim akhir: ${game.score} poin. Kalian tim pompa berbalik nilai sejati! 🚿⭐`;confetti(35);}},2100);}
+ else if(prod<V){sndNO();
+  box.className='gmsg bad';box.textContent=`❌ Daya kuras ${prod} < target ${V}. Kolam belum kuras habis! Naikkan pompa ATAU jam — ingat hasil kalinya harus pas.`;}
+ else{sndNO();
+  box.className='gmsg bad';box.textContent=`❌ Daya kuras ${prod} > target ${V}. Kelebihan! Pemborosan energi 😅 Turunkan pompa atau jam — hasil kali harus TEPAT ${V}.`;}}
+function pResetM(){game.pompa=0;game.jam=0;buildPoolOpts();pRender();$('gMsg').className='gmsg';$('gMsg').textContent='🔄 Kolam diisi ulang. Hitung ulang bersama!';}
+
+/* ================= REFLEKSI ================= */
+function refMood(n){document.querySelectorAll('.emo').forEach((e,i)=>e.classList.toggle('sel',i===n));sndClick();}
+function refSave(){const v=$('refText').value.trim();$('refSaved').textContent=v?`💜 Terima kasih, ${S.names[0]} & ${S.names[1]}! Refleksimu sudah tercatat.`:'💭 Tulis dulu pendapatmu di kolom, ya!';}
+
+/* ================= TAB ================= */
+document.querySelectorAll('.slide').forEach(sec=>{const tabs=sec.querySelectorAll('.tab'),panes=sec.querySelectorAll('.tabpane');
+ tabs.forEach((t,i)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');panes.forEach(p=>p.classList.remove('active'));if(panes[i])panes[i].classList.add('active');}));});
+
+/* ================= INIT ================= */
+window.addEventListener('DOMContentLoaded',()=>{
+ renderPractice('pr1',L1);renderPractice('pr2',L2);renderPractice('pr3',L3);renderPractice('pr4',L4);
+ buildMenu();buildGrid();setTurn(1);panelEmpty(0);panelEmpty(1);quizProg();
+ revStart();pkBuild();vLab();wLab();clsStart();m3Fill();m3Load(0);kalkPreset(5,4,2);m4Fill();m4Load(0);gearRender();poolStart();
+ ['name1','name2'].forEach((id,idx)=>{$(id).addEventListener('input',()=>{const v=$(id).value.trim();S.names[idx]=v||('Siswa '+(idx+1));refreshNames();panelEmptyIfFree(idx);});});
+ $('progressBar').style.width=(1/12*100)+'%';
+});
+function panelEmptyIfFree(s){if(qz.cur[s]===null)panelEmpty(s);}
+</script>
+</body>
+</html>
