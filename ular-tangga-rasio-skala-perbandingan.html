@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ular Tangga: Rasio, Skala &amp; Perbandingan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#2563eb 0%,#7c3aed 52%,#db2777 100%);background-attachment:fixed;min-height:100vh;color:#1e293b}
+.hidden{display:none!important}
+#screen-setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.card{background:#fff;border-radius:26px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:24px 22px;max-width:620px;width:100%;text-align:center}
+.logo{font-size:42px;line-height:1}
+h1{font-family:'Baloo 2',cursive;font-size:29px;color:#312e81;line-height:1.15;margin:6px 0 4px}
+h1 span{color:#ea580c}
+h2{font-family:'Baloo 2',cursive;font-size:16px;color:#334155;margin:14px 0 8px}
+.tagline{color:#64748b;font-weight:700;font-size:14px;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:4px}
+.tp{background:#eef2ff;color:#4338ca;border-radius:999px;padding:4px 12px;font-weight:800;font-size:12px}
+.count-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chip{font-family:'Baloo 2',cursive;font-size:15px;padding:8px 16px;border-radius:999px;border:3px solid #e2e8f0;background:#f8fafc;color:#475569;cursor:pointer;transition:.15s}
+.chip.sel{border-color:#f59e0b;background:#fffbeb;color:#b45309;transform:scale(1.07)}
+.nrow{display:flex;align-items:center;gap:10px;margin:8px auto;max-width:330px}
+.nrow input{flex:1;min-width:0;padding:10px 14px;border:2px solid #e2e8f0;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:700;font-size:15px;outline:none}
+.nrow input:focus{border-color:#8b5cf6}
+.dot{width:28px;height:28px;border-radius:50%;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.resume{background:#ecfdf5;border:2px dashed #10b981;border-radius:14px;padding:12px;margin:12px 0;font-size:14px;color:#065f46}
+.rpos{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rtag{background:#d1fae5;border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px}
+.btn-primary{font-family:'Baloo 2',cursive;font-size:17px;background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#78350f;border:none;border-radius:999px;padding:12px 26px;cursor:pointer;box-shadow:0 4px 0 #b45309,0 8px 18px rgba(245,158,11,.35);font-weight:800;transition:.12s}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 #b45309}
+.btn-primary:disabled{filter:grayscale(.55);opacity:.7;cursor:not-allowed}
+.btn-resume{font-family:'Baloo 2',cursive;font-size:16px;background:linear-gradient(180deg,#34d399,#10b981);color:#064e3b;border:none;border-radius:999px;padding:10px 22px;cursor:pointer;box-shadow:0 3px 0 #047857;font-weight:800;margin-top:4px}
+.btn-ghost{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);color:#fff;border-radius:999px;padding:6px 14px;font-family:'Baloo 2',cursive;font-size:14px;cursor:pointer}
+.btn-ghost:hover{background:rgba(255,255,255,.3)}
+.howto{text-align:left;background:#f8fafc;border:2px solid #e2e8f0;border-radius:14px;padding:10px 14px;margin-top:14px;font-size:13.5px;color:#334155}
+.howto summary{font-family:'Baloo 2',cursive;font-weight:700;color:#4338ca;cursor:pointer;font-size:15px}
+.howto ul{margin:8px 0 4px 18px;display:grid;gap:5px}
+.note{font-size:12.5px;color:#94a3b8;font-weight:700;margin-top:12px}
+#screen-game{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 8px 30px}
+.topbar{width:100%;max-width:1020px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 4px 10px}
+.topbar h1{font-size:19px;color:#fff;margin:0}
+.game-wrap{display:flex;gap:16px;justify-content:center;align-items:flex-start;width:100%;max-width:1020px}
+.board-zone{width:min(94vw,560px);flex:none}
+.board{position:relative;width:100%;aspect-ratio:1/1;background:#fffdf4;border:7px solid #f59e0b;border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+#cells{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);border-radius:11px;overflow:hidden}
+.cell{position:relative;border:.5px solid rgba(100,116,139,.16)}
+.cell.alt{background:#fdf1cf}
+.cell.lb{background:#bbf7d0}
+.cell.lt{background:#fef08a}
+.cell.sh{background:#fecaca}
+.cell.st{background:#bae6fd}
+.cell .num{position:absolute;top:1px;left:3px;font-size:clamp(6px,1.3vw,11px);font-weight:900;color:#475569;opacity:.9}
+.cell .ic{position:absolute;bottom:0;width:100%;text-align:center;font-size:clamp(8px,2.1vw,16px);line-height:1}
+#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+#tokens{position:absolute;inset:0;pointer-events:none;z-index:6}
+.token{position:absolute;width:9.4%;height:9.4%;border-radius:50%;border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:clamp(8px,1.8vw,14px);transform:translate(-50%,-50%);transition:left .24s ease,top .24s ease;font-family:'Baloo 2',cursive}
+.panel{width:min(94vw,340px);display:flex;flex-direction:column;gap:12px}
+#players{display:flex;flex-direction:column;gap:8px}
+.pcard{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:8px 12px;border:3px solid transparent;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:.15s}
+.pcard.active{border-color:#22c55e;background:#f0fdf4;transform:scale(1.02)}
+.pinfo{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.pinfo small{color:#64748b;font-weight:800}
+.dice-zone{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.dice{width:70px;height:70px;background:#fff;border:3px solid #312e81;border-radius:16px;box-shadow:0 6px 14px rgba(0,0,0,.25);display:flex}
+.dice-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);width:100%;height:100%;padding:9px;gap:2px}
+.pip{width:10px;height:10px;border-radius:50%;background:#312e81;place-self:center;opacity:0;transform:scale(.5);transition:.12s}
+.pip.on{opacity:1;transform:scale(1)}
+@keyframes diceShake{0%{transform:rotate(0)}25%{transform:rotate(-16deg) translateY(-5px)}50%{transform:rotate(12deg) translateY(2px)}75%{transform:rotate(-9deg) translateY(-3px)}100%{transform:rotate(0)}}
+.dice.rolling{animation:diceShake .14s linear infinite}
+.status{background:#fff;border-radius:14px;padding:12px 14px;font-weight:800;color:#334155;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.15);min-height:54px}
+.status b{color:#7c3aed}
+.btn-primary.big{width:100%;font-size:19px}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.65);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
+.qcard{background:#fff;border-radius:24px;max-width:560px;width:100%;padding:20px 20px 18px;border-top:10px solid #f59e0b;box-shadow:0 30px 80px rgba(0,0,0,.5);max-height:92vh;overflow:auto;animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.qhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.qcell{font-family:'Baloo 2',cursive;background:#ede9fe;color:#5b21b6;padding:4px 14px;border-radius:999px;font-weight:800;font-size:14px}
+.qbadge{padding:3px 12px;border-radius:999px;font-weight:900;font-size:12px;letter-spacing:.5px}
+.qbadge.mudah{background:#dcfce7;color:#166534}
+.qbadge.sulit{background:#ffedd5;color:#9a3412}
+.qbadge.hots{background:#fee2e2;color:#b91c1c}
+#qText{font-size:16.5px;font-weight:800;color:#1e293b;line-height:1.5;margin-bottom:14px}
+#qForm{display:flex;gap:8px}
+#qInput{flex:1;min-width:0;padding:11px 14px;border:3px solid #e2e8f0;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;outline:none}
+#qInput:focus{border-color:#8b5cf6}
+#qInput:disabled{background:#f1f5f9;color:#475569}
+.qfeedback{margin-top:12px;padding:11px 13px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.5;animation:pop .2s}
+.qfeedback.good{background:#dcfce7;color:#166534;border-left:5px solid #22c55e}
+.qfeedback.bad{background:#fee2e2;color:#991b1b;border-left:5px solid #ef4444}
+.qfeedback .exp{display:block;margin-top:6px;color:#475569;font-weight:600}
+#qNext{margin-top:12px;width:100%}
+@keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.shake{animation:shakeX .3s}
+.wincard{background:linear-gradient(160deg,#fff,#fef3c7);border-radius:28px;max-width:520px;width:100%;padding:34px 24px;text-align:center;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:pop .3s}
+.trophy{font-size:64px;animation:pop .5s}
+.wincard h2{font-family:'Baloo 2',cursive;font-size:30px;color:#b45309;margin:6px 0}
+.wincard p{color:#7c2d12;font-weight:800;margin-bottom:16px}
+#confetti{position:absolute;inset:0;pointer-events:none}
+.cf{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(680deg)}}
+@media(max-width:920px){.game-wrap{flex-direction:column;align-items:center}.panel{width:min(94vw,560px)}}
+</style>
+</head>
+<body>
+
+<section id="screen-setup">
+  <div class="card">
+    <div class="logo">🐍🪜</div>
+    <h1>ULAR TANGGA MATEMATIKA<br><span>Rasio, Skala &amp; Perbandingan</span></h1>
+    <p class="tagline">100 soal: rasio &amp; penyederhanaan, skala peta, perbandingan senilai &amp; berbalik nilai</p>
+    <div class="chips">
+      <span class="tp">📐 Rasio</span>
+      <span class="tp">🗺️ Skala Peta</span>
+      <span class="tp">⚖️ Perbandingan Senilai</span>
+      <span class="tp">🔄 Berbalik Nilai</span>
+    </div>
+    <h2>Jumlah Pemain (2–5)</h2>
+    <div id="countChips" class="count-row"></div>
+    <div id="nameInputs"></div>
+    <div id="resumeBox" class="resume hidden"></div>
+    <button id="btnStart" class="btn-primary">🚀 Mulai Permainan Baru</button>
+    <details class="howto">
+      <summary>📜 Cara Bermain</summary>
+      <ul>
+        <li>🎲 Lempar dadu bergiliran. Untuk <b>maju sesuai angka dadu</b>, jawab soal dari <b>kotak tujuan</b> (2 kesempatan). Benar → maju; salah → <b>tetap di tempat</b>.</li>
+        <li>🪜 Kotak <b>dasar tangga</b> (hijau): jawab benar → naik ke puncak tangga ⭐. Soalnya level <b>HOTS</b>!</li>
+        <li>🐍 Kotak <b>kepala ular</b> (merah): jawab benar → aman; salah → tergelincir ke ekor ular 🎯. Soalnya level <b>HOTS</b>!</li>
+        <li>🏁 Harus berhenti <b>tepat di kotak 100</b> untuk menang. Jika lebih, kamu memantul mundur.</li>
+        <li>📊 Kotak awal = soal mudah, kotak akhir = soal sulit, kotak tangga &amp; ular = soal HOTS penalaran.</li>
+      </ul>
+    </details>
+    <p class="note">💾 Progres tersimpan otomatis tiap giliran — ketik nama pemain di atas untuk melanjutkan permainan terakhir.</p>
+  </div>
+</section>
+
+<section id="screen-game" class="hidden">
+  <header class="topbar">
+    <h1>🐍 Ular Tangga · Rasio, Skala &amp; Perbandingan 🪜</h1>
+    <button id="btnExit" class="btn-ghost">🏠 Keluar</button>
+  </header>
+  <div class="game-wrap">
+    <div class="board-zone">
+      <div id="board" class="board">
+        <div id="cells"></div>
+        <svg id="overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        <div id="tokens"></div>
+      </div>
+    </div>
+    <aside class="panel">
+      <div id="players"></div>
+      <div class="dice-zone">
+        <div id="dice" class="dice"><div id="diceGrid" class="dice-grid">
+          <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+          <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+          <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+        </div></div>
+        <button id="btnRoll" class="btn-primary big">🎲 Lempar Dadu</button>
+      </div>
+      <div id="status" class="status">Selamat datang!</div>
+    </aside>
+  </div>
+</section>
+
+<div id="qmodal" class="overlay hidden">
+  <div class="qcard">
+    <div class="qhead"><span id="qCell" class="qcell"></span><span id="qBadge" class="qbadge mudah"></span></div>
+    <p id="qText"></p>
+    <form id="qForm" autocomplete="off">
+      <input id="qInput" type="text" placeholder="Ketik jawabanmu di sini...">
+      <button type="submit" class="btn-primary">✔ Jawab</button>
+    </form>
+    <div id="qFeedback" class="qfeedback hidden"></div>
+    <button id="qNext" class="btn-primary hidden">Lanjut ➜</button>
+  </div>
+</div>
+
+<div id="winOverlay" class="overlay hidden">
+  <div class="wincard">
+    <div class="trophy">🏆</div>
+    <h2 id="winTitle"></h2>
+    <p id="winSub"></p>
+    <div id="confetti"></div>
+    <button id="btnAgain" class="btn-primary">🔁 Main Lagi</button>
+  </div>
+</div>
+<script>
+var QBANK=[
+{q:"Bentuk paling sederhana dari rasio 24 : 36 adalah …",a:"2 : 3",v:["2:3"],e:"FPB 24 dan 36 = 12, maka 24÷12 : 36÷12 = 2 : 3."},
+{q:"Bentuk paling sederhana dari rasio 45 menit : 1,5 jam adalah …",a:"1 : 2",v:["1:2"],e:"1,5 jam = 90 menit → 45 : 90 = 1 : 2."},
+{q:"Rasio paling sederhana dari 400 gram : 2 kg adalah …",a:"1 : 5",v:["1:5"],e:"2 kg = 2.000 gram → 400 : 2.000 = 1 : 5."},
+{q:"Bentuk sederhana dari rasio 150 cm : 4,5 m adalah …",a:"1 : 3",v:["1:3"],e:"4,5 m = 450 cm → 150 : 450 = 1 : 3."},
+{q:"Jika a : b = 3 : 5 dan nilai a = 18, maka nilai b adalah …",a:"30",v:["30"],e:"b = 5/3 × 18 = 30."},
+{q:"Perbandingan uang Andi dan Budi adalah 4 : 7. Jika jumlah uang mereka Rp132.000, uang Andi adalah …",a:"Rp48.000",v:["48.000","48000"],e:"Uang Andi = 4/11 × 132.000 = Rp48.000."},
+{q:"Perbandingan kelereng Dito dan Eka adalah 5 : 8. Jika selisih kelereng mereka 21 butir, jumlah kelereng mereka berdua adalah …",a:"91 butir",v:["91"],e:"Jumlah = (5+8)/(8−5) × 21 = 13/3 × 21 = 91 butir."},
+{q:"Umur Ayah dan Ibu berbanding 9 : 8. Jika umur Ibu 40 tahun, maka umur Ayah adalah …",a:"45 tahun",v:["45"],e:"Umur Ayah = 9/8 × 40 = 45 tahun."},
+{q:"Dalam keranjang terdapat 40 buah apel dan jeruk. Jika rasio apel : jeruk = 3 : 5, banyak jeruk adalah …",a:"25 buah",v:["25"],e:"Jeruk = 5/8 × 40 = 25 buah."},
+{q:"Jika x : y = 2 : 3 dan y : z = 4 : 5, maka rasio x : y : z adalah …",a:"8 : 12 : 15",v:["8:12:15"],e:"Samakan y = KPK(3,4) = 12 → x:y = 8:12 dan y:z = 12:15 → 8 : 12 : 15."},
+{q:"Diketahui p : q = 3 : 4 dan q : r = 2 : 5. Jika nilai p = 12, maka nilai r adalah …",a:"40",v:["40"],e:"p : q : r = 3 : 4 : 10. Karena p = 12 (= 3 × 4), maka r = 10 × 4 = 40."},
+{q:"Perbandingan panjang dan lebar persegi panjang adalah 5 : 3. Jika kelilingnya 64 cm, luasnya adalah …",a:"240 cm²",v:["240"],e:"p + l = 64÷2 = 32 → p = 20, l = 12 → luas = 20 × 12 = 240 cm²."},
+{q:"Sudut-sudut sebuah segitiga berbanding 2 : 3 : 4. Besar sudut terbesarnya adalah …",a:"80°",v:["80"],e:"Sudut terbesar = 4/9 × 180° = 80°."},
+{q:"Perbandingan uang Sinta, Rani, dan Dinda adalah 2 : 3 : 5. Jika selisih uang Dinda dan Sinta Rp90.000, total uang mereka adalah …",a:"Rp300.000",v:["300.000","300000"],e:"Total = (2+3+5)/(5−2) × 90.000 = 10/3 × 90.000 = Rp300.000."},
+{q:"Rasio paling sederhana dari 2,5 liter : 500 ml adalah …",a:"5 : 1",v:["5:1"],e:"2,5 liter = 2.500 ml → 2.500 : 500 = 5 : 1."},
+{q:"Bentuk sederhana dari rasio pecahan 2/3 : 4/5 adalah …",a:"5 : 6",v:["5:6"],e:"Kalikan silang penyebut: (2×5) : (4×3) = 10 : 12 = 5 : 6."},
+{q:"Di kelas terdapat 18 siswa laki-laki dan 24 siswa perempuan. Rasio siswa perempuan terhadap seluruh siswa adalah …",a:"4 : 7",v:["4:7"],e:"Total siswa = 42 → 24 : 42 = 4 : 7."},
+{q:"Gaji karyawan naik dari Rp4.000.000 menjadi Rp4.800.000. Rasio gaji lama terhadap gaji baru adalah …",a:"5 : 6",v:["5:6"],e:"4.000.000 : 4.800.000 = 40 : 48 = 5 : 6."},
+{q:"Dua persegi memiliki panjang sisi 6 cm dan 9 cm. Rasio luas persegi pertama terhadap persegi kedua adalah …",a:"4 : 9",v:["4:9"],e:"Rasio luas = 6² : 9² = 36 : 81 = 4 : 9."},
+{q:"Jarak dua kota pada peta 5 cm dengan skala 1 : 1.200.000. Jarak sebenarnya adalah … km",a:"60 km",v:["60"],e:"5 × 1.200.000 = 6.000.000 cm = 60 km."},
+{q:"Jarak Kota A dan B sebenarnya 150 km. Jika digambar pada peta skala 1 : 3.000.000, jarak pada peta adalah … cm",a:"5 cm",v:["5"],e:"150 km = 15.000.000 cm → 15.000.000 ÷ 3.000.000 = 5 cm."},
+{q:"Jarak dua tempat pada peta 8 cm, sedangkan jarak sebenarnya 40 km. Skala peta tersebut adalah …",a:"1 : 500.000",v:["1:500.000","1:500000"],e:"40 km = 4.000.000 cm → 8 : 4.000.000 = 1 : 500.000."},
+{q:"Denah rumah dibuat dengan skala 1 : 200. Jika panjang rumah pada denah 7,5 cm, panjang sebenarnya adalah … m",a:"15 m",v:["15"],e:"7,5 × 200 = 1.500 cm = 15 m."},
+{q:"Tinggi menara 60 m. Jika tinggi pada gambar 12 cm, skala gambar tersebut adalah …",a:"1 : 500",v:["1:500"],e:"60 m = 6.000 cm → 12 : 6.000 = 1 : 500."},
+{q:"Tanah persegi panjang pada denah berukuran 10 cm × 6 cm dengan skala 1 : 500. Luas tanah sebenarnya adalah …",a:"1.500 m²",v:["1500","1.500"],e:"Panjang 50 m, lebar 30 m → luas = 1.500 m²."},
+{q:"Model pesawat panjang 40 cm dan lebar sayap 30 cm. Jika panjang pesawat sebenarnya 32 m, lebar sayap sebenarnya adalah … m",a:"24 m",v:["24"],e:"30/40 × 32 = 24 m."},
+{q:"Pada peta skala 1 : 250.000, jarak kota P dan Q adalah 16 cm. Jarak sebenarnya adalah … km",a:"40 km",v:["40"],e:"16 × 250.000 = 4.000.000 cm = 40 km."},
+{q:"Taman persegi memiliki sisi 25 m. Jika digambar dengan skala 1 : 250, keliling taman pada gambar adalah … cm",a:"40 cm",v:["40"],e:"Sisi gambar = 2.500 ÷ 250 = 10 cm → keliling = 4 × 10 = 40 cm."},
+{q:"Jarak pada peta skala 1 : 500.000 adalah 6 cm. Jika digambar ulang dengan skala 1 : 200.000, jarak pada peta baru menjadi … cm",a:"15 cm",v:["15"],e:"Jarak sebenarnya = 3.000.000 cm → 3.000.000 ÷ 200.000 = 15 cm."},
+{q:"Lebar sungai sebenarnya 45 m. Pada foto udara skala 1 : 1.500, lebar sungai pada foto adalah … cm",a:"3 cm",v:["3"],e:"45 m = 4.500 cm → 4.500 ÷ 1.500 = 3 cm."},
+{q:"Miniatur gedung dibuat dengan skala 1 : 400. Jika tinggi miniatur 22 cm, tinggi gedung sebenarnya adalah … m",a:"88 m",v:["88"],e:"22 × 400 = 8.800 cm = 88 m."},
+{q:"Luas kolam persegi pada denah skala 1 : 300 adalah 16 cm². Luas kolam sebenarnya adalah …",a:"144 m²",v:["144"],e:"Sisi denah = √16 = 4 cm → sisi asli = 12 m → luas = 144 m²."},
+{q:"Jarak rumah Riko ke sekolah 3,6 km. Pada denah jaraknya 9 cm. Skala denah tersebut adalah …",a:"1 : 40.000",v:["1:40.000","1:40000"],e:"3,6 km = 360.000 cm → 9 : 360.000 = 1 : 40.000."},
+{q:"Lapangan 120 m × 90 m digambar pada kertas 8 cm × 6 cm. Skala gambar tersebut adalah …",a:"1 : 1.500",v:["1:1.500","1:1500"],e:"120 m = 12.000 cm → 8 : 12.000 = 1 : 1.500."},
+{q:"Kamar tidur pada denah skala 1 : 150 berukuran 3 cm × 2 cm. Luas kamar sebenarnya adalah …",a:"13,5 m²",v:["13,5","13.5"],e:"Ukuran asli = 4,5 m × 3 m = 13,5 m²."},
+{q:"Skala grafis peta: 1 cm mewakili 15 km. Skala angka peta tersebut adalah …",a:"1 : 1.500.000",v:["1:1.500.000","1:1500000"],e:"15 km = 1.500.000 cm → skala = 1 : 1.500.000."},
+{q:"Tinggi pintu pada maket skala 1 : 50 adalah 4,4 cm. Tinggi pintu sebenarnya adalah … m",a:"2,2 m",v:["2,2","2.2"],e:"4,4 × 50 = 220 cm = 2,2 m."},
+{q:"Jarak dua pelabuhan pada peta skala 1 : 4.000.000 adalah 4,5 cm. Jarak sebenarnya adalah … km",a:"180 km",v:["180"],e:"4,5 × 4.000.000 = 18.000.000 cm = 180 km."},
+{q:"Harga 4 buku tulis adalah Rp18.000. Harga 10 buku tulis yang sama adalah …",a:"Rp45.000",v:["45.000","45000"],e:"10/4 × 18.000 = Rp45.000."},
+{q:"Mobil memerlukan 5 liter bensin untuk 60 km. Untuk menempuh 156 km diperlukan … liter",a:"13 liter",v:["13"],e:"156/60 × 5 = 13 liter."},
+{q:"Untuk membuat 6 loyang kue diperlukan 1,5 kg tepung terigu. Untuk 10 loyang diperlukan … kg",a:"2,5 kg",v:["2,5","2.5"],e:"10/6 × 1,5 = 2,5 kg."},
+{q:"Mesin cetak dapat mencetak 240 lembar dalam 4 menit. Dalam 15 menit mesin tersebut mencetak … lembar",a:"900 lembar",v:["900"],e:"15/4 × 240 = 900 lembar."},
+{q:"Nilai tukar 5 dolar AS adalah Rp80.000. Jika seseorang menukarkan Rp288.000, ia memperoleh … dolar",a:"18 dolar",v:["18"],e:"288.000 ÷ 80.000 = 3,6 → 3,6 × 5 = 18 dolar AS."},
+{q:"Pekerja mendapat upah Rp450.000 untuk 6 hari. Jika bekerja 14 hari, upah yang diterima adalah …",a:"Rp1.050.000",v:["1.050.000","1050000"],e:"14/6 × 450.000 = Rp1.050.000."},
+{q:"Tiang setinggi 3 m memiliki bayangan 4,5 m. Pada saat yang sama bayangan pohon 12 m. Tinggi pohon adalah … m",a:"8 m",v:["8"],e:"T/3 = 12/4,5 → T = 36 ÷ 4,5 = 8 m."},
+{q:"Dengan kecepatan tetap, kereta menempuh 180 km dalam 2,5 jam. Jarak yang ditempuh dalam 4 jam adalah … km",a:"288 km",v:["288"],e:"4/2,5 × 180 = 288 km."},
+{q:"Berat 8 karung beras identik adalah 200 kg. Berat 15 karung beras tersebut adalah … kg",a:"375 kg",v:["375"],e:"15/8 × 200 = 375 kg."},
+{q:"Jantung manusia berdetak 360 kali dalam 5 menit. Dalam 1 jam jantung berdetak sebanyak … kali",a:"4.320 kali",v:["4320","4.320"],e:"1 jam = 60 menit → 60/5 × 360 = 4.320 kali."},
+{q:"Mengecat dinding 45 m² membutuhkan 3 kaleng cat. Untuk 120 m² dibutuhkan … kaleng",a:"8 kaleng",v:["8"],e:"120/45 × 3 = 8 kaleng."},
+{q:"Harga 250 gram daging sapi adalah Rp35.000. Harga 1,2 kg daging tersebut adalah …",a:"Rp168.000",v:["168.000","168000"],e:"1,2 kg = 1.200 gram → 1.200/250 × 35.000 = Rp168.000."},
+{q:"Konveksi dapat menjahit 45 potong kemeja dalam 3 hari. Dalam 2 minggu (14 hari) menjahit … potong",a:"210 potong",v:["210"],e:"14/3 × 45 = 210 potong."},
+{q:"Jika 6/9 = x/24, maka nilai x yang memenuhi perbandingan senilai tersebut adalah …",a:"16",v:["16"],e:"x = (6 × 24) ÷ 9 = 16."},
+{q:"Sebanyak 12 liter air mengisi wadah setinggi 18 cm. Jika volumenya menjadi 20 liter, tinggi air menjadi … cm",a:"30 cm",v:["30"],e:"20/12 × 18 = 30 cm."},
+{q:"Sepeda motor menempuh 90 km dalam 1 jam 30 menit. Dengan kecepatan sama, waktu untuk 150 km adalah … jam",a:"2,5 jam",v:["2,5","2.5"],e:"1 jam 30 menit = 1,5 jam → 150/90 × 1,5 = 2,5 jam."},
+{q:"Memberi makan 20 ekor ayam membutuhkan 3 kg pakan per hari. Untuk 50 ekor ayam dibutuhkan … kg",a:"7,5 kg",v:["7,5","7.5"],e:"50/20 × 3 = 7,5 kg."},
+{q:"Kran air mengalirkan 35 liter dalam 7 menit. Volume air yang mengalir selama 25 menit adalah … liter",a:"125 liter",v:["125"],e:"25/7 × 35 = 125 liter."},
+{q:"Dalam resep minuman, setiap 2 liter susu dicampur 150 gram gula. Jika digunakan 7 liter susu, gula yang dibutuhkan … gram",a:"525 gram",v:["525"],e:"7/2 × 150 = 525 gram."},
+{q:"Suatu pekerjaan dapat diselesaikan oleh 12 orang dalam 15 hari. Jika dikerjakan 10 orang, waktu yang dibutuhkan … hari",a:"18 hari",v:["18"],e:"Perbandingan berbalik nilai: (12 × 15) ÷ 10 = 18 hari."},
+{q:"Mobil melaju 60 km/jam dan tiba dalam 4 jam. Jika kecepatan ditingkatkan menjadi 80 km/jam, waktu tempuhnya … jam",a:"3 jam",v:["3"],e:"(60 × 4) ÷ 80 = 3 jam."},
+{q:"Persediaan pakan cukup untuk 30 ekor sapi selama 20 hari. Jika dibeli 10 ekor sapi lagi, pakan habis dalam … hari",a:"15 hari",v:["15"],e:"Sapi menjadi 40 → (30 × 20) ÷ 40 = 15 hari."},
+{q:"Membangun jembatan dalam 40 hari diperlukan 18 pekerja. Agar selesai dalam 24 hari, dibutuhkan … orang",a:"30 orang",v:["30"],e:"(40 × 18) ÷ 24 = 30 orang."},
+{q:"Asrama memiliki persediaan beras untuk 60 penghuni selama 18 hari. Jika 15 penghuni pulang, persediaan cukup untuk … hari",a:"24 hari",v:["24"],e:"Penghuni sisa 45 → (60 × 18) ÷ 45 = 24 hari."},
+{q:"Proyek diperkirakan selesai 36 hari oleh 15 pekerja. Agar selesai dalam 27 hari, banyak pekerja tambahan yang diperlukan adalah … orang",a:"5 orang",v:["5"],e:"Total pekerja = (36 × 15) ÷ 27 = 20 → tambahan = 20 − 15 = 5 orang."},
+{q:"Roda dengan jari-jari 28 cm berputar 150 kali. Roda lain berjari-jari 42 cm akan berputar … kali pada lintasan yang sama",a:"100 kali",v:["100"],e:"Putaran berbalik nilai dengan jari-jari: (28 × 150) ÷ 42 = 100 kali."},
+{q:"Roda gigi A memiliki 24 gigi dan berputar 60 rpm. Jika roda gigi B memiliki 36 gigi, roda gigi B berputar … rpm",a:"40 rpm",v:["40"],e:"(24 × 60) ÷ 36 = 40 rpm."},
+{q:"Sekotak permen dibagikan kepada 16 anak, masing-masing mendapat 9 butir. Jika dibagikan kepada 12 anak, masing-masing mendapat … butir",a:"12 butir",v:["12"],e:"(16 × 9) ÷ 12 = 12 butir."},
+{q:"Untuk menguras kolam, 4 pompa identik membutuhkan 6 jam. Jika hanya 3 pompa yang digunakan, waktu yang dibutuhkan … jam",a:"8 jam",v:["8"],e:"(4 × 6) ÷ 3 = 8 jam."},
+{q:"Andi bersepeda 15 km/jam selama 40 menit menuju taman. Agar tiba dalam 25 menit, kecepatan sepedanya harus … km/jam",a:"24 km/jam",v:["24"],e:"Jarak = 15 × 40/60 = 10 km → kecepatan = 10 × 60/25 = 24 km/jam."},
+{q:"Buku cerita 120 halaman dengan rata-rata 30 baris per halaman. Jika dicetak ulang dengan 24 baris per halaman, jumlah halamannya menjadi …",a:"150 halaman",v:["150"],e:"(120 × 30) ÷ 24 = 150 halaman."},
+{q:"Jika x dan y berbanding terbalik, dan saat x = 8 nilai y = 15, maka saat x = 12 nilai y adalah …",a:"10",v:["10"],e:"x × y = 120 → y = 120 ÷ 12 = 10."},
+{q:"Persediaan makanan untuk 25 ekor kambing cukup 12 hari. Jika 5 ekor kambing dijual, persediaan habis dalam … hari",a:"15 hari",v:["15"],e:"Kambing sisa 20 → (25 × 12) ÷ 20 = 15 hari."},
+{q:"Enam mesin produksi menyelesaikan pesanan dalam 14 hari. Jika 2 mesin rusak, pesanan selesai dalam … hari",a:"21 hari",v:["21"],e:"Mesin sisa 4 → (6 × 14) ÷ 4 = 21 hari."},
+{q:"Sejumlah uang cukup untuk membeli 24 potong kaos dengan harga Rp50.000 per potong. Jika harga naik menjadi Rp60.000, kaos yang dapat dibeli … potong",a:"20 potong",v:["20"],e:"Uang = 24 × 50.000 = 1.200.000 → 1.200.000 ÷ 60.000 = 20 potong."},
+{q:"Pita panjang dipotong menjadi 35 bagian dengan panjang masing-masing 12 cm. Jika dipotong sepanjang 14 cm, diperoleh … bagian",a:"30 bagian",v:["30"],e:"Panjang pita = 35 × 12 = 420 cm → 420 ÷ 14 = 30 bagian."},
+{q:"Delapan orang relawan membersihkan balai desa dalam 45 menit. Jika ditambah 4 relawan lagi, pekerjaan selesai dalam … menit",a:"30 menit",v:["30"],e:"Relawan menjadi 12 → (8 × 45) ÷ 12 = 30 menit."},
+{q:"HOTS — Perbandingan uang Ali dan Bima adalah 3 : 4. Jika Ali memberikan Rp15.000 kepada Bima, perbandingannya menjadi 1 : 2. Jumlah uang Ali dan Bima adalah …",a:"Rp157.500",v:["157.500","157500"],e:"(3x − 15.000)/(4x + 15.000) = 1/2 → 6x − 30.000 = 4x + 15.000 → 2x = 45.000 → x = 22.500 → jumlah = 7x = Rp157.500."},
+{q:"HOTS — Rasio sirup dan air dalam wadah adalah 2 : 7. Setelah ditambah 6 liter sirup, rasionya menjadi 1 : 2. Volume air dalam wadah adalah … liter",a:"28 liter",v:["28"],e:"(2x + 6)/7x = 1/2 → 4x + 12 = 7x → x = 4 → air = 7x = 28 liter."},
+{q:"HOTS — Dua tahun lalu perbandingan umur ayah dan anaknya 7 : 2. Enam tahun yang akan datang perbandingannya menjadi 5 : 2. Umur ayah saat ini adalah … tahun",a:"44 tahun",v:["44"],e:"(7x+8)/(2x+8) = 5/2 → 14x + 16 = 10x + 40 → x = 6. Umur ayah = 7×6 + 2 = 44 tahun. Cek: 2 th lalu 42:12 = 7:2 ✓; 6 th lagi 50:20 = 5:2 ✓. (Kunci modul menulis 30, tetapi hitungan yang tepat adalah 44.)"},
+{q:"HOTS — A : B = 2 : 3, B : C = 4 : 5, dan C : D = 3 : 7. Jika selisih nilai D dan A adalah 54, maka nilai B + C adalah …",a:"54",v:["54"],e:"A:B:C:D = 8 : 12 : 15 : 35 → D − A = 27k = 54 → k = 2 → B + C = (12+15) × 2 = 54."},
+{q:"HOTS — Paduan logam X memiliki rasio tembaga : seng = 5 : 3, paduan Y = 1 : 3. Jika X dan Y dilebur dengan massa sama, rasio tembaga : seng paduan baru adalah …",a:"7 : 9",v:["7:9"],e:"Misal masing-masing 8 kg: X → tembaga 5, seng 3; Y → tembaga 2, seng 6. Total tembaga 7, seng 9 → 7 : 9."},
+{q:"HOTS — Pendapatan Pak Hadi : Pak Joko = 5 : 4, pengeluaran mereka 3 : 2. Setiap bulan masing-masing menabung Rp2.000.000. Pendapatan bulanan Pak Hadi adalah …",a:"Rp5.000.000",v:["5.000.000","5000000"],e:"(5x − 2jt)/(4x − 2jt) = 3/2 → 10x − 4jt = 12x − 6jt → x = 1jt → pendapatan Hadi = 5x = Rp5.000.000."},
+{q:"HOTS — Rasio peserta pria dan wanita seminar adalah 3 : 5. Setelah 12 pria datang lagi dan 6 wanita pergi, rasionya menjadi 3 : 4. Jumlah peserta mula-mula adalah … orang",a:"176 orang",v:["176"],e:"(3x + 12)/(5x − 6) = 3/4 → 12x + 48 = 15x − 18 → 3x = 66 → x = 22 → total = 8x = 176 orang. (Kunci modul menulis 144, tetapi perhitungan yang tepat adalah 176.)"},
+{q:"HOTS — Pada peta skala 1 : 2.000, lahan trapesium memiliki sisi sejajar 8 cm dan 12 cm serta tinggi 5 cm. Jika lahan dijual Rp500.000 per m², harga jual seluruh lahan adalah …",a:"Rp10.000.000.000",v:["10.000.000.000","10000000000","10 miliar","10miliar"],e:"Skala 1:2.000 → 1 cm = 20 m. Sisi 160 m dan 240 m, tinggi 100 m → luas = 200 × 100 = 20.000 m² → harga = 20.000 × 500.000 = Rp10 miliar. (Kunci modul menulis Rp1 miliar; hitungan yang tepat Rp10 miliar.)"},
+{q:"HOTS — Foto berukuran 4 cm × 6 cm diperbesar sehingga sisi panjangnya menjadi 21 cm. Perbandingan luas foto sebelum dan sesudah diperbesar adalah …",a:"4 : 49",v:["4:49"],e:"Rasio sisi panjang = 6 : 21 = 2 : 7 → rasio luas = 2² : 7² = 4 : 49."},
+{q:"HOTS — Miniatur tangki air dibuat dengan skala 1 : 10 dan menampung tepat 3,5 liter. Kapasitas tangki air sebenarnya adalah … liter",a:"3.500 liter",v:["3500","3.500"],e:"Rasio volume = pangkat tiga skala → V = 10³ × 3,5 = 3.500 liter."},
+{q:"HOTS — Peta A berskala 1 : 600.000, jarak dua stasiun 12 cm. Pada peta B jarak kedua stasiun itu 18 cm. Skala peta B adalah …",a:"1 : 400.000",v:["1:400.000","1:400000"],e:"Jarak sebenarnya = 12 × 600.000 = 7.200.000 cm → skala B = 7.200.000 ÷ 18 = 400.000 → 1 : 400.000."},
+{q:"HOTS — Taman kota luas sebenarnya 3,6 hektar (1 ha = 10.000 m²). Jika luasnya pada denah 90 cm², skala denah tersebut adalah …",a:"1 : 2.000",v:["1:2.000","1:2000"],e:"3,6 ha = 36.000 m² = 360.000.000 cm² → rasio luas 90 : 360.000.000 = 1 : 4.000.000 → skala garis = 1 : 2.000."},
+{q:"HOTS — Dua kota berjarak 5 cm pada peta skala 1 : 1.800.000. Pengendara berangkat pukul 07.00 dengan kecepatan 60 km/jam. Pukul berapa ia tiba?",a:"Pukul 08.30",v:["08.30","8.30","08:30","8:30","0830"],e:"Jarak = 5 × 1.800.000 = 9.000.000 cm = 90 km → waktu = 90 ÷ 60 = 1,5 jam → tiba pukul 07.00 + 1.30 = 08.30."},
+{q:"HOTS — Proyek direncanakan 40 hari oleh 25 pekerja. Setelah 12 hari, pekerjaan berhenti 8 hari karena cuaca. Agar selesai tepat waktu, dibutuhkan pekerja tambahan … orang",a:"10 orang",v:["10"],e:"Sisa pekerjaan = 28 × 25 = 700 orang-hari; sisa waktu = 40 − 12 − 8 = 20 hari → 700 ÷ 20 = 35 pekerja → tambahan = 35 − 25 = 10 orang."},
+{q:"HOTS — Gedung direncanakan selesai 30 hari oleh 24 pekerja. Setelah bekerja 10 hari, 4 pekerja sakit. Waktu total pembangunan menjadi … hari",a:"34 hari",v:["34"],e:"Sisa pekerjaan = 20 × 24 = 480 orang-hari → dengan 20 pekerja = 24 hari → total = 10 + 24 = 34 hari."},
+{q:"HOTS — Lima mesin bekerja 6 jam per hari selama 4 hari menghasilkan 300 gulung benang. Jika 8 mesin bekerja 5 jam per hari selama 6 hari, benang yang dihasilkan … gulung",a:"600 gulung",v:["600"],e:"P = 300 × (8/5) × (5/6) × (6/4) = 300 × 2 = 600 gulung."},
+{q:"HOTS — Persediaan beras panti asuhan cukup untuk 40 anak selama 25 hari. Setelah 5 hari, datang 10 anak baru. Sisa persediaan habis dalam … hari",a:"16 hari",v:["16"],e:"Sisa = 40 × 20 = 800 orang-hari → anak menjadi 50 → 800 ÷ 50 = 16 hari."},
+{q:"HOTS — Menggali parit 120 m membutuhkan 6 orang selama 5 hari. Parit 200 m harus selesai dalam 4 hari. Banyak pekerja yang dibutuhkan … orang",a:"13 orang",v:["13","12,5","12.5"],e:"(6 × 5 × 200) ÷ (120 × 4) = 12,5 → dibulatkan menjadi 13 orang."},
+{q:"HOTS — Pekerja A selesai sendirian dalam 12 hari, Pekerja B dalam 24 hari. Jika bekerja bersama-sama, pekerjaan selesai dalam … hari",a:"8 hari",v:["8"],e:"1/t = 1/12 + 1/24 = 3/24 = 1/8 → t = 8 hari."},
+{q:"HOTS — Keran X mengisi bak dalam 20 menit, keran Y dalam 30 menit, sedangkan keran Z mengosongkan bak penuh dalam 60 menit. Jika ketiganya dibuka bersamaan saat bak kosong, bak penuh dalam … menit",a:"15 menit",v:["15"],e:"1/t = 1/20 + 1/30 − 1/60 = (3 + 2 − 1)/60 = 4/60 = 1/15 → t = 15 menit."},
+{q:"HOTS — Lima belas sapi menghabiskan rumput ladang dalam 8 hari. Jika 6 sapi setara dengan 10 kambing, maka 20 ekor kambing akan menghabiskan rumput dalam … hari",a:"10 hari",v:["10"],e:"20 kambing = 12 sapi → t = (15 × 8) ÷ 12 = 10 hari."},
+{q:"HOTS — Setengah jarak pertama ditempuh 40 km/jam dan setengah sisanya 60 km/jam. Kecepatan rata-rata untuk seluruh perjalanan adalah … km/jam",a:"48 km/jam",v:["48"],e:"Rata-rata dua bagian jarak sama = (2 × 40 × 60)/(40 + 60) = 4.800/100 = 48 km/jam."},
+{q:"HOTS — Campuran 20 liter mengandung alkohol dan air dengan rasio 1 : 4. Banyak alkohol murni yang harus ditambahkan agar rasio alkohol dan air menjadi 3 : 8 adalah … liter",a:"2 liter",v:["2"],e:"Alkohol 4 L, air 16 L → (4 + x)/16 = 3/8 → 4 + x = 6 → x = 2 liter."},
+{q:"HOTS — Tiang bendera menghasilkan bayangan 6 m. Pada saat yang sama, siswa tinggi 160 cm berdiri 4,4 m dari pangkal tiang sehingga ujung bayangan siswa berimpit dengan ujung bayangan tiang. Tinggi tiang adalah … m",a:"6 m",v:["6"],e:"Bayangan siswa = 6 − 4,4 = 1,6 m → perbandingan tinggi : bayangan siswa = 1,6 : 1,6 = 1 : 1 → tinggi tiang = 6 × 1 = 6 m."},
+{q:"HOTS — Tiga keran identik mengisi penuh tangki 600 liter dalam 40 menit. Jika digunakan 5 keran identik untuk mengisi tangki 900 liter, waktu yang dibutuhkan … menit",a:"36 menit",v:["36"],e:"(3 × 40 × 900) ÷ (600 × 5) = 108.000 ÷ 3.000 = 36 menit."}
+];
+(function(){
+"use strict";
+/* ================= PETA TANGGA & ULAR ================= */
+var LADDERS={3:22,8:30,15:34,21:42,28:55,38:59,47:68,57:76,66:85,79:98};
+var SNAKES={24:5,36:16,44:26,52:29,61:40,69:50,81:63,89:70,95:72,99:41};
+var SPECIALQ={3:76,8:77,15:78,21:79,24:80,28:81,36:82,38:83,44:84,47:85,52:86,57:87,61:88,66:89,69:90,79:91,81:92,89:93,95:94,99:95};
+var cellQ=new Array(101);
+(function(){
+  var i,k;
+  for(i=0;i<=100;i++)cellQ[i]=-1;
+  var front=[1,2,4,5,6,7,9,10,11,12,13,14,16,17,18,19,20,22,23,25,26,27,29,30,31,32,33,34,35,37,39,40,41,42,43,45,46,48,49,50,51,53,54,55,56,58,59,60,62,63,64,65,67,68,70,71,72,73,74,75];
+  for(i=0;i<front.length;i++)cellQ[front[i]]=i;
+  for(k in SPECIALQ)cellQ[parseInt(k,10)]=SPECIALQ[k]-1;
+  var back=[76,77,78,80,82,83,84,85,86,87,88,90,91,92,93,94,96,97,98,100];
+  for(i=0;i<back.length;i++)cellQ[back[i]]=(i<15)?(60+i):(i+80);
+})();
+
+/* ================= UTIL ================= */
+function el(id){return document.getElementById(id);}
+function on(id,ev,fn){var e=el(id);if(e){e.addEventListener(ev,fn);}else{if(window.console)console.warn("ID tidak ditemukan: "+id);}}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+var UNITS=["menit","halaman","miliar","dolar","derajat","kaleng","potong","bagian","lembar","butir","buah","orang","tahun","detik","gram","liter","kali","pukul","km/jam","km","cm²","cm2","m²","m2","kg","rpm","cm","jam","gr","°","m","l"];
+function normAnswer(s){
+  if(s===null||s===undefined)return "";
+  s=String(s).toLowerCase();
+  for(var i=0;i<UNITS.length;i++){s=s.split(UNITS[i]).join("");}
+  s=s.replace(/rp/g,"").replace(/\s+/g,"");
+  s=s.replace(/(\d)\.(\d{3})(?!\d)/g,"$1$2");
+  s=s.replace(/(\d)\.(\d{3})(?!\d)/g,"$1$2");
+  s=s.replace(/(\d),(\d)/g,"$1.$2");
+  s=s.replace(/(\d)\.(\d{3})(?!\d)/g,"$1$2");
+  s=s.replace(/(\d)\/(\d)/g,"$1:$2");
+  return s;
+}
+
+var PCOLORS=["#ef4444","#3b82f6","#22c55e","#f97316","#a855f7"];
+var PIPS={1:[4],2:[2,6],3:[2,4,6],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+var KEY="ultranggaRasio_";
+var S={players:[],cur:0,busy:false,over:false,count:2};
+
+function badgeOf(qi){
+  if(qi>=75)return{t:"HOTS",c:"hots"};
+  if(qi>=60)return{t:"SULIT",c:"sulit"};
+  return{t:"MUDAH",c:"mudah"};
+}
+function rc(n){var i=n-1,row=Math.floor(i/10),col=i%10;if(row%2===1)col=9-col;return{row:row,col:col};}
+function cc(n){
+  if(n<=0)return{x:5,y:95};
+  var r=rc(n);return{x:(r.col+0.5)*10,y:(9-r.row+0.5)*10};
+}
+function setStatus(html){var s=el("status");if(s)s.innerHTML=html;}
+function buildSteps(from,n){
+  var steps=[],t=from,dir=1,i;
+  for(i=0;i<n;i++){if(t+dir>100)dir=-1;t+=dir;steps.push(t);}
+  return steps;
+}
+function inVal(obj,v){for(var k in obj){if(obj[k]===v)return parseInt(k,10);}return 0;}
+
+/* ================= SIMPAN PERMAINAN (localStorage, aman) ================= */
+function saveGame(){
+  try{
+    if(!S.players.length)return;
+    var data={v:1,n:[],p:[],t:S.cur,ts:Date.now()};
+    for(var i=0;i<S.players.length;i++){data.n.push(S.players[i].name);data.p.push(S.players[i].pos);}
+    var raw=JSON.stringify(data);
+    for(var j=0;j<S.players.length;j++){localStorage.setItem(KEY+S.players[j].name.toLowerCase(),raw);}
+  }catch(e){/* penyimpanan tidak tersedia — permainan tetap jalan */}
+}
+function loadSave(name){
+  try{
+    var raw=localStorage.getItem(KEY+String(name).toLowerCase().trim());
+    if(!raw)return null;
+    var d=JSON.parse(raw);
+    if(d&&d.n&&d.p&&d.n.length===d.p.length&&d.n.length>=2)return d;
+  }catch(e){}
+  return null;
+}
+function saveClear(){
+  try{for(var i=0;i<S.players.length;i++){localStorage.removeItem(KEY+S.players[i].name.toLowerCase());}}catch(e){}
+}
+
+/* ================= PAPAN ================= */
+var NS="http://www.w3.org/2000/svg";
+var snakeBody={};
+function svgEl(tag,attrs){
+  var e=document.createElementNS(NS,tag);
+  for(var k in attrs)e.setAttribute(k,attrs[k]);
+  return e;
+}
+function drawLadder(b,t){
+  var svg=el("overlay"),a=cc(b),c=cc(t);
+  var dx=c.x-a.x,dy=c.y-a.y,L=Math.hypot(dx,dy)||1;
+  var ox=-dy/L*1.7,oy=dx/L*1.7;
+  svg.appendChild(svgEl("line",{x1:a.x+ox,y1:a.y+oy,x2:c.x+ox,y2:c.y+oy,stroke:"#a16207","stroke-width":1.15,"stroke-linecap":"round"}));
+  svg.appendChild(svgEl("line",{x1:a.x-ox,y1:a.y-oy,x2:c.x-ox,y2:c.y-oy,stroke:"#a16207","stroke-width":1.15,"stroke-linecap":"round"}));
+  var rungs=Math.max(3,Math.round(L/6.5)),i;
+  for(i=1;i<rungs;i++){
+    var f=i/rungs,mx=a.x+dx*f,my=a.y+dy*f;
+    svg.appendChild(svgEl("line",{x1:mx+ox,y1:my+oy,x2:mx-ox,y2:my-oy,stroke:"#ca8a04","stroke-width":0.95,"stroke-linecap":"round"}));
+  }
+}
+function drawSnake(h,t){
+  var svg=el("overlay"),a=cc(h),b=cc(t);
+  var dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1;
+  var nx=-dy/L,ny=dx/L;
+  var waves=Math.max(2,Math.min(4,Math.round(L/24))),i;
+  var d="M "+a.x+" "+a.y,firstCx=a.x+dx*0.5,firstCy=a.y+dy*0.5;
+  for(i=1;i<=waves;i++){
+    var t1=i/waves,t0=(i-1)/waves;
+    var amp=(i===waves?5:9)*(i%2===1?1:-1);
+    var cx=a.x+dx*((t0+t1)/2)+nx*amp,cy=a.y+dy*((t0+t1)/2)+ny*amp;
+    if(i===1){firstCx=cx;firstCy=cy;}
+    d+=" Q "+cx.toFixed(2)+" "+cy.toFixed(2)+" "+(a.x+dx*t1).toFixed(2)+" "+(a.y+dy*t1).toFixed(2);
+  }
+  var base=svgEl("path",{d:d,fill:"none",stroke:"#15803d","stroke-width":3.8,"stroke-linecap":"round","stroke-linejoin":"round"});
+  svg.appendChild(base);
+  svg.appendChild(svgEl("path",{d:d,fill:"none",stroke:"#4ade80","stroke-width":2.1,"stroke-linecap":"round"}));
+  svg.appendChild(svgEl("path",{d:d,fill:"none",stroke:"#fde047","stroke-width":0.8,"stroke-dasharray":"1.4 2.4","stroke-linecap":"round"}));
+  snakeBody[h]=base;
+  var ux=a.x-firstCx,uy=a.y-firstCy,ul=Math.hypot(ux,uy)||1;ux/=ul;uy/=ul;
+  var px=-uy,py=ux;
+  svg.appendChild(svgEl("path",{d:"M "+(a.x+ux*1.8)+" "+(a.y+uy*1.8)+" L "+(a.x+ux*4.4)+" "+(a.y+uy*4.4),stroke:"#dc2626","stroke-width":0.7,"stroke-linecap":"round",fill:"none"}));
+  svg.appendChild(svgEl("circle",{cx:a.x,cy:a.y,r:2.5,fill:"#15803d"}));
+  svg.appendChild(svgEl("circle",{cx:(a.x+ux*1.1+px*0.95).toFixed(2),cy:(a.y+uy*1.1+py*0.95).toFixed(2),r:0.55,fill:"#fff"}));
+  svg.appendChild(svgEl("circle",{cx:(a.x+ux*1.1-px*0.95).toFixed(2),cy:(a.y+uy*1.1-py*0.95).toFixed(2),r:0.55,fill:"#fff"}));
+  svg.appendChild(svgEl("circle",{cx:(a.x+ux*1.25+px*0.95).toFixed(2),cy:(a.y+uy*1.25+py*0.95).toFixed(2),r:0.24,fill:"#0f172a"}));
+  svg.appendChild(svgEl("circle",{cx:(a.x+ux*1.25-px*0.95).toFixed(2),cy:(a.y+uy*1.25-py*0.95).toFixed(2),r:0.24,fill:"#0f172a"}));
+}
+function buildBoard(){
+  var cells=el("cells");cells.innerHTML="";
+  el("overlay").innerHTML="";snakeBody={};
+  el("tokens").innerHTML="";
+  /* Isi grid baris-demi-baris (atas ke bawah, kiri ke kanan) dengan nomor
+     ular-tangga yang benar: kotak 1 kiri-bawah, kotak 100 kiri-atas. */
+  var rr,ccol;
+  for(rr=9;rr>=0;rr--){
+    for(ccol=0;ccol<10;ccol++){
+      var n=(rr%2===0)?(rr*10+ccol+1):(rr*10+(10-ccol));
+      var d=document.createElement("div");
+      d.className="cell"+(((rr+ccol)%2===0)?" alt":"");
+      var inner='<span class="num">'+n+'</span>';
+      if(LADDERS[n]){d.className+=" lb";inner+='<span class="ic">🪜</span>';}
+      else if(SNAKES[n]){d.className+=" sh";inner+='<span class="ic">🐍</span>';}
+      else if(inVal(LADDERS,n)){d.className+=" lt";inner+='<span class="ic">⭐</span>';}
+      else if(inVal(SNAKES,n)){d.className+=" st";inner+='<span class="ic">🎯</span>';}
+      d.innerHTML=inner;
+      cells.appendChild(d);
+    }
+  }
+  var k;
+  for(k in LADDERS)drawLadder(parseInt(k,10),LADDERS[k]);
+  for(k in SNAKES)drawSnake(parseInt(k,10),SNAKES[k]);
+  S.players.forEach(function(p,i){
+    var t=document.createElement("div");
+    t.className="token";t.id="tok"+i;
+    t.style.background=S.players[i].color;
+    t.textContent=S.players[i].name.charAt(0).toUpperCase();
+    t.style.transition="none";
+    el("tokens").appendChild(t);
+  });
+  updateAllTokens();
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    for(var i=0;i<S.players.length;i++){var t=el("tok"+i);if(t)t.style.transition="";}
+  });});
+}
+var OFFS=[[0,0],[-2.6,-2.3],[2.6,-2.3],[-2.6,2.4],[2.6,2.4]];
+function updateAllTokens(){
+  var map={},i;
+  for(i=0;i<S.players.length;i++){var k=S.players[i].pos;(map[k]=map[k]||[]).push(i);}
+  for(i=0;i<S.players.length;i++){
+    var grp=map[S.players[i].pos],slot=grp.indexOf(i);
+    var x,y;
+    if(S.players[i].pos===0){x=3.4+slot*2.4;y=104;}
+    else{
+      var c=cc(S.players[i].pos);
+      var o=(grp.length>1)?OFFS[slot%OFFS.length]:[0,0];
+      x=c.x+o[0]*0.85;y=c.y+o[1]*0.85;
+    }
+    var t=el("tok"+i);
+    if(t){t.style.left=x+"%";t.style.top=y+"%";}
+  }
+}
+function renderPlayers(){
+  var box=el("players");box.innerHTML="";
+  S.players.forEach(function(p,i){
+    var d=document.createElement("div");
+    d.className="pcard"+(i===S.cur?" active":"");
+    d.innerHTML='<span class="dot" style="background:'+p.color+'">'+esc(p.name.charAt(0).toUpperCase())+'</span>'+
+      '<span class="pinfo"><b>'+esc(p.name)+'</b><small>Kotak '+p.pos+'</small></span>';
+    box.appendChild(d);
+  });
+}
+
+/* ================= DADU ================= */
+function setDiceFace(n){
+  var g=el("diceGrid");if(!g)return;
+  var cs=g.children,nums=PIPS[n]||PIPS[1];
+  for(var i=0;i<9;i++){cs[i].className="pip"+(nums.indexOf(i)>=0?" on":"");}
+}
+function rollDice(){
+  if(S.busy||S.over)return;
+  S.busy=true;
+  el("btnRoll").disabled=true;
+  setStatus("🎲 Dadu sedang dilempar…");
+  var d=el("dice"),ticks=0;
+  d.classList.add("rolling");
+  var iv=setInterval(function(){
+    setDiceFace(1+Math.floor(Math.random()*6));
+    if(++ticks>=10){
+      clearInterval(iv);
+      d.classList.remove("rolling");
+      var n=1+Math.floor(Math.random()*6);
+      setDiceFace(n);
+      setTimeout(function(){askMove(n);},420);
+    }
+  },85);
+}
+
+/* ================= SOAL (MODAL) ================= */
+var Q={attempts:2,cb:null,idx:-1,ok:false};
+function openQuestion(cellNo,qi,cb){
+  if(qi<0||!QBANK[qi]){if(cb)cb(true);return;}
+  Q.attempts=2;Q.cb=cb;Q.idx=qi;Q.ok=false;
+  var q=QBANK[qi],bd=badgeOf(qi);
+  el("qCell").textContent="Kotak "+cellNo;
+  var b=el("qBadge");b.textContent=bd.t;b.className="qbadge "+bd.c;
+  el("qText").textContent=q.q;
+  var f=el("qFeedback");f.className="qfeedback hidden";f.innerHTML="";
+  el("qNext").classList.add("hidden");
+  var inp=el("qInput");inp.value="";inp.disabled=false;
+  el("qmodal").classList.remove("hidden");
+  setTimeout(function(){try{inp.focus();}catch(e){}},60);
+}
+function submitAnswer(e){
+  e.preventDefault();
+  var inp=el("qInput");
+  if(inp.disabled||Q.idx<0)return;
+  var q=QBANK[Q.idx];
+  var val=normAnswer(inp.value),ok=false,i;
+  for(i=0;i<q._v.length;i++){if(val===q._v[i]){ok=true;break;}}
+  Q.ok=ok;
+  var f=el("qFeedback");
+  if(ok){
+    inp.disabled=true;
+    f.className="qfeedback good";
+    f.innerHTML="✅ <b>Benar sekali!</b> Jawaban: <b>"+q.a+"</b><span class=\"exp\">💡 "+q.e+"</span>";
+    el("qNext").classList.remove("hidden");
+    try{el("qNext").focus();}catch(e2){}
+  }else{
+    Q.attempts--;
+    if(Q.attempts>0){
+      f.className="qfeedback bad";
+      f.innerHTML="❌ <b>Belum tepat!</b> Sisa <b>"+Q.attempts+"</b> kesempatan. Ayo coba lagi!";
+      inp.classList.add("shake");
+      setTimeout(function(){inp.classList.remove("shake");},350);
+      inp.select();
+    }else{
+      inp.disabled=true;
+      f.className="qfeedback bad";
+      f.innerHTML="❌ <b>Salah.</b> Jawaban yang benar: <b>"+q.a+"</b><span class=\"exp\">💡 "+q.e+"</span>";
+      el("qNext").classList.remove("hidden");
+      try{el("qNext").focus();}catch(e3){}
+    }
+  }
+}
+function nextStep(){
+  if(!Q.cb)return;
+  el("qmodal").classList.add("hidden");
+  var cb=Q.cb;Q.cb=null;Q.idx=-1;
+  cb(Q.ok);
+}
+
+/* ================= GERAK, TANGGA & ULAR ================= */
+function animateMove(pi,steps,done){
+  var tok=el("tok"+pi),i=0;
+  (function step(){
+    if(i>=steps.length){
+      S.players[pi].pos=steps[steps.length-1];
+      renderPlayers();updateAllTokens();
+      setTimeout(done,160);
+      return;
+    }
+    var c=steps[i++];
+    S.players[pi].pos=c;
+    renderPlayers();
+    if(tok){tok.style.left=cc(c).x+"%";tok.style.top=cc(c).y+"%";}
+    setTimeout(step,270);
+  })();
+}
+function climb(bot,top,tok,done){
+  if(!tok){done();return;}
+  var a=cc(bot),b=cc(top),t0=performance.now(),dur=950;
+  tok.style.transition="none";
+  (function fr(now){
+    var f=Math.min(1,(now-t0)/dur);
+    tok.style.left=(a.x+(b.x-a.x)*f)+"%";
+    tok.style.top=(a.y+(b.y-a.y)*f)+"%";
+    if(f<1)requestAnimationFrame(fr);
+    else{tok.style.transition="";done();}
+  })(t0);
+}
+function slide(head,tok,done){
+  var path=snakeBody[head];
+  if(!path||!tok){done();return;}
+  var L=path.getTotalLength(),t0=performance.now(),dur=1300;
+  tok.style.transition="none";
+  (function fr(now){
+    var f=Math.min(1,(now-t0)/dur);
+    var e=f<0.5?(2*f*f):(1-Math.pow(-2*f+2,2)/2);
+    var pt=path.getPointAtLength(L*e);
+    tok.style.left=pt.x+"%";
+    tok.style.top=pt.y+"%";
+    if(f<1)requestAnimationFrame(fr);
+    else{tok.style.transition="";done();}
+  })(t0);
+}
+function askMove(n){
+  var pi=S.cur,p=S.players[pi];
+  var steps=buildSteps(p.pos,n),dest=steps[steps.length-1];
+  setStatus("🎯 <b>"+esc(p.name)+"</b> melempar angka <b>"+n+"</b>! Jawab soal <b>Kotak "+dest+"</b> untuk bergerak.");
+  openQuestion(dest,cellQ[dest],function(ok){
+    if(ok){
+      animateMove(pi,steps,function(){
+        if(dest===100){win();return;}
+        if(LADDERS[dest]){
+          var top=LADDERS[dest];
+          setStatus("🪜 Hebat! <b>"+esc(p.name)+"</b> naik tangga dari kotak "+dest+" ke kotak "+top+"!");
+          climb(dest,top,el("tok"+pi),function(){
+            S.players[pi].pos=top;renderPlayers();updateAllTokens();endTurn();
+          });
+        }else if(SNAKES[dest]){
+          setStatus("🐍 Aman! <b>"+esc(p.name)+"</b> menjawab benar di kepala ular kotak "+dest+".");
+          endTurn();
+        }else{endTurn();}
+      });
+    }else{
+      if(SNAKES[dest]){
+        animateMove(pi,steps,function(){
+          setStatus("🐍 <b>"+esc(p.name)+"</b> gagal menjawab… tergelincir ke ekor ular!");
+          slide(dest,el("tok"+pi),function(){
+            S.players[pi].pos=SNAKES[dest];renderPlayers();updateAllTokens();endTurn();
+          });
+        });
+      }else{
+        setStatus("❌ <b>"+esc(p.name)+"</b> gagal menjawab. Tetap di kotak "+p.pos+".");
+        endTurn();
+      }
+    }
+  });
+}
+function endTurn(){
+  if(S.over)return;
+  renderPlayers();saveGame();
+  S.cur=(S.cur+1)%S.players.length;
+  renderPlayers();
+  S.busy=false;
+  el("btnRoll").disabled=false;
+  setStatus("🎲 Giliran <b>"+esc(S.players[S.cur].name)+"</b> — lempar dadu!");
+}
+function win(){
+  S.over=true;S.busy=true;
+  el("btnRoll").disabled=true;
+  var w=S.players[S.cur];
+  saveClear();
+  setStatus("🏆 <b>"+esc(w.name)+"</b> mencapai kotak 100 — MENANG!");
+  el("winTitle").textContent="SELAMAT, "+w.name.toUpperCase()+"!";
+  el("winSub").textContent=w.name+" mencapai kotak 100 dengan tepat dan memenangkan permainan!";
+  var box=el("confetti");box.innerHTML="";
+  var cols=["#ef4444","#f59e0b","#22c55e","#3b82f6","#a855f7","#ec4899"];
+  for(var i=0;i<60;i++){
+    var s=document.createElement("span");
+    s.className="cf";
+    s.style.left=(Math.random()*100)+"%";
+    s.style.background=cols[i%cols.length];
+    s.style.animationDelay=(Math.random()*1.4)+"s";
+    s.style.animationDuration=(2+Math.random()*2.2)+"s";
+    box.appendChild(s);
+  }
+  setTimeout(function(){el("winOverlay").classList.remove("hidden");},500);
+}
+
+/* ================= SETUP & RESUME ================= */
+function dedupe(arr){
+  var seen={},out=[];
+  for(var i=0;i<arr.length;i++){
+    var n=String(arr[i]||"").replace(/[<>&"]/g,"").trim().slice(0,14);
+    if(!n)n="Pemain "+(i+1);
+    if(seen[n.toLowerCase()]){var k=2;while(seen[(n+" "+k).toLowerCase()])k++;n=n+" "+k;}
+    seen[n.toLowerCase()]=1;out.push(n);
+  }
+  return out;
+}
+function renderCount(){
+  var box=el("countChips");box.innerHTML="";
+  for(var i=2;i<=5;i++){
+    (function(v){
+      var b=document.createElement("button");
+      b.type="button";
+      b.className="chip"+(S.count===v?" sel":"");
+      b.textContent=v+" pemain";
+      b.onclick=function(){S.count=v;renderCount();renderNames(false);};
+      box.appendChild(b);
+    })(i);
+  }
+}
+function renderNames(prefill){
+  var box=el("nameInputs");box.innerHTML="";
+  for(var i=0;i<S.count;i++){
+    var d=document.createElement("div");
+    d.className="nrow";
+    var val=(prefill&&S.players[i])?S.players[i].name:"";
+    d.innerHTML='<span class="dot" style="background:'+PCOLORS[i]+'">'+(i+1)+'</span>'+
+      '<input id="pname'+i+'" maxlength="14" placeholder="Nama Pemain '+(i+1)+'" value="'+esc(val)+'">';
+    box.appendChild(d);
+  }
+  var f0=el("pname0");
+  if(f0)f0.addEventListener("input",checkResume);
+}
+var resumeTimer=null;
+function checkResume(){
+  var box=el("resumeBox");
+  if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}
+  var nm="";
+  try{nm=(el("pname0").value||"").trim();}catch(e){}
+  if(nm.length<2||!loadSave(nm)){box.className="resume hidden";box.innerHTML="";return;}
+  var d=loadSave(nm);
+  var tags="";
+  for(var i=0;i<d.n.length;i++){tags+='<span class="rtag">'+esc(d.n[i])+': kotak '+d.p[i]+'</span>';}
+  box.className="resume";
+  box.innerHTML="<div>💾 Permainan tersimpan untuk <b>"+esc(nm)+"</b> ditemukan:</div>"+
+    '<div class="rpos">'+tags+'</div>'+
+    '<div><button id="btnResume" class="btn-resume" type="button">▶ Lanjutkan Permainan</button> '+
+    '<button id="btnIgnore" class="chip" type="button" style="margin-left:6px">Mulai yang baru</button></div>';
+  el("btnResume").onclick=function(){startGame(d);};
+  el("btnIgnore").onclick=function(){box.className="resume hidden";box.innerHTML="";};
+  resumeTimer=setTimeout(function(){startGame(d);},3000);
+}
+function startGame(resume){
+  var names,i;
+  if(resume){names=resume.n.slice();}
+  else{
+    names=[];
+    for(i=0;i<S.count;i++){var f=el("pname"+i);names.push(f?f.value:"");}
+    names=dedupe(names);
+  }
+  S.players=[];
+  for(i=0;i<names.length;i++){
+    S.players.push({name:names[i],color:PCOLORS[i],pos:resume?resume.p[i]:0});
+  }
+  S.cur=resume?(resume.t%S.players.length):0;
+  S.over=false;S.busy=false;
+  el("screen-setup").classList.add("hidden");
+  el("screen-game").classList.remove("hidden");
+  el("btnRoll").disabled=false;
+  buildBoard();
+  renderPlayers();
+  setDiceFace(1);
+  setStatus("🎲 Giliran <b>"+esc(S.players[S.cur].name)+"</b> — lempar dadu!");
+  saveGame();
+}
+function showSetup(){
+  el("screen-game").classList.add("hidden");
+  el("winOverlay").classList.add("hidden");
+  el("screen-setup").classList.remove("hidden");
+  renderNames(true);
+}
+
+/* ================= INISIALISASI ================= */
+function init(){
+  try{
+    for(var i=0;i<QBANK.length;i++){QBANK[i]._v=QBANK[i].v.map(normAnswer);}
+  }catch(e){if(window.console)console.error(e);}
+  renderCount();
+  renderNames(false);
+  setDiceFace(1);
+  on("btnStart","click",function(){startGame(null);});
+  on("btnRoll","click",rollDice);
+  on("btnExit","click",function(){
+    if(window.confirm("Kembali ke menu utama?\nProgres permainan sudah tersimpan otomatis.")){showSetup();}
+  });
+  on("btnAgain","click",showSetup);
+  on("qForm","submit",submitAnswer);
+  on("qNext","click",nextStep);
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}
+else{init();}
+})();
+</script>
+</body>
+</html>
