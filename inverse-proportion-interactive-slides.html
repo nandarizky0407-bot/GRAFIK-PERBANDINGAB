@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inverse Proportion — Interactive Slides | Cambridge Stage 8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220; --bg2:#0e1729;
+  --card:rgba(255,255,255,.045); --card2:rgba(255,255,255,.07);
+  --line:rgba(148,163,184,.18);
+  --cyan:#22d3ee; --purple:#a78bfa; --pink:#f472b6; --green:#34d399; --amber:#fbbf24; --red:#f87171;
+  --text:#e6edf7; --muted:#94a3b8; --soft:#cbd5e1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,'Segoe UI',Arial,sans-serif;
+  background:var(--bg); color:var(--text); overflow:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(700px 420px at 12% -8%, rgba(34,211,238,.14), transparent 60%),
+    radial-gradient(760px 480px at 88% 108%, rgba(167,139,250,.13), transparent 60%),
+    radial-gradient(520px 320px at 80% -10%, rgba(244,114,182,.09), transparent 60%),
+    linear-gradient(180deg,#0b1220 0%,#0d1526 55%,#0b1220 100%);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  background-image:linear-gradient(rgba(148,163,184,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(900px 600px at 50% 40%, #000 30%, transparent 100%);
+}
+#app{height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
+
+/* ---------- header / footer ---------- */
+header.top{
+  display:flex;align-items:center;gap:14px;padding:11px 22px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);background:rgba(11,18,32,.72);backdrop-filter:blur(10px);z-index:30;
+}
+.brand{font-family:'Orbitron','Poppins',sans-serif;font-weight:800;font-size:15.5px;letter-spacing:1.5px;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.brand small{font-family:'Inter',sans-serif;font-weight:600;font-size:11px;letter-spacing:2px;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.spacer{flex:1}
+#hdrName{display:none}
+#progressWrap{height:4px;background:rgba(148,163,184,.12);z-index:30;position:relative}
+#progressFill{height:100%;width:0;border-radius:0 99px 99px 0;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);box-shadow:0 0 10px rgba(34,211,238,.7);transition:width .35s ease}
+footer.nav{
+  display:flex;align-items:center;gap:12px;padding:9px 20px;flex-wrap:wrap;
+  border-top:1px solid var(--line);background:rgba(11,18,32,.72);backdrop-filter:blur(10px);z-index:30;
+}
+#dots{display:flex;gap:7px;flex-wrap:wrap}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(148,163,184,.3);cursor:pointer;transition:.2s;border:none;padding:0}
+.dot:hover{background:rgba(148,163,184,.6)}
+.dot.on{background:var(--cyan);box-shadow:0 0 8px rgba(34,211,238,.9);transform:scale(1.3)}
+#counter{font-family:'Poppins',sans-serif;font-size:13px;color:var(--muted);min-width:64px;text-align:center}
+.kbd{border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11.5px;background:rgba(255,255,255,.05);color:var(--muted)}
+.kbd-hint{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11.5px}
+
+/* ---------- slides ---------- */
+main#stage{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;padding:26px 26px 22px;scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.3) transparent}
+.slide.active{display:block;animation:slideIn .45s ease}
+.slide-inner{max-width:1150px;margin:0 auto}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ---------- typography & atoms ---------- */
+h2.slide-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:clamp(22px,3vw,30px);margin-bottom:6px;
+  background:linear-gradient(90deg,#a5f3fc,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.slide-sub{color:var(--muted);font-size:15px;margin-bottom:18px;max-width:860px}
+.neon-title{
+  font-family:'Orbitron','Poppins',sans-serif;font-weight:800;letter-spacing:4px;
+  font-size:clamp(34px,6.2vw,66px);line-height:1.08;text-align:center;
+  background:linear-gradient(90deg,#22d3ee 0%,#a78bfa 50%,#f472b6 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(139,92,246,.45));
+}
+.lead{color:var(--soft);font-size:clamp(15px,1.6vw,17.5px);line-height:1.65}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.card.glow-c{border-color:rgba(34,211,238,.35);box-shadow:0 0 24px rgba(34,211,238,.12),0 10px 40px rgba(0,0,0,.35)}
+.card.glow-p{border-color:rgba(167,139,250,.35);box-shadow:0 0 24px rgba(167,139,250,.12),0 10px 40px rgba(0,0,0,.35)}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);font-size:13.5px;color:var(--soft);font-weight:500}
+.chip.accent{border-color:rgba(34,211,238,.45);color:#a5f3fc;background:rgba(34,211,238,.07)}
+.chip.purp{border-color:rgba(167,139,250,.45);color:#ddd6fe;background:rgba(167,139,250,.08)}
+.chip-row{display:flex;gap:10px;flex-wrap:wrap}
+.formula{
+  font-family:'Orbitron',monospace;font-weight:600;letter-spacing:3px;text-align:center;
+  font-size:clamp(26px,4vw,44px);
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.mt{margin-top:16px}.mt-s{margin-top:10px}.mb{margin-bottom:16px}
+.center{text-align:center}
+.big{font-size:clamp(17px,1.9vw,20px);font-weight:600}
+.muted{color:var(--muted)}
+.hl-c{color:#67e8f9;font-weight:600}.hl-p{color:#c4b5fd;font-weight:600}.hl-k{color:#fbbf24;font-weight:600}.hl-g{color:#6ee7b7;font-weight:600}
+
+/* ---------- buttons & inputs ---------- */
+.btn{
+  font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;border-radius:14px;padding:11px 22px;
+  cursor:pointer;border:1px solid transparent;color:var(--text);transition:.2s;background:rgba(255,255,255,.06);
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:linear-gradient(135deg,rgba(34,211,238,.25),rgba(167,139,250,.25));border-color:rgba(34,211,238,.5);box-shadow:0 0 18px rgba(34,211,238,.22)}
+.btn.primary:hover{box-shadow:0 0 26px rgba(34,211,238,.4)}
+.btn.success{background:linear-gradient(135deg,rgba(52,211,153,.25),rgba(34,211,238,.15));border-color:rgba(52,211,153,.5)}
+.btn.pink{background:linear-gradient(135deg,rgba(244,114,182,.22),rgba(167,139,250,.18));border-color:rgba(244,114,182,.5)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--muted)}
+.btn.ghost:hover{color:var(--text);border-color:rgba(148,163,184,.4)}
+.btn.sm{padding:8px 15px;font-size:13.5px;border-radius:11px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.input{
+  background:rgba(2,6,23,.65);border:1px solid var(--line);border-radius:12px;color:var(--text);
+  padding:12px 14px;font-size:16px;font-family:'Inter',sans-serif;outline:none;transition:.2s;width:170px;
+}
+.input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+textarea.input{width:100%;resize:vertical;min-height:64px;font-size:14.5px}
+.err{color:var(--red);font-size:13.5px;margin-top:8px;min-height:18px}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pop{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+
+/* ---------- tables ---------- */
+table.nice{width:100%;border-collapse:collapse;font-size:15px}
+.nice th{background:rgba(34,211,238,.10);color:#a5f3fc;font-family:'Poppins',sans-serif;font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.nice td{padding:10px 12px;text-align:center;border-bottom:1px dashed rgba(148,163,184,.16);color:var(--soft)}
+.nice tr:last-child td{border-bottom:none}
+.nice .rowhead{color:var(--text);font-weight:600;background:rgba(167,139,250,.08)}
+.ratio-cell{cursor:pointer;font-weight:700;color:var(--amber);user-select:none;transition:.2s}
+.ratio-cell:hover{background:rgba(251,191,36,.08)}
+.ratio-cell.revealed{color:var(--amber)}
+.alert{border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.08);border-radius:16px;padding:15px 18px;font-size:14.5px;line-height:1.6;color:#fde68a}
+.hintbox{border:1px solid rgba(244,114,182,.4);background:rgba(244,114,182,.08);border-radius:16px;padding:15px 18px;font-size:14.5px;line-height:1.6;color:#fbcfe8}
+.infobox{border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.07);border-radius:16px;padding:15px 18px;font-size:14.5px;line-height:1.6;color:#a5f3fc}
+
+/* ---------- flip cards ---------- */
+.flip{perspective:1100px;cursor:pointer;min-height:200px}
+.flip-inner{position:relative;width:100%;height:100%;min-height:200px;transition:transform .65s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
+.flip.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;
+  border:1px solid var(--line);background:var(--card);padding:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:8px;
+}
+.flip-face .ico{font-size:38px;filter:drop-shadow(0 0 10px rgba(34,211,238,.5))}
+.flip-face h3{font-family:'Poppins',sans-serif;font-size:16.5px;font-weight:600}
+.flip-face .tap{color:var(--muted);font-size:12px;margin-top:4px}
+.flip-back{transform:rotateY(180deg);background:linear-gradient(160deg,rgba(34,211,238,.12),rgba(167,139,250,.12));border-color:rgba(34,211,238,.35);font-size:14px;line-height:1.6;color:var(--soft);justify-content:flex-start;padding-top:20px}
+.flip-back b{color:#a5f3fc}
+
+/* ---------- quiz ---------- */
+.jump{
+  width:40px;height:40px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:var(--soft);font-family:'Poppins',sans-serif;font-weight:600;font-size:14.5px;cursor:pointer;transition:.2s;position:relative;
+}
+.jump:hover{border-color:rgba(34,211,238,.6)}
+.jump.cur{border-color:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.55);color:#a5f3fc}
+.jump.ok{background:rgba(52,211,153,.2);border-color:rgba(52,211,153,.55);color:#6ee7b7}
+.jump.no{background:rgba(248,113,113,.16);border-color:rgba(248,113,113,.5);color:#fca5a5}
+.jump.seen{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.55);color:#ddd6fe}
+.jump.tried{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.45);color:#fde68a}
+.fb{font-size:15px;font-weight:600;min-height:22px;margin-top:10px}
+.fb.good{color:#6ee7b7}.fb.bad{color:#fca5a5}.fb.info{color:#93c5fd}
+.sol{border-left:3px solid var(--purple);background:rgba(167,139,250,.08);border-radius:0 16px 16px 0;padding:15px 18px;margin-top:14px;font-size:14.5px;line-height:1.7;color:var(--soft)}
+.sol .sol-title{color:#ddd6fe;font-family:'Poppins',sans-serif;font-weight:600;margin-bottom:6px}
+.sol ol{margin:6px 0 0 20px}
+.sol li{margin:3px 0}
+.stars{color:var(--amber);letter-spacing:3px;font-size:15px}
+.banner{
+  border:1px solid rgba(52,211,153,.5);background:linear-gradient(135deg,rgba(52,211,153,.14),rgba(34,211,238,.1));
+  border-radius:18px;padding:18px 22px;margin-top:16px;font-size:16.5px;font-weight:600;color:#a7f3d0;text-align:center;
+  box-shadow:0 0 24px rgba(52,211,153,.15);
+}
+.banner.mid{border-color:rgba(251,191,36,.5);background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(244,114,182,.08));color:#fde68a;box-shadow:0 0 24px rgba(251,191,36,.12)}
+
+/* ---------- sliders ---------- */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:99px;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--text);border:3px solid var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.8);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--text);border:3px solid var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.8);cursor:pointer}
+.slider-label{display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);margin:10px 0 4px;font-family:'Poppins',sans-serif}
+.slider-label b{color:#a5f3fc}
+#gCanvas{width:100%;height:420px;display:block;border-radius:16px;background:rgba(2,6,23,.5);border:1px solid var(--line)}
+.gcap{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+
+/* ---------- machine ---------- */
+.kchip{padding:9px 18px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:var(--soft);font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;cursor:pointer;transition:.2s}
+.kchip:hover{border-color:rgba(167,139,250,.6)}
+.kchip.on{border-color:var(--purple);background:rgba(167,139,250,.18);color:#ddd6fe;box-shadow:0 0 12px rgba(167,139,250,.4)}
+.modebtn.on{border-color:var(--cyan);background:rgba(34,211,238,.15);color:#a5f3fc;box-shadow:0 0 12px rgba(34,211,238,.35)}
+#mResult{font-family:'Orbitron',monospace;font-size:clamp(26px,3.4vw,40px);letter-spacing:2px;
+  background:linear-gradient(90deg,#34d399,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- reflection ---------- */
+.rchip{font-size:26px;padding:8px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;transition:.2s}
+.rchip:hover{transform:translateY(-3px)}
+.rchip.on{border-color:var(--pink);background:rgba(244,114,182,.15);box-shadow:0 0 14px rgba(244,114,182,.4)}
+
+/* ---------- cover ---------- */
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:calc(100vh - 150px);text-align:center}
+.name-box{max-width:520px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center;padding:26px}
+.name-box label{font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;color:#a5f3fc}
+.name-box .input{width:100%;text-align:center}
+.cover-meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.objectives li{margin:11px 0;line-height:1.6;color:var(--soft);font-size:15.5px;list-style:none;display:flex;gap:12px;align-items:flex-start}
+.objectives .oi{flex-shrink:0;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);font-size:16px}
+.takeaway{display:flex;gap:14px;align-items:flex-start}
+.takeaway .ti{font-size:28px;flex-shrink:0}
+.takeaway h3{font-family:'Poppins',sans-serif;font-size:16.5px;margin-bottom:5px;color:#a5f3fc}
+.takeaway p{font-size:14.5px;line-height:1.65;color:var(--soft)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:99}
+.story-q{font-size:clamp(17px,2vw,20px);font-weight:600;line-height:1.55}
+.ansrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.unitlbl{font-family:'Poppins',sans-serif;font-weight:700;color:#a5f3fc;font-size:18px}
+.hidden{display:none !important}
+@media (max-width:960px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .slide{padding:18px 14px 16px}
+  #gCanvas{height:340px}
+  .cover{min-height:auto;padding:20px 0}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header class="top">
+  <div class="brand">INVERSE PROPORTION <small>· CAMBRIDGE STAGE 8</small></div>
+  <div class="spacer"></div>
+  <span class="chip purp" id="hdrName">🎓 <span class="student-name">…</span></span>
+  <button class="btn sm ghost" id="langBtn" title="Switch language / Ganti bahasa">🌐 ID</button>
+</header>
+<div id="progressWrap"><div id="progressFill"></div></div>
+
+<main id="stage">
+
+<!-- ============ SLIDE 1 : COVER ============ -->
+<section class="slide active" id="s1">
+  <div class="slide-inner cover">
+    <span class="chip accent">🎓 Cambridge Lower Secondary · Stage 8 · Mathematics</span>
+    <h1 class="neon-title">INVERSE<br>PROPORTION</h1>
+    <div class="formula">y = k ÷ x</div>
+    <p class="lead" style="max-width:640px" data-en="When one quantity goes <b>up</b>, the other goes <b>down</b> by the same factor. Let's discover the rule, the curve, and how to use it in real life." data-id="Ketika satu besaran <b>naik</b>, besaran lain <b>turun</b> dengan faktor yang sama. Mari kita temukan aturannya, kurvanya, dan penggunaannya dalam kehidupan nyata."></p>
+    <div class="name-box card glow-c">
+      <label for="nameInput" data-en="👋 Enter your name to start the lesson" data-id="👋 Masukkan namamu untuk memulai pelajaran"></label>
+      <input id="nameInput" class="input" maxlength="24" autocomplete="off" data-en-ph="e.g. Aisyah" data-id-ph="mis. Aisyah" placeholder="e.g. Aisyah">
+      <button id="startBtn" class="btn primary" data-en="Start Lesson ▸" data-id="Mulai Belajar ▸"></button>
+      <div id="nameErr" class="err" data-en="Please type your name first!" data-id="Tulis namamu dulu, ya!"></div>
+    </div>
+    <div class="cover-meta">
+      <span class="chip" data-en="🧭 12 interactive slides" data-id="🧭 12 slide interaktif"></span>
+      <span class="chip" data-en="✏️ 10 word problems + solutions" data-id="✏️ 10 soal cerita + pembahasan"></span>
+      <span class="chip" data-en="🌐 English / Indonesia" data-id="🌐 Inggris / Indonesia"></span>
+      <span class="chip" data-en="🎮 Curve · machine · quiz" data-id="🎮 Kurva · mesin · kuis"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 : WARM-UP (APERSEPSI) ============ -->
+<section class="slide" id="s2">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🔥 Warm-Up · The Garden Wall" data-id="🔥 Pemanasan · Tembok Taman"></h2>
+    <p class="slide-sub" data-en="Hello <b class='student-name'>…</b>! Before we start, try this quick challenge. Trust your instinct!" data-id="Halo <b class='student-name'>…</b>! Sebelum mulai, coba tantangan cepat ini. Ikuti kata hatimu!"></p>
+    <div class="grid2">
+      <div class="card glow-c">
+        <span class="chip purp mb">📖 Story</span>
+        <p class="story-q" data-en="The school is building a garden wall. <span class='hl-c'>4 workers would finish it in 6 days</span>." data-id="Sekolah sedang membangun tembok taman. <span class='hl-c'>4 pekerja akan menyelesaikannya dalam 6 hari</span>."></p>
+        <p class="mt-s lead" data-en="If the school hires <span class='hl-p'>12 workers</span> (same rate), how many days will it take? Take a guess first!" data-id="Jika sekolah menyewa <span class='hl-p'>12 pekerja</span> (laju sama), berapa hari yang dibutuhkan? Tebak dulu, ya!"></p>
+        <div class="ansrow">
+          <input id="guessInput" class="input" inputmode="decimal" data-en-ph="your guess…" data-id-ph="tebakanmu…" placeholder="your guess…">
+          <span class="unitlbl" data-en="days" data-id="hari"></span>
+          <button id="guessBtn" class="btn success sm" data-en="Check" data-id="Periksa"></button>
+          <button id="revealBtn" class="btn ghost sm" data-en="Show me how ▸" data-id="Tunjukkan caranya ▸"></button>
+        </div>
+        <div id="guessFb" class="fb"></div>
+      </div>
+      <div class="card glow-p">
+        <span class="chip accent mb" data-en="💡 The teacher's way" data-id="💡 Cara sang guru"></span>
+        <div id="guessSol" class="hidden">
+          <p class="lead" data-en="The <b>total work</b> never changes — this is called the <b>constant product</b>:" data-id="<b>Total pekerjaan</b> tidak pernah berubah — ini disebut <b>hasil kali tetap</b>:"></p>
+          <div class="sol mt-s">
+            <ol>
+              <li data-en="Total work → 4 workers × 6 days = <b class='hl-k'>24 worker-days</b>" data-id="Total pekerjaan → 4 pekerja × 6 hari = <b class='hl-k'>24 hari-pekerja</b>"></li>
+              <li data-en="12 workers → 24 ÷ 12 = <b class='hl-g'>2 days</b>" data-id="12 pekerja → 24 ÷ 12 = <b class='hl-g'>2 hari</b>"></li>
+              <li data-en="The constant: <b class='hl-k'>k = 4 × 6 = 24</b> — workers × days stays the same!" data-id="Konstantanya: <b class='hl-k'>k = 4 × 6 = 24</b> — pekerja × hari selalu tetap!"></li>
+            </ol>
+          </div>
+        </div>
+        <div id="guessTease" class="infobox mt" data-en="🎯 The secret: with the same amount of work, <b>more workers ⇒ fewer days</b>. Triple the workers → a third of the time. Mathematicians call this <b>inverse proportion</b> — two quantities that move in opposite directions!" data-id="🎯 Rahasianya: dengan jumlah pekerjaan yang sama, <b>lebih banyak pekerja ⇒ waktu lebih singkat</b>. Pekerja tiga kali lipat → waktu sepertiga. Para matematikawan menyebutnya <b>perbandingan berbalik nilai (inverse proportion)</b> — dua besaran yang bergerak berlawanan arah!"></div>
+      </div>
+    </div>
+    <div class="card mt">
+      <span class="chip accent" data-en="🗣️ Think–Pair–Share" data-id="🗣️ Berpikir–Berdiskusi"></span>
+      <p class="lead mt-s" data-en="💬 Would <b>24 workers</b> really finish in just 1 day? · 💬 If a storm stops the work for one day, is the pattern still perfect? What changed?" data-id="💬 Apakah <b>24 pekerja</b> benar-benar selesai hanya dalam 1 hari? · 💬 Jika badai menghentikan pekerjaan selama satu hari, apakah polanya masih sempurna? Apa yang berubah?"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 : LEARNING OBJECTIVES ============ -->
+<section class="slide" id="s3">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🎯 Learning Objectives" data-id="🎯 Tujuan Pembelajaran"></h2>
+    <p class="slide-sub" data-en="By the end of this lesson, you will be able to…" data-id="Setelah pelajaran ini, kamu akan mampu…"></p>
+    <div class="card">
+      <ul class="objectives">
+        <li><span class="oi">1️⃣</span><span data-en="<b>Define</b> inverse proportion and find the <b class='hl-k'>constant k = x × y</b> from a table or a situation." data-id="<b>Menjelaskan</b> arti perbandingan berbalik nilai dan menemukan <b class='hl-k'>konstanta k = x × y</b> dari tabel atau situasi nyata."></span></li>
+        <li><span class="oi">2️⃣</span><span data-en="<b>Recognise</b> inverse proportion in everyday life: workers, speed, sharing, filling tanks and more." data-id="<b>Mengenali</b> perbandingan berbalik nilai dalam kehidupan sehari-hari: pekerja, kecepatan, pembagian, pengisian tangki, dan lainnya."></span></li>
+        <li><span class="oi">3️⃣</span><span data-en="<b>Test</b> whether a table shows inverse proportion by checking that <b class='hl-c'>x × y is constant</b> for every pair." data-id="<b>Menguji</b> apakah sebuah tabel menunjukkan perbandingan berbalik nilai dengan memastikan <b class='hl-c'>x × y selalu tetap</b> untuk setiap pasangan nilai."></span></li>
+        <li><span class="oi">4️⃣</span><span data-en="<b>Draw and read</b> the graph of <b class='hl-p'>y = k ÷ x</b> — a curve that never touches the axes." data-id="<b>Menggambar dan membaca</b> grafik <b class='hl-p'>y = k ÷ x</b> — kurva yang tidak pernah menyentuh kedua sumbu."></span></li>
+        <li><span class="oi">5️⃣</span><span data-en="<b>Solve</b> real-life word problems using <b class='hl-g'>x₁ × y₁ = x₂ × y₂</b>." data-id="<b>Menyelesaikan</b> soal cerita kehidupan nyata dengan <b class='hl-g'>x₁ × y₁ = x₂ × y₂</b>."></span></li>
+      </ul>
+    </div>
+    <div class="card glow-c mt">
+      <span class="chip accent" data-en="✅ Success criteria — “I can…”" data-id="✅ Kriteria keberhasilan — “Aku bisa…”"></span>
+      <div class="chip-row mt-s">
+        <span class="chip" data-en="find k = x × y" data-id="mencari k = x × y"></span>
+        <span class="chip" data-en="complete an inverse table" data-id="melengkapi tabel berbalik nilai"></span>
+        <span class="chip" data-en="draw y = k ÷ x" data-id="menggambar y = k ÷ x"></span>
+        <span class="chip" data-en="solve word problems" data-id="menyelesaikan soal cerita"></span>
+        <span class="chip" data-en="explain my method to a friend" data-id="menjelaskan caraku kepada teman"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 : DEFINITION ============ -->
+<section class="slide" id="s4">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="📘 What is Inverse Proportion?" data-id="📘 Apa Itu Perbandingan Berbalik Nilai?"></h2>
+    <p class="slide-sub" data-en="Two quantities are in inverse proportion when one increases and the other decreases by the same factor." data-id="Dua besaran disebut berbalik nilai jika salah satu bertambah dan yang lain berkurang dengan faktor yang sama."></p>
+    <div class="grid2">
+      <div class="card glow-c">
+        <span class="chip accent mb" data-en="📖 Definition" data-id="📖 Definisi"></span>
+        <p class="lead" data-en="Two quantities <b class='hl-c'>x</b> and <b class='hl-p'>y</b> are in <b>inverse proportion</b> if, when one is multiplied by a number, the other is <b>divided by the same number</b>." data-id="Dua besaran <b class='hl-c'>x</b> dan <b class='hl-p'>y</b> berbanding balik jika salah satunya dikalikan suatu bilangan, besaran yang lain <b>dibagi dengan bilangan yang sama</b>."></p>
+        <p class="lead mt-s" data-en="double x → half y &nbsp;·&nbsp; triple x → a third of y &nbsp;·&nbsp; half x → double y" data-id="x dua kali → y setengah &nbsp;·&nbsp; x tiga kali → y sepertiga &nbsp;·&nbsp; x setengah → y dua kali"></p>
+        <div class="formula mt" style="font-size:clamp(24px,3vw,36px)">y ∝ 1/x</div>
+        <p class="center muted mt-s" data-en="“y is inversely proportional to x” — one goes up, the other goes down" data-id="“y berbanding balik dengan x” — satu naik, yang lain turun"></p>
+      </div>
+      <div class="card glow-p">
+        <span class="chip purp mb" data-en="🔑 The equation & the constant k" data-id="🔑 Persamaan &amp; konstanta k"></span>
+        <div class="formula" style="font-size:clamp(26px,3.4vw,40px)">y = k ÷ x</div>
+        <p class="lead mt-s" data-en="<b class='hl-k'>k</b> is the <b>constant of proportionality</b> — the fixed total product:" data-id="<b class='hl-k'>k</b> adalah <b>konstanta perbandingan</b> — hasil kali total yang tetap:"></p>
+        <div class="formula mt-s" style="font-size:clamp(22px,2.6vw,30px)">k = x × y</div>
+        <table class="nice mt">
+          <tr><th data-en="Builders x" data-id="Pekerja x"></th><th>1</th><th>2</th><th>3</th><th>4</th><th>6</th></tr>
+          <tr><td class="rowhead" data-en="Days y" data-id="Hari y"></td><td>12</td><td>6</td><td>4</td><td>3</td><td>2</td></tr>
+          <tr><td class="rowhead" data-en="x × y" data-id="x × y"></td><td class="hl-k">12</td><td class="hl-k">12</td><td class="hl-k">12</td><td class="hl-k">12</td><td class="hl-k">12</td></tr>
+        </table>
+        <p class="muted mt-s" style="font-size:13.5px" data-en="The wall needs 12 builder-days of work → k = 12, so y = 12 ÷ x. The product x × y never changes!" data-id="Tembok itu membutuhkan 12 hari-pekerja → k = 12, sehingga y = 12 ÷ x. Hasil kali x × y tidak pernah berubah!"></p>
+      </div>
+    </div>
+    <div class="alert mt">
+      ⚠️ <b data-en="Common mistakes — watch out!" data-id="Kesalahan umum — hati-hati!"></b>
+      <span data-en="(1) Inverse is the <b>opposite</b> of direct: here doubling x makes y <b>half</b>, not double. (2) The test is <b class='hl-k'>x × y constant</b>, NOT y ÷ x. If 2 painters take 6 days, 4 painters do not take 12 days — they take <b class='hl-g'>3 days</b>, because k = 2 × 6 = 12 and 12 ÷ 4 = 3." data-id="(1) Berbalik nilai adalah <b>kebalikan</b> dari senilai: di sini x dua kali membuat y <b>setengahnya</b>, bukan dua kali. (2) Ujiannya adalah <b class='hl-k'>x × y tetap</b>, BUKAN y ÷ x. Jika 2 pelukis butuh 6 hari, 4 pelukis tidak butuh 12 hari — melainkan <b class='hl-g'>3 hari</b>, karena k = 2 × 6 = 12 dan 12 ÷ 4 = 3."></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 : EVERYDAY USES (FLIP CARDS) ============ -->
+<section class="slide" id="s5">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🌍 Inverse Proportion Around Us" data-id="🌍 Perbandingan Berbalik Nilai di Sekitar Kita"></h2>
+    <p class="slide-sub" data-en="Inverse proportion is everywhere in daily life — click each card to flip it and see a real example with numbers!" data-id="Perbandingan berbalik nilai ada di mana-mana — klik setiap kartu untuk membaliknya dan lihat contoh nyata dengan angka!"></p>
+    <div class="grid3">
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">🚗</span><h3 data-en="Speed & Journey Time" data-id="Kecepatan &amp; Waktu"></h3><span class="chip accent" data-en="Fixed distance" data-id="Jarak tetap"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="A 240-mile trip at <b>60 mph</b> takes <b>4 hours</b>.<br>At <b>120 mph</b>: 240 ÷ 120 = <b>2 hours</b>.<br>Double the speed → half the time. k = 240 miles!" data-id="Perjalanan 240 mil dengan <b>60 mph</b> butuh <b>4 jam</b>.<br>Dengan <b>120 mph</b>: 240 ÷ 120 = <b>2 jam</b>.<br>Kecepatan dua kali → waktu setengah. k = 240 mil!"></div>
+      </div></div>
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">👷</span><h3 data-en="Workers & Days" data-id="Pekerja &amp; Hari"></h3><span class="chip accent" data-en="Fixed job" data-id="Pekerjaan tetap"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="A job needs <b>4 workers for 6 days</b> = 24 worker-days.<br>With <b>8 workers</b>: 24 ÷ 8 = <b>3 days</b>.<br>More workers ⇔ fewer days, k = 24!" data-id="Pekerjaan butuh <b>4 pekerja selama 6 hari</b> = 24 hari-pekerja.<br>Dengan <b>8 pekerja</b>: 24 ÷ 8 = <b>3 hari</b>.<br>Pekerja lebih banyak ⇔ hari lebih sedikit, k = 24!"></div>
+      </div></div>
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">🍕</span><h3 data-en="Sharing a Pizza" data-id="Membagi Pizza"></h3><span class="chip accent" data-en="Fixed number of slices" data-id="Potongan tetap"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="A pizza has <b>24 slices</b>.<br><b>8 guests</b> → 24 ÷ 8 = <b>3 slices each</b>.<br><b>12 guests</b> → 24 ÷ 12 = <b>2 slices each</b>.<br>More guests ⇔ smaller share, k = 24!" data-id="Sebuah pizza memiliki <b>24 potong</b>.<br><b>8 tamu</b> → 24 ÷ 8 = <b>3 potong per orang</b>.<br><b>12 tamu</b> → 24 ÷ 12 = <b>2 potong per orang</b>.<br>Tamu lebih banyak ⇔ bagian lebih kecil, k = 24!"></div>
+      </div></div>
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">🚰</span><h3 data-en="Taps & Filling Time" data-id="Keran &amp; Waktu Pengisian"></h3><span class="chip accent" data-en="Fixed tank size" data-id="Ukuran tangki tetap"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="A tank needs <b>2 taps for 30 minutes</b> = 60 tap-minutes.<br>With <b>4 taps</b>: 60 ÷ 4 = <b>15 minutes</b>.<br>More taps ⇔ faster filling, k = 60!" data-id="Sebuah tangki butuh <b>2 keran selama 30 menit</b> = 60 keran-menit.<br>Dengan <b>4 keran</b>: 60 ÷ 4 = <b>15 menit</b>.<br>Keran lebih banyak ⇔ pengisian lebih cepat, k = 60!"></div>
+      </div></div>
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">🎁</span><h3 data-en="Sharing a Prize" data-id="Membagi Hadiah"></h3><span class="chip accent" data-en="£120 fixed prize" data-id="Hadiah tetap £120"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="A <b>£120 prize</b> shared equally:<br><b>4 friends</b> → 120 ÷ 4 = <b>£30 each</b>.<br><b>8 friends</b> → 120 ÷ 8 = <b>£15 each</b>.<br>More people ⇔ smaller share, k = 120!" data-id="Hadiah <b>£120</b> dibagi rata:<br><b>4 teman</b> → 120 ÷ 4 = <b>£30 per orang</b>.<br><b>8 teman</b> → 120 ÷ 8 = <b>£15 per orang</b>.<br>Orang lebih banyak ⇔ bagian lebih kecil, k = 120!"></div>
+      </div></div>
+      <div class="flip"><div class="flip-inner">
+        <div class="flip-face"><span class="ico">⚙️</span><h3 data-en="Machines & Days" data-id="Mesin &amp; Hari"></h3><span class="chip accent" data-en="Fixed order" data-id="Pesanan tetap"></span><span class="tap" data-en="tap to flip ↻" data-id="klik untuk membalik ↻"></span></div>
+        <div class="flip-face flip-back" data-en="An order needs <b>5 machines for 12 days</b> = 60 machine-days.<br>With <b>10 machines</b>: 60 ÷ 10 = <b>6 days</b>.<br>More machines ⇔ fewer days, k = 60!" data-id="Pesanan butuh <b>5 mesin selama 12 hari</b> = 60 hari-mesin.<br>Dengan <b>10 mesin</b>: 60 ÷ 10 = <b>6 hari</b>.<br>Mesin lebih banyak ⇔ hari lebih sedikit, k = 60!"></div>
+      </div></div>
+    </div>
+    <div class="infobox mt" data-en="🔎 Notice the pattern: in every example the <b class='hl-k'>product x × y stays the same</b> — workers × days, speed × time, guests × slices, taps × minutes. That fixed product is the constant k!" data-id="🔎 Perhatikan polanya: di setiap contoh <b class='hl-k'>hasil kali x × y tetap sama</b> — pekerja × hari, kecepatan × waktu, tamu × potong, keran × menit. Hasil kali tetap itulah konstanta k!"></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 : TEST THE TABLE ============ -->
+<section class="slide" id="s6">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🔍 Detective Time · Is it Inverse Proportion?" data-id="🔍 Detektif Matematika · Apakah Berbalik Nilai?"></h2>
+    <p class="slide-sub" data-en="The test: click each yellow cell to reveal <b class='hl-k'>x × y</b>. If every product is the <b>same constant</b> → inverse proportion. If not → it isn't!" data-id="Caranya: klik setiap sel kuning untuk melihat <b class='hl-k'>x × y</b>. Jika semua hasil kalinya <b>konstanta yang sama</b> → berbalik nilai. Jika tidak → bukan!"></p>
+    <div class="grid2">
+      <div class="card glow-c">
+        <span class="chip accent mb" data-en="👷 Table A · Painting a house" data-id="👷 Tabel A · Mencat rumah"></span>
+        <table class="nice" id="tblA">
+          <tr><th></th><th></th><th></th><th></th><th></th></tr>
+          <tr><td class="rowhead" data-en="Painters x" data-id="Pelukis x"></td><td>2</td><td>3</td><td>4</td><td>6</td></tr>
+          <tr><td class="rowhead" data-en="Days y" data-id="Hari y"></td><td>12</td><td>8</td><td>6</td><td>4</td></tr>
+          <tr><td class="rowhead" data-en="x × y" data-id="x × y"></td>
+            <td class="ratio-cell" data-v="24">? ? ?</td><td class="ratio-cell" data-v="24">? ? ?</td><td class="ratio-cell" data-v="24">? ? ?</td><td class="ratio-cell" data-v="24">? ? ?</td></tr>
+        </table>
+        <div class="ansrow">
+          <button class="btn success sm verdict" data-tbl="A" data-val="ip" data-en="Inverse proportion ✔" data-id="Berbalik nilai ✔"></button>
+          <button class="btn ghost sm verdict" data-tbl="A" data-val="ni" data-en="Not inverse ✘" data-id="Tidak berbalik ✘"></button>
+        </div>
+        <div id="fbA" class="fb"></div>
+      </div>
+      <div class="card glow-p">
+        <span class="chip purp mb" data-en="🏗️ Table B · Building a shed" data-id="🏗️ Tabel B · Membangun gudang"></span>
+        <table class="nice" id="tblB">
+          <tr><th></th><th></th><th></th><th></th></tr>
+          <tr><td class="rowhead" data-en="Builders x" data-id="Pekerja x"></td><td>5</td><td>10</td><td>15</td></tr>
+          <tr><td class="rowhead" data-en="Days y" data-id="Hari y"></td><td>8</td><td>4</td><td>3</td></tr>
+          <tr><td class="rowhead" data-en="x × y" data-id="x × y"></td>
+            <td class="ratio-cell" data-v="40">? ? ?</td><td class="ratio-cell" data-v="40">? ? ?</td><td class="ratio-cell" data-v="45">? ? ?</td></tr>
+        </table>
+        <div class="ansrow">
+          <button class="btn success sm verdict" data-tbl="B" data-val="ip" data-en="Inverse proportion ✔" data-id="Berbalik nilai ✔"></button>
+          <button class="btn ghost sm verdict" data-tbl="B" data-val="ni" data-en="Not inverse ✘" data-id="Tidak berbalik ✘"></button>
+        </div>
+        <div id="fbB" class="fb"></div>
+      </div>
+    </div>
+    <div class="alert mt" data-en="🕵️ Why does Table B fail? The products are 40, 40, then 45 — not constant. In a true inverse table, <b>every single pair</b> must give the same product k. One broken pair is enough to say NO!" data-id="🕵️ Mengapa Tabel B gagal? Hasil kalinya 40, 40, lalu 45 — tidak tetap. Pada tabel berbalik nilai yang sejati, <b>setiap pasangan</b> harus menghasilkan produk k yang sama. Satu pasangan yang rusak sudah cukup untuk menjawab TIDAK!"></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 : INTERACTIVE GRAPH ============ -->
+<section class="slide" id="s7">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="📈 The Graph of y = k ÷ x" data-id="📈 Grafik y = k ÷ x"></h2>
+    <p class="slide-sub" data-en="Move the sliders! <b class='hl-c'>k</b> lifts the curve, <b class='hl-p'>x</b> slides the point along it. Watch the table and the equation update." data-id="Geser kedua slider! <b class='hl-c'>k</b> mengangkat kurva, <b class='hl-p'>x</b> menggeser titik di sepanjang kurva. Perhatikan tabel dan persamaannya ikut berubah."></p>
+    <div class="grid2">
+      <div>
+        <div class="card glow-c">
+          <div class="slider-label"><span data-en="Constant k" data-id="Konstanta k"></span><b id="kVal">k = 24</b></div>
+          <input type="range" id="kSlider" min="10" max="60" step="10" value="24">
+          <div class="slider-label mt-s"><span data-en="Value of x" data-id="Nilai x"></span><b id="xVal">x = 4</b></div>
+          <input type="range" id="xSlider" min="1" max="12" step="0.5" value="4">
+          <div class="formula mt" id="eqLine" style="font-size:clamp(20px,2.4vw,30px);letter-spacing:1px">y = 24 ÷ 4 = 6</div>
+          <div class="chip-row mt-s">
+            <span class="chip accent" id="chipK">k = 24</span>
+            <span class="chip purp" id="chipX">x = 4</span>
+            <span class="chip" id="chipY" style="border-color:rgba(244,114,182,.5);color:#fbcfe8">y = 6</span>
+          </div>
+        </div>
+        <div class="card mt">
+          <span class="chip accent" data-en="📋 Table: x → y" data-id="📋 Tabel: x → y"></span>
+          <table class="nice mt-s" id="gTable">
+            <tr><th>x</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+            <tr id="gTableRowY"><td class="rowhead">y</td><td>24</td><td>12</td><td>8</td><td>6</td><td>4.8</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card glow-p">
+        <canvas id="gCanvas"></canvas>
+        <p class="gcap" data-en="💡 An inverse-proportion graph is a <b class='hl-c'>curve (hyperbola) that never touches the axes</b>. Double x → half y. Why never touch? You cannot have 0 days of work — x must stay above 0!" data-id="💡 Grafik perbandingan berbalik nilai berupa <b class='hl-c'>kurva (hiperbola) yang tidak pernah menyentuh kedua sumbu</b>. x dua kali → y setengah. Mengapa tidak menyentuh? Tidak mungkin pekerjaan selesai dalam 0 hari — x harus lebih dari 0!"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 : INVERSE MACHINE ============ -->
+<section class="slide" id="s8">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="⚙️ The Inverse Machine" data-id="⚙️ Mesin Berbalik Nilai"></h2>
+    <p class="slide-sub" data-en="A machine powered by y = k ÷ x. Choose k, choose the direction, feed it a number — and watch the steps appear!" data-id="Sebuah mesin yang bekerja dengan y = k ÷ x. Pilih k, pilih arah, masukkan sebuah angka — dan lihat langkah-langkahnya muncul!"></p>
+    <div class="grid2">
+      <div class="card glow-c">
+        <div class="chip-row mb">
+          <button class="btn sm primary modebtn on" id="mModeF" data-en="Forward: y = k ÷ x" data-id="Maju: y = k ÷ x"></button>
+          <button class="btn sm ghost modebtn" id="mModeR" data-en="Reverse: x = k ÷ y" data-id="Mundur: x = k ÷ y"></button>
+        </div>
+        <span class="chip purp" data-en="1️⃣ Choose the constant k" data-id="1️⃣ Pilih konstanta k"></span>
+        <div class="chip-row mt-s" id="mKRow">
+          <button class="kchip" data-k="12">k = 12</button>
+          <button class="kchip on" data-k="24">k = 24</button>
+          <button class="kchip" data-k="30">k = 30</button>
+          <button class="kchip" data-k="36">k = 36</button>
+          <button class="kchip" data-k="48">k = 48</button>
+          <button class="kchip" data-k="60">k = 60</button>
+        </div>
+        <div class="mt">
+          <span class="chip accent" id="mInputLabel">2️⃣ Enter x</span>
+          <div class="ansrow">
+            <input id="mInput" class="input" inputmode="decimal" placeholder="4">
+            <button id="mGo" class="btn primary sm" data-en="Compute ▸" data-id="Hitung ▸"></button>
+          </div>
+          <div id="mErr" class="err"></div>
+        </div>
+      </div>
+      <div class="card glow-p center" style="display:flex;flex-direction:column;justify-content:center">
+        <span class="chip purp" style="align-self:center" data-en="🎯 Result" data-id="🎯 Hasil"></span>
+        <div id="mResult" class="mt">—</div>
+        <div id="mSteps" class="sol mt" style="display:none;text-align:left">
+          <div class="sol-title" data-en="Solution steps" data-id="Langkah perhitungan"></div>
+          <div id="mStepsBody"></div>
+        </div>
+      </div>
+    </div>
+    <div class="infobox mt" data-en="🧪 Try this: set <b>k = 24</b> and enter <b>x = 4</b> → the machine answers y = 6. Now switch to <b>Reverse</b> and enter y = 6 → the machine gives back x = 4. Notice: bigger x ⇒ smaller y — that is what inverse means!" data-id="🧪 Coba ini: atur <b>k = 24</b> dan masukkan <b>x = 4</b> → mesin menjawab y = 6. Sekarang ganti ke mode <b>Mundur</b> dan masukkan y = 6 → mesin mengembalikan x = 4. Perhatikan: x makin besar ⇒ y makin kecil — itulah makna 'berbalik'!"></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 : PRACTICE ARENA ============ -->
+<section class="slide" id="s9">
+  <div class="slide-inner">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <h2 class="slide-title" style="margin:0" data-en="🏆 Practice Arena" data-id="🏆 Arena Latihan"></h2>
+      <div class="spacer"></div>
+      <span class="chip accent" id="scoreChip">⭐ Score: 0 / 10</span>
+      <span class="chip purp" id="progChip">✅ 0 / 10 answered</span>
+      <button class="btn sm ghost" id="resetBtn" data-en="↺ Reset" data-id="↺ Ulangi"></button>
+    </div>
+    <p class="slide-sub" style="margin-top:8px" data-en="10 real-life word problems (Cambridge style). More hands → less time! Read carefully, type your answer, then check. A full solution is always available — but try first!" data-id="10 soal cerita kehidupan nyata (gaya Cambridge). Bantuan lebih banyak → waktu lebih singkat! Baca dengan teliti, tulis jawabanmu, lalu periksa. Pembahasan lengkap selalu tersedia — tapi coba dulu, ya!"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center" id="jumpGrid"></div>
+    <div class="card glow-c mt" id="pCard">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span class="chip purp" id="pCount">Problem 1 of 10</span>
+        <span class="stars" id="pStars">★☆☆</span>
+        <span class="chip" id="pTopic" data-en="inverse proportion" data-id="perbandingan berbalik nilai"></span>
+      </div>
+      <p class="story-q mt" id="pStory"></p>
+      <p class="lead mt-s" id="pQuestion"></p>
+      <div class="ansrow">
+        <input id="pAns" class="input" inputmode="decimal" data-en-ph="type your answer…" data-id-ph="tulis jawabanmu…" placeholder="type your answer…">
+        <span class="unitlbl" id="pUnit"></span>
+        <button id="pCheck" class="btn success sm" data-en="Check Answer" data-id="Cek Jawaban"></button>
+        <button id="pHintBtn" class="btn pink sm" data-en="💡 Hint" data-id="💡 Petunjuk"></button>
+        <button id="pSolBtn" class="btn ghost sm" data-en="📖 Show Solution" data-id="📖 Lihat Pembahasan"></button>
+      </div>
+      <div id="pFb" class="fb"></div>
+      <div id="pHintText" class="hintbox mt hidden"></div>
+      <div id="pSol" class="sol hidden">
+        <div class="sol-title" data-en="📖 Solution (pembahasan)" data-id="📖 Pembahasan"></div>
+        <div class="mt-s" id="pKLine"></div>
+        <ol id="pSolBody"></ol>
+      </div>
+    </div>
+    <div class="ansrow" style="justify-content:space-between">
+      <button id="pPrev" class="btn ghost sm" data-en="◂ Previous" data-id="◂ Sebelumnya"></button>
+      <button id="pNext" class="btn primary sm" data-en="Next ▸" data-id="Berikutnya ▸"></button>
+    </div>
+    <div id="finale" class="banner hidden"></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10 : CONCLUSION ============ -->
+<section class="slide" id="s10">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🧠 Conclusion — What We Learned Today" data-id="🧠 Kesimpulan — Yang Kita Pelajari Hari Ini"></h2>
+    <p class="slide-sub" data-en="Four big ideas to carry with you:" data-id="Empat gagasan besar untuk dibawa pulang:"></p>
+    <div class="grid2">
+      <div class="card glow-c takeaway"><span class="ti">🔑</span><div>
+        <h3 data-en="The rule" data-id="Aturannya"></h3>
+        <p data-en="Inverse proportion means <b class='hl-c'>y = k ÷ x</b>. The constant of proportionality is the fixed product <b class='hl-k'>k = x × y</b>. Equivalently, <b class='hl-g'>x₁ × y₁ = x₂ × y₂</b> for any two pairs." data-id="Perbandingan berbalik nilai berarti <b class='hl-c'>y = k ÷ x</b>. Konstanta perbandingannya adalah hasil kali tetap <b class='hl-k'>k = x × y</b>. Setara dengannya, <b class='hl-g'>x₁ × y₁ = x₂ × y₂</b> untuk dua pasangan nilai mana pun."></p>
+      </div></div>
+      <div class="card glow-p takeaway"><span class="ti">📈</span><div>
+        <h3 data-en="The graph" data-id="Grafiknya"></h3>
+        <p data-en="The graph of <b class='hl-p'>y = k ÷ x</b> is a <b>curve (hyperbola) that never touches the axes</b>. Doubling x halves y. The curve gets close to the axes but x and y can never be 0." data-id="Grafik <b class='hl-p'>y = k ÷ x</b> berupa <b>kurva (hiperbola) yang tidak pernah menyentuh kedua sumbu</b>. Menggandakan x membuat y menjadi setengahnya. Kurva mendekati sumbu tetapi x dan y tidak akan pernah 0."></p>
+      </div></div>
+      <div class="card glow-c takeaway"><span class="ti">🧮</span><div>
+        <h3 data-en="Solving method" data-id="Cara menyelesaikan"></h3>
+        <p data-en="<b>Find the fixed total first:</b> multiply the given pair to get k. Then divide: need new y? Compute <b class='hl-c'>y = k ÷ x</b>; need new x? Compute <b class='hl-c'>x = k ÷ y</b>." data-id="<b>Cari dulu total tetapnya:</b> kalikan pasangan nilai yang diketahui untuk mendapat k. Lalu bagi: butuh y baru? Hitung <b class='hl-c'>y = k ÷ x</b>; butuh x baru? Hitung <b class='hl-c'>x = k ÷ y</b>."></p>
+      </div></div>
+      <div class="card glow-p takeaway"><span class="ti">🔍</span><div>
+        <h3 data-en="The test (vs. direct!)" data-id="Ujiannya (vs. senilai!)"></h3>
+        <p data-en="Inverse: <b class='hl-k'>x × y is the same</b> for every pair, and the two quantities move in <b>opposite directions</b>. Direct: y ÷ x is constant and both move <b>the same way</b>. Check both tests when you are not sure!" data-id="Berbalik nilai: <b class='hl-k'>x × y sama</b> untuk setiap pasangan, dan kedua besaran bergerak <b>berlawanan arah</b>. Senilai: y ÷ x tetap dan keduanya bergerak <b>searah</b>. Periksa kedua ujian saat ragu!"></p>
+      </div></div>
+    </div>
+    <div class="banner" data-en="⭐ Remember: double x → half y. Halve x → double y. The product x × y never changes!" data-id="⭐ Ingat: x dua kali → y setengah. x setengah → y dua kali. Hasil kali x × y tidak pernah berubah!"></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11 : REFLECTION ============ -->
+<section class="slide" id="s11">
+  <div class="slide-inner">
+    <h2 class="slide-title" data-en="🪞 Reflection" data-id="🪞 Refleksi"></h2>
+    <p class="slide-sub" data-en="Take a quiet minute. Your notes stay on this screen — they are just for you." data-id="Luangkan satu menit hening. Catatanmu hanya tampil di layar ini — murni untukmu sendiri."></p>
+    <div class="card glow-p center">
+      <span class="chip purp" data-en="How confident do you feel about inverse proportion now?" data-id="Seberapa yakin kamu sekarang dengan perbandingan berbalik nilai?"></span>
+      <div class="chip-row mt" style="justify-content:center" id="rRow">
+        <button class="rchip" title="1">😟</button>
+        <button class="rchip" title="2">😕</button>
+        <button class="rchip" title="3">😐</button>
+        <button class="rchip" title="4">🙂</button>
+        <button class="rchip" title="5">🤩</button>
+      </div>
+      <div id="rMsg" class="fb center mt-s"></div>
+    </div>
+    <div class="grid3 mt">
+      <div class="card">
+        <span class="chip accent" data-en="⭐ Star 1" data-id="⭐ Bintang 1"></span>
+        <p class="muted mt-s" style="font-size:13.5px" data-en="One thing I understood well today…" data-id="Satu hal yang saya pahami dengan baik hari ini…"></p>
+        <textarea class="input mt-s" rows="3"></textarea>
+      </div>
+      <div class="card">
+        <span class="chip purp" data-en="🌫️ Wish" data-id="🌫️ Harapan"></span>
+        <p class="muted mt-s" style="font-size:13.5px" data-en="One thing I still find tricky…" data-id="Satu hal yang masih membingungkan…"></p>
+        <textarea class="input mt-s" rows="3"></textarea>
+      </div>
+      <div class="card">
+        <span class="chip accent" data-en="🌍 Around me" data-id="🌍 Di sekitarku"></span>
+        <p class="muted mt-s" style="font-size:13.5px" data-en="One real example of inverse proportion I noticed this week…" data-id="Satu contoh nyata perbandingan berbalik nilai yang saya temukan minggu ini…"></p>
+        <textarea class="input mt-s" rows="3"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12 : THANK YOU ============ -->
+<section class="slide" id="s12">
+  <div class="slide-inner cover">
+    <span class="chip accent">🎉 Lesson complete</span>
+    <h1 class="neon-title" style="font-size:clamp(30px,5vw,54px)" data-en="THANK YOU<br>FOR TODAY!" data-id="TERIMA KASIH<br>UNTUK HARI INI!"></h1>
+    <p class="lead center" style="max-width:640px" data-en="Great work, <b class='student-name'>…</b>! You can now define it, spot it in daily life, test a table, draw the curve, and solve real problems." data-id="Kerja bagus, <b class='student-name'>…</b>! Sekarang kamu bisa menjelaskannya, menemukannya dalam kehidupan sehari-hari, menguji tabel, menggambar kurvanya, dan menyelesaikan soal nyata."></p>
+    <div class="chip-row" style="justify-content:center">
+      <span class="chip accent" id="thanksScore">⭐ Your score: 0 / 10</span>
+      <span class="chip" id="thanksBadge" data-en="🏅 Inverse Proportion Explorer" data-id="🏅 Penjelajah Perbandingan Berbalik"></span>
+    </div>
+    <div class="cover-meta">
+      <span class="chip" data-en="🔑 y = k ÷ x" data-id="🔑 y = k ÷ x"></span>
+      <span class="chip" data-en="📈 hyperbola — never touches the axes" data-id="📈 hiperbola — tak pernah menyentuh sumbu"></span>
+      <span class="chip" data-en="🧮 k = x × y" data-id="🧮 k = x × y"></span>
+      <span class="chip" data-en="🌍 everywhere in daily life" data-id="🌍 ada di mana-mana"></span>
+    </div>
+    <button id="restartBtn" class="btn primary" data-en="↺ Restart the lesson" data-id="↺ Ulangi pelajaran"></button>
+    <p class="muted" style="font-size:12.5px" data-en="Cambridge Lower Secondary Mathematics · Stage 8 · Ratio & Proportion — Inverse Proportion" data-id="Cambridge Lower Secondary Mathematics · Stage 8 · Ratio &amp; Proportion — Perbandingan Berbalik Nilai"></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="nav">
+  <button id="prevBtn" class="btn sm ghost" data-en="◂ Prev" data-id="◂ Mundur"></button>
+  <div id="dots"></div>
+  <span id="counter">1 / 12</span>
+  <button id="nextBtn" class="btn sm primary" data-en="Next ▸" data-id="Lanjut ▸"></button>
+  <div class="spacer"></div>
+  <div class="kbd-hint"><span class="kbd">←</span><span class="kbd">→</span><span data-en="keyboard navigation" data-id="navigasi papan tuts"></span></div>
+</footer>
+</div>
+
+<canvas id="confetti"></canvas>
+<script>
+"use strict";
+/* ================= STATE ================= */
+const S = {
+  lang: "en",
+  name: "",
+  idx: 0,
+  cur: 0,
+  score: 0,
+  results: Array(10).fill(null),   // null | "ok" | "no" | "seen"
+  tries: Array(10).fill(0),
+  seen: Array(10).fill(false),
+  answers: Array(10).fill(""),
+  guessState: 0,                   // 0 none, 1 good, 2 close, 3 no
+  rating: 0
+};
+const N_SLIDES = 12;
+
+/* ================= UI STRINGS (dynamic) ================= */
+const U = {
+  score:        {en:"⭐ Score", id:"⭐ Skor"},
+  answered:     {en:"answered", id:"terjawab"},
+  problem:      {en:"Problem", id:"Soal"},
+  of:           {en:"of", id:"dari"},
+  correct:      {en:"✅ Correct! +1 point", id:"✅ Benar! +1 poin"},
+  correctNoPt:  {en:"✅ Correct — well done! (No extra point: the solution was already shown or an earlier try was wrong.)", id:"✅ Benar — hebat! (Tidak ada poin tambahan: pembahasan sudah terbuka atau percobaan sebelumnya keliru.)"},
+  tryAgain:     {en:"❌ Not yet — check your calculation and try again.", id:"❌ Belum tepat — periksa perhitunganmu dan coba lagi."},
+  tryAgain2:    {en:"🤔 Still not right. Open the 💡 Hint, or check the solution if you are ready.", id:"🤔 Masih belum tepat. Buka 💡 Petunjuk, atau lihat pembahasannya jika sudah siap."},
+  empty:        {en:"Type your answer first!", id:"Tulis jawabanmu dulu!"},
+  alreadyOk:    {en:"😎 You already solved this one!", id:"😎 Soal ini sudah kamu jawab benar!"},
+  kLine:        {en:"🔑 Constant of proportionality", id:"🔑 Konstanta perbandingan"},
+  yourScore:    {en:"⭐ Your score: {s} / 10", id:"⭐ Skormu: {s} / 10"},
+  finaleHi:     {en:"🎉 Amazing, {n}! Score {s}/10 — you are a true Inverse Proportion Master! 🏆", id:"🎉 Luar biasa, {n}! Skor {s}/10 — kamu benar-benar ahli perbandingan berbalik nilai! 🏆"},
+  finaleMid:    {en:"💪 Good effort, {n}! Score {s}/10. Re-read the solutions you missed — next time it will click!", id:"💪 Upaya bagus, {n}! Skor {s}/10. Baca lagi pembahasan soal yang keliru — lain kali pasti bisa!"},
+  finaleKeep:   {en:"🌱 Keep going, {n}! Score {s}/10. Revisit the slides, then try the arena again — every attempt makes you stronger!", id:"🌱 Semangat terus, {n}! Skor {s}/10. Pelajari lagi slidenya, lalu coba lagi — setiap percobaan membuatmu makin kuat!"},
+  r1: {en:"It is okay to feel unsure! Scroll back to the graph and machine slides, then try again.", id:"Wajar merasa belum yakin! Gulir kembali ke slide grafik dan mesin, lalu coba lagi."},
+  r2: {en:"You are getting there! Re-read the definition and the table test.", id:"Kamu hampir sampai! Baca lagi bagian definisi dan uji tabel."},
+  r3: {en:"Solid start! Try a few more practice problems to build confidence.", id:"Awal yang baik! Coba beberapa soal latihan lagi agar makin percaya diri."},
+  r4: {en:"Great! You are almost an Inverse Proportion Master.", id:"Bagus! Kamu hampir menjadi ahli perbandingan berbalik nilai."},
+  r5: {en:"Fantastic! You are a true Inverse Proportion Master! 🏆", id:"Luar biasa! Kamu benar-benar ahli perbandingan berbalik nilai! 🏆"},
+  guessGood: {en:"✅ 2 days — spot on! You already think in inverse proportions!", id:"✅ 2 hari — tepat sekali! Kamu sudah berpikir dengan perbandingan berbalik nilai!"},
+  guessClose:{en:"🟡 Very close! The exact answer is 2 days. Open “Show me how” to see why.", id:"🟡 Hampir tepat! Jawaban tepatnya 2 hari. Buka “Tunjukkan caranya” untuk melihat alasannya."},
+  guessNo:   {en:"❌ Not quite — the answer is 2 days. Tap “Show me how” to watch the constant product in action.", id:"❌ Belum tepat — jawabannya 2 hari. Klik “Tunjukkan caranya” untuk melihat hasil kali tetap dalam aksi."},
+  guessEmpty:{en:"Type a number first!", id:"Tulis angkanya dulu!"},
+  Aok: {en:"✅ Yes! Every product x × y = 24 — the same constant — so it IS inverse proportion.", id:"✅ Betul! Setiap hasil kali x × y = 24 — konstanta yang sama — jadi ini BERBALIK NILAI."},
+  Ano: {en:"🔍 Look again — click the yellow cells. All four products are equal (24), so Table A IS inverse proportion.", id:"🔍 Periksa lagi — klik sel kuningnya. Keempat hasil kalinya sama (24), jadi Tabel A BERBALIK NILAI."},
+  Bok: {en:"✅ Exactly! The products differ (40, 40, 45), so it is NOT inverse proportion. One broken pair is enough!", id:"✅ Tepat! Hasil kalinya berbeda (40, 40, 45), jadi BUKAN perbandingan berbalik nilai. Satu pasangan rusak sudah cukup!"},
+  Bno: {en:"❌ Not this one — the products are 40, 40 and 45: not constant! So it is NOT inverse proportion.", id:"❌ Bukan yang ini — hasil kalinya 40, 40, dan 45: tidak tetap! Jadi BUKAN perbandingan berbalik nilai."},
+  mErr: {en:"Enter a number!", id:"Masukkan angka!"},
+  mZero:{en:"Enter a number greater than 0!", id:"Masukkan angka lebih dari 0!"},
+  mKconst: {en:"k = {k} (constant product)", id:"k = {k} (hasil kali tetap)"},
+  mStepF:  {en:"y = k ÷ x = {k} ÷ {x} = {y}", id:"y = k ÷ x = {k} ÷ {x} = {y}"},
+  mStepR:  {en:"x = k ÷ y = {k} ÷ {y} = {x}", id:"x = k ÷ y = {k} ÷ {y} = {x}"}
+};
+
+/* ================= 10 BILINGUAL PROBLEMS ================= */
+const PROBLEMS = [
+ {ans:4, tol:0.01, unit:{en:"days", id:"hari"}, stars:1,
+  en:{story:"A construction team of 6 workers builds a garden wall in 8 days.",
+      q:"How long would the same wall take 12 workers, all working at the same rate?",
+      hint:"The total work stays the same: workers × days = k. Divide k by the new number of workers.",
+      steps:["k = 6 × 8 = 48 worker-days","Days = 48 ÷ 12 = 4 days","Check: 12 × 4 = 48 ✓ (twice the workers → half the time)"],
+      k:"k = 48 worker-days"},
+  id:{story:"Tim konstruksi 6 pekerja membangun tembok taman dalam 8 hari.",
+      q:"Berapa lama tembok yang sama diselesaikan 12 pekerja dengan laju kerja yang sama?",
+      hint:"Total pekerjaan tetap: pekerja × hari = k. Bagi k dengan banyaknya pekerja baru.",
+      steps:["k = 6 × 8 = 48 hari-pekerja","Hari = 48 ÷ 12 = 4 hari","Periksa: 12 × 4 = 48 ✓ (pekerja dua kali → waktu setengah)"],
+      k:"k = 48 hari-pekerja"}},
+ {ans:4, tol:0.01, unit:{en:"hours", id:"jam"}, stars:1,
+  en:{story:"A car travels at 60 mph and completes a journey in 3 hours.",
+      q:"How long would the same journey take at 45 mph?",
+      hint:"The distance is fixed: speed × time = k. Then divide by the new speed.",
+      steps:["k = 60 × 3 = 180 miles (the distance)","Time = 180 ÷ 45 = 4 hours","Check: 45 × 4 = 180 ✓ (slower speed → longer time)"],
+      k:"k = 180 miles"},
+  id:{story:"Sebuah mobil melaju 60 mph dan menyelesaikan perjalanan dalam 3 jam.",
+      q:"Berapa lama perjalanan yang sama dengan kecepatan 45 mph?",
+      hint:"Jaraknya tetap: kecepatan × waktu = k. Lalu bagi dengan kecepatan baru.",
+      steps:["k = 60 × 3 = 180 mil (jaraknya)","Waktu = 180 ÷ 45 = 4 jam","Periksa: 45 × 4 = 180 ✓ (lebih lambat → lebih lama)"],
+      k:"k = 180 mil"}},
+ {ans:7.5, tol:0.01, unit:{en:"£", id:"£"}, stars:2,
+  en:{story:"A prize of £120 is shared equally among 8 friends.",
+      q:"How much would each friend get if 16 friends shared the same prize?",
+      hint:"The total is fixed: friends × share = k. Divide £120 by the new number of friends.",
+      steps:["k = 8 × 15 = 120 pounds","Share = 120 ÷ 16 = £7.50","Check: 16 × 7.50 = 120 ✓ (twice the friends → half the share)"],
+      k:"k = £120"},
+  id:{story:"Hadiah sebesar £120 dibagi rata kepada 8 teman.",
+      q:"Berapa bagian setiap teman jika hadiah yang sama dibagi kepada 16 teman?",
+      hint:"Totalnya tetap: teman × bagian = k. Bagi £120 dengan banyaknya teman baru.",
+      steps:["k = 8 × 15 = 120 pound","Bagian = 120 ÷ 16 = £7,50","Periksa: 16 × 7,50 = 120 ✓ (teman dua kali → bagian setengah)"],
+      k:"k = £120"}},
+ {ans:15, tol:0.01, unit:{en:"minutes", id:"menit"}, stars:2,
+  en:{story:"3 taps fill a swimming pool in 40 minutes.",
+      q:"How long would the same pool take to fill with 8 taps running?",
+      hint:"Total work: taps × minutes = k. Divide k by the new number of taps.",
+      steps:["k = 3 × 40 = 120 tap-minutes","Time = 120 ÷ 8 = 15 minutes","Check: 8 × 15 = 120 ✓ (more taps → much faster)"],
+      k:"k = 120 tap-minutes"},
+  id:{story:"3 keran mengisi kolam renang dalam 40 menit.",
+      q:"Berapa lama kolam yang sama terisi dengan 8 keran?",
+      hint:"Total pekerjaan: keran × menit = k. Bagi k dengan banyaknya keran baru.",
+      steps:["k = 3 × 40 = 120 keran-menit","Waktu = 120 ÷ 8 = 15 menit","Periksa: 8 × 15 = 120 ✓ (keran lebih banyak → jauh lebih cepat)"],
+      k:"k = 120 keran-menit"}},
+ {ans:3, tol:0.01, unit:{en:"days", id:"hari"}, stars:1,
+  en:{story:"A factory uses 5 machines to complete an order in 12 days.",
+      q:"How long would the same order take with 20 machines?",
+      hint:"k = machines × days. Divide k by the new number of machines.",
+      steps:["k = 5 × 12 = 60 machine-days","Days = 60 ÷ 20 = 3 days","Check: 20 × 3 = 60 ✓ (four times the machines → a quarter of the time)"],
+      k:"k = 60 machine-days"},
+  id:{story:"Sebuah pabrik memakai 5 mesin untuk menyelesaikan pesanan dalam 12 hari.",
+      q:"Berapa lama pesanan yang sama selesai dengan 20 mesin?",
+      hint:"k = mesin × hari. Bagi k dengan banyaknya mesin baru.",
+      steps:["k = 5 × 12 = 60 hari-mesin","Hari = 60 ÷ 20 = 3 hari","Periksa: 20 × 3 = 60 ✓ (mesin empat kali → waktu seperempat)"],
+      k:"k = 60 hari-mesin"}},
+ {ans:12, tol:0.01, unit:{en:"hours", id:"jam"}, stars:1,
+  en:{story:"It takes 6 bakers 10 hours to prepare the bread for a market.",
+      q:"How long would the same preparation take with only 5 bakers?",
+      hint:"Fewer bakers → more time! Keep k the same and divide by 5.",
+      steps:["k = 6 × 10 = 60 baker-hours","Hours = 60 ÷ 5 = 12 hours","Check: 5 × 12 = 60 ✓ (one fewer baker → longer time)"],
+      k:"k = 60 baker-hours"},
+  id:{story:"Enam juru roti membutuhkan 10 jam untuk menyiapkan roti untuk pasar.",
+      q:"Berapa lama persiapan yang sama dengan hanya 5 juru roti?",
+      hint:"Juru roti lebih sedikit → waktu lebih lama! Tetapkan k lalu bagi dengan 5.",
+      steps:["k = 6 × 10 = 60 jam-kerja juru roti","Jam = 60 ÷ 5 = 12 jam","Periksa: 5 × 12 = 60 ✓ (juru roti berkurang → waktu bertambah)"],
+      k:"k = 60 jam-kerja juru roti"}},
+ {ans:12, tol:0.01, unit:{en:"days", id:"hari"}, stars:2,
+  en:{story:"A barn has enough feed to keep 15 horses for 8 days.",
+      q:"How many days would the same feed last for 10 horses?",
+      hint:"The total feed is fixed: horses × days = k. Divide k by 10.",
+      steps:["k = 15 × 8 = 120 horse-days","Days = 120 ÷ 10 = 12 days","Check: 10 × 12 = 120 ✓ (fewer horses → feed lasts longer)"],
+      k:"k = 120 horse-days"},
+  id:{story:"Sebuah kandang memiliki cukup pakan untuk 15 kuda selama 8 hari.",
+      q:"Berapa hari pakan yang sama habis untuk 10 kuda?",
+      hint:"Total pakan tetap: kuda × hari = k. Bagi k dengan 10.",
+      steps:["k = 15 × 8 = 120 hari-kuda","Hari = 120 ÷ 10 = 12 hari","Periksa: 10 × 12 = 120 ✓ (kuda lebih sedikit → pakan lebih awet)"],
+      k:"k = 120 hari-kuda"}},
+ {ans:15, tol:0.01, unit:{en:"mph", id:"mph"}, stars:3,
+  en:{story:"Amara cycles a 60-mile route at 12 mph, which takes her 5 hours.",
+      q:"What speed would she need to cycle the same route in 4 hours?",
+      hint:"This time you need the speed: distance is fixed, so speed = k ÷ time.",
+      steps:["k = 12 × 5 = 60 miles (the distance)","Speed = 60 ÷ 4 = 15 mph","Check: 15 × 4 = 60 ✓ (less time → faster speed)"],
+      k:"k = 60 miles"},
+  id:{story:"Amara bersepeda menempuh rute 60 mil dengan kecepatan 12 mph, butuh waktu 5 jam.",
+      q:"Berapa kecepatan yang dibutuhkan untuk menempuh rute yang sama dalam 4 jam?",
+      hint:"Kali ini yang dicari kecepatan: jarak tetap, jadi kecepatan = k ÷ waktu.",
+      steps:["k = 12 × 5 = 60 mil (jaraknya)","Kecepatan = 60 ÷ 4 = 15 mph","Periksa: 15 × 4 = 60 ✓ (waktu lebih singkat → kecepatan lebih tinggi)"],
+      k:"k = 60 mil"}},
+ {ans:3.2, tol:0.01, unit:{en:"hours", id:"jam"}, stars:3,
+  en:{story:"At 40 km/h, a coach journey takes 8 hours.",
+      q:"How long would the same journey take at 100 km/h? Give your answer in hours.",
+      hint:"k = 40 × 8 is the fixed distance in km. Divide by the new speed.",
+      steps:["k = 40 × 8 = 320 km (the distance)","Time = 320 ÷ 100 = 3.2 hours","That is 3 hours and 0.2 × 60 = 12 minutes ✓"],
+      k:"k = 320 km"},
+  id:{story:"Dengan kecepatan 40 km/jam, sebuah perjalanan bus memakan waktu 8 jam.",
+      q:"Berapa lama perjalanan yang sama dengan kecepatan 100 km/jam? Jawab dalam jam.",
+      hint:"k = 40 × 8 adalah jarak tetap dalam km. Bagi dengan kecepatan baru.",
+      steps:["k = 40 × 8 = 320 km (jaraknya)","Waktu = 320 ÷ 100 = 3,2 jam","Yaitu 3 jam dan 0,2 × 60 = 12 menit ✓"],
+      k:"k = 320 km"}},
+ {ans:6, tol:0.01, unit:{en:"hours", id:"jam"}, stars:2,
+  en:{story:"2 large pipes can fill a water tank in 9 hours.",
+      q:"How long would the same tank take to fill with 3 pipes?",
+      hint:"k = pipes × hours. Divide k by the new number of pipes.",
+      steps:["k = 2 × 9 = 18 pipe-hours","Hours = 18 ÷ 3 = 6 hours","Check: 3 × 6 = 18 ✓ (one more pipe → three hours saved)"],
+      k:"k = 18 pipe-hours"},
+  id:{story:"2 pipa besar dapat mengisi tangki air dalam 9 jam.",
+      q:"Berapa lama tangki yang sama terisi dengan 3 pipa?",
+      hint:"k = pipa × jam. Bagi k dengan banyaknya pipa baru.",
+      steps:["k = 2 × 9 = 18 pipa-jam","Jam = 18 ÷ 3 = 6 jam","Periksa: 3 × 6 = 18 ✓ (satu pipa tambahan → tiga jam lebih cepat)"],
+      k:"k = 18 pipa-jam"}}
+];
+
+/* ================= HELPERS ================= */
+const $ = id => document.getElementById(id);
+function fmt(n){ return String(parseFloat(n.toFixed(2))); }
+function parseNum(v){ if(typeof v !== "string") return NaN; const t = v.trim().replace(",", "."); if(t === "") return NaN; return Number(t); }
+function tpl(str, obj){ return str.replace(/\{(\w+)\}/g, (m,k)=> obj[k] !== undefined ? obj[k] : m); }
+function setPh(el){ const v = el.getAttribute("data-" + S.lang + "-ph"); if(v) el.setAttribute("placeholder", v); }
+
+/* ================= I18N ================= */
+function locNum(v){ return S.lang === "id" ? String(v).replace(".", ",") : String(v); }
+function applyLang(){
+  document.querySelectorAll("[data-en]").forEach(el=>{
+    const v = el.getAttribute("data-" + S.lang);
+    if(v !== null) el.innerHTML = v;
+  });
+  document.querySelectorAll("[data-en-ph]").forEach(setPh);
+  $("langBtn").textContent = S.lang === "en" ? "🌐 ID" : "🌐 EN";
+  document.documentElement.lang = S.lang;
+  document.querySelectorAll(".ratio-cell.revealed").forEach(c=>{ c.textContent = locNum(c.dataset.v); });
+  renderGuessFb();
+  updateChips();
+  renderProblem();
+  updateMachineLabels();
+  drawGraph();
+  updateThanks();
+  if(S.finaleShown) renderFinale(false);
+  document.querySelectorAll(".student-name").forEach(el=>{ el.textContent = S.name || "…"; });
+}
+
+/* ================= NAVIGATION ================= */
+function goTo(i){
+  S.idx = Math.max(0, Math.min(N_SLIDES - 1, i));
+  document.querySelectorAll(".slide").forEach((s, j)=> s.classList.toggle("active", j === S.idx));
+  $("progressFill").style.width = ((S.idx + 1) / N_SLIDES * 100) + "%";
+  $("counter").textContent = (S.idx + 1) + " / " + N_SLIDES;
+  document.querySelectorAll(".dot").forEach((d, j)=> d.classList.toggle("on", j === S.idx));
+  $("prevBtn").disabled = S.idx === 0;
+  $("nextBtn").disabled = S.idx === N_SLIDES - 1;
+  const act = document.querySelector(".slide.active");
+  if(act) act.scrollTop = 0;
+  if(S.idx === 6) drawGraph();
+}
+function keyNav(e){
+  const t = document.activeElement;
+  const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
+  if(e.key === "ArrowRight" && !typing) goTo(S.idx + 1);
+  else if(e.key === "ArrowLeft" && !typing) goTo(S.idx - 1);
+}
+
+/* ================= COVER ================= */
+function startLesson(){
+  const nm = $("nameInput").value.trim();
+  if(!nm){
+    $("nameErr").style.display = "block";
+    const box = $("nameInput");
+    box.classList.add("shake");
+    setTimeout(()=> box.classList.remove("shake"), 450);
+    return;
+  }
+  $("nameErr").style.display = "none";
+  S.name = nm;
+  document.querySelectorAll(".student-name").forEach(el=>{ el.textContent = nm; });
+  $("hdrName").style.display = "inline-flex";
+  goTo(1);
+}
+
+/* ================= WARM-UP ================= */
+function renderGuessFb(){
+  const fb = $("guessFb");
+  const map = {1:"guessGood", 2:"guessClose", 3:"guessNo"};
+  if(S.guessState && map[S.guessState]){
+    fb.textContent = U[map[S.guessState]][S.lang];
+    fb.className = "fb " + (S.guessState === 1 ? "good" : S.guessState === 2 ? "info" : "bad");
+  } else { fb.textContent = ""; }
+}
+function checkGuess(){
+  const v = parseNum($("guessInput").value);
+  if(isNaN(v)){
+    $("guessFb").textContent = U.guessEmpty[S.lang];
+    $("guessFb").className = "fb bad";
+    return;
+  }
+  S.guessState = Math.abs(v - 2) < 0.005 ? 1 : Math.abs(v - 2) <= 0.5 ? 2 : 3;
+  renderGuessFb();
+  if(S.guessState === 1) burstAt($("guessBtn"));
+}
+
+/* ================= TABLE TEST ================= */
+function verdict(b){
+  const t = b.dataset.tbl;
+  const correct = t === "A" ? b.dataset.val === "ip" : b.dataset.val === "ni";
+  const fb = $(t === "A" ? "fbA" : "fbB");
+  fb.textContent = correct ? U[t + "ok"][S.lang] : U[t + "no"][S.lang];
+  fb.className = "fb " + (correct ? "good" : "bad");
+  if(correct) burstAt(b);
+}
+
+/* ================= GRAPH (hyperbola y = k / x) ================= */
+function drawGraph(){
+  const cv = $("gCanvas");
+  if(!cv.clientWidth) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = cv.clientHeight;
+  if(cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)){
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  }
+  const c = cv.getContext("2d");
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, W, H);
+  const k = parseFloat($("kSlider").value), xp = parseFloat($("xSlider").value);
+  const ymax = Math.max(10, Math.ceil(k * 1.15 / 5) * 5);
+  const L = 52, R = 18, T = 18, B = 46, pw = W - L - R, ph = H - T - B;
+  const X = v => L + v / 12 * pw, Y = v => T + ph - v / ymax * ph;
+  c.strokeStyle = "rgba(148,163,184,.14)"; c.lineWidth = 1;
+  for(let i = 0; i <= 12; i++){ c.beginPath(); c.moveTo(X(i), T); c.lineTo(X(i), T + ph); c.stroke(); }
+  for(let j = 0; j <= 5; j++){ const yy = T + ph - j * ph / 5; c.beginPath(); c.moveTo(L, yy); c.lineTo(L + pw, yy); c.stroke(); }
+  c.strokeStyle = "rgba(148,163,184,.85)"; c.lineWidth = 1.5;
+  c.beginPath(); c.moveTo(L, T); c.lineTo(L, T + ph); c.lineTo(L + pw, T + ph); c.stroke();
+  c.fillStyle = "#94a3b8"; c.font = "12px Inter, sans-serif";
+  c.textAlign = "center";
+  for(let i = 0; i <= 12; i += 2){ c.fillText(String(i), X(i), T + ph + 16); }
+  c.textAlign = "right";
+  for(let j = 0; j <= 5; j++){ c.fillText(fmt(j * ymax / 5), L - 8, T + ph - j * ph / 5 + 4); }
+  c.textAlign = "left";
+  c.font = "600 13px Poppins, sans-serif";
+  c.fillStyle = "#67e8f9"; c.fillText("x", L + pw - 4, T + ph + 30);
+  c.fillText("y", L - 26, T + 8);
+  c.fillStyle = "#fbcfe8"; c.fillText("(0,0)", L + 7, T + ph - 8);
+  c.save();
+  c.beginPath(); c.rect(L, T, pw, ph); c.clip();
+  const grad = c.createLinearGradient(L, T + ph, L + pw, T);
+  grad.addColorStop(0, "#22d3ee"); grad.addColorStop(1, "#f472b6");
+  c.strokeStyle = grad; c.lineWidth = 3.5;
+  c.shadowColor = "rgba(34,211,238,.8)"; c.shadowBlur = 12;
+  c.beginPath();
+  for(let t = 1.2; t <= 12; t += 0.05){
+    const yy = Y(Math.min(k / t, ymax * 2));
+    if(t === 1.2) c.moveTo(X(t), yy); else c.lineTo(X(t), yy);
+  }
+  c.stroke();
+  c.restore();
+  const yv = k / xp, px = X(xp), py = Y(yv);
+  if(py >= T - 4 && py <= T + ph + 4){
+    c.setLineDash([5, 5]); c.strokeStyle = "rgba(244,114,182,.5)"; c.lineWidth = 1.2; c.shadowBlur = 0;
+    c.beginPath(); c.moveTo(L, py); c.lineTo(px, py); c.lineTo(px, T + ph); c.stroke();
+    c.setLineDash([]);
+    c.fillStyle = "#f472b6"; c.shadowColor = "rgba(244,114,182,.9)"; c.shadowBlur = 14;
+    c.beginPath(); c.arc(px, py, 7, 0, Math.PI * 2); c.fill();
+    c.shadowBlur = 0;
+    c.fillStyle = "#fbcfe8"; c.font = "600 13px Inter, sans-serif"; c.textAlign = "left";
+    c.fillText("(" + fmt(xp) + ", " + fmt(yv) + ")", px + 12, py < T + 22 ? py + 24 : py - 10);
+  }
+  $("kVal").textContent = "k = " + fmt(k);
+  $("xVal").textContent = "x = " + fmt(xp);
+  $("eqLine").textContent = "y = " + fmt(k) + " ÷ " + fmt(xp) + " = " + fmt(yv);
+  $("chipK").textContent = "k = " + fmt(k);
+  $("chipX").textContent = "x = " + fmt(xp);
+  $("chipY").textContent = "y = " + fmt(yv);
+  const row = $("gTableRowY");
+  let html = "<td class='rowhead'>y</td>";
+  for(let i = 1; i <= 5; i++){
+    const cur = Math.abs(xp - i) < 1e-9;
+    html += "<td" + (cur ? " style='color:#f472b6;font-weight:700'" : "") + ">" + fmt(k / i) + "</td>";
+  }
+  row.innerHTML = html;
+}
+
+/* ================= MACHINE ================= */
+let mMode = "F", mK = 24;
+function updateMachineLabels(){
+  $("mInputLabel").textContent = (S.lang === "en" ? "2️⃣ Enter " : "2️⃣ Masukkan ") + (mMode === "F" ? "x" : "y");
+}
+function setMode(m){
+  mMode = m;
+  [["mModeF","F"],["mModeR","R"]].forEach(([id, mm])=>{
+    const b = $(id);
+    b.classList.toggle("on", mm === m);
+    b.classList.toggle("primary", mm === m);
+    b.classList.toggle("ghost", mm !== m);
+  });
+  updateMachineLabels();
+  $("mErr").textContent = "";
+  $("mResult").textContent = "—";
+  $("mSteps").style.display = "none";
+}
+function computeMachine(){
+  const v = parseNum($("mInput").value);
+  if(isNaN(v)){ $("mErr").textContent = U.mErr[S.lang]; return; }
+  if(v <= 0){ $("mErr").textContent = U.mZero[S.lang]; return; }
+  $("mErr").textContent = "";
+  const res = $("mResult");
+  if(mMode === "F"){
+    const y = mK / v;
+    res.textContent = "y = " + fmt(y);
+    $("mStepsBody").innerHTML = tpl(U.mKconst[S.lang], {k: fmt(mK)}) + "<br>" + tpl(U.mStepF[S.lang], {k: fmt(mK), x: fmt(v), y: fmt(y)});
+  } else {
+    const x = mK / v;
+    res.textContent = "x = " + fmt(x);
+    $("mStepsBody").innerHTML = tpl(U.mKconst[S.lang], {k: fmt(mK)}) + "<br>" + tpl(U.mStepR[S.lang], {k: fmt(mK), y: fmt(v), x: fmt(x)});
+  }
+  res.classList.remove("pop"); void res.offsetWidth; res.classList.add("pop");
+  $("mSteps").style.display = "block";
+}
+
+/* ================= QUIZ ================= */
+function updateChips(){
+  $("scoreChip").textContent = U.score[S.lang] + ": " + S.score + " / 10";
+  const n = S.results.filter(r => r === "ok").length;
+  $("progChip").textContent = "✅ " + n + " / 10 " + U.answered[S.lang];
+  updateThanks();
+}
+function buildJump(){
+  const g = $("jumpGrid"); g.innerHTML = "";
+  for(let i = 0; i < 10; i++){
+    const b = document.createElement("button");
+    b.className = "jump"; b.textContent = i + 1;
+    b.addEventListener("click", ()=>{ S.cur = i; renderProblem(); });
+    g.appendChild(b);
+  }
+}
+function refreshJump(){
+  Array.from($("jumpGrid").children).forEach((b, i)=>{
+    b.className = "jump" + (i === S.cur ? " cur" : "");
+    const r = S.results[i];
+    if(r === "ok") b.classList.add("ok");
+    else if(r === "seen") b.classList.add("seen");
+    else if(r === "no") b.classList.add("no");
+    else if(S.tries[i] > 0) b.classList.add("tried");
+  });
+}
+function showSolution(byUser){
+  const p = PROBLEMS[S.cur], t = p[S.lang];
+  $("pKLine").innerHTML = "<span class='hl-k'>" + U.kLine[S.lang] + ": " + t.k + "</span>";
+  $("pSolBody").innerHTML = t.steps.map(s => "<li>" + s + "</li>").join("");
+  $("pSol").classList.remove("hidden");
+  if(byUser){
+    S.seen[S.cur] = true;
+    if(S.results[S.cur] === null){ S.results[S.cur] = "seen"; refreshJump(); }
+  }
+}
+function renderProblem(){
+  const p = PROBLEMS[S.cur], t = p[S.lang];
+  $("pCount").textContent = U.problem[S.lang] + " " + (S.cur + 1) + " " + U.of[S.lang] + " 10";
+  $("pStars").textContent = "★".repeat(p.stars) + "☆".repeat(3 - p.stars);
+  $("pStory").textContent = t.story;
+  $("pQuestion").textContent = t.q;
+  $("pUnit").textContent = p.unit[S.lang];
+  $("pAns").value = S.answers[S.cur];
+  const solved = S.results[S.cur] === "ok";
+  $("pAns").disabled = solved;
+  $("pCheck").disabled = solved;
+  $("pFb").textContent = ""; $("pFb").className = "fb";
+  $("pHintText").textContent = t.hint;
+  $("pHintText").classList.toggle("hidden", !S.hintShown[S.cur]);
+  $("pSol").classList.add("hidden");
+  if(solved){
+    $("pFb").textContent = S.tries[S.cur] === 1 ? U.correct[S.lang] : U.correctNoPt[S.lang];
+    $("pFb").className = "fb good";
+    showSolution(false);
+  } else if(S.seen[S.cur]){
+    showSolution(false);
+  }
+  $("pPrev").disabled = S.cur === 0;
+  $("pNext").disabled = S.cur === 9;
+  refreshJump();
+  updateChips();
+}
+function checkAnswer(){
+  const p = PROBLEMS[S.cur];
+  if(S.results[S.cur] === "ok"){
+    $("pFb").textContent = U.alreadyOk[S.lang];
+    $("pFb").className = "fb info";
+    return;
+  }
+  const raw = $("pAns").value;
+  S.answers[S.cur] = raw;
+  const v = parseNum(raw);
+  if(isNaN(v)){
+    $("pFb").textContent = U.empty[S.lang];
+    $("pFb").className = "fb bad";
+    $("pAns").classList.add("shake");
+    setTimeout(()=> $("pAns").classList.remove("shake"), 450);
+    return;
+  }
+  S.tries[S.cur]++;
+  if(Math.abs(v - p.ans) <= p.tol){
+    const firstTry = S.results[S.cur] === null && S.tries[S.cur] === 1 && !S.seen[S.cur];
+    S.results[S.cur] = "ok";
+    $("pFb").textContent = firstTry ? U.correct[S.lang] : U.correctNoPt[S.lang];
+    $("pFb").className = "fb good";
+    if(firstTry) S.score++;
+    $("pAns").disabled = true; $("pCheck").disabled = true;
+    showSolution(false);
+    refreshJump(); updateChips();
+    burstAt($("pCheck"));
+    if(S.results.filter(r => r === "ok").length === 10){
+      S.finaleShown = true;
+      renderFinale(true);
+    }
+  } else {
+    if(S.results[S.cur] === null) S.results[S.cur] = "no";
+    $("pFb").textContent = S.tries[S.cur] >= 2 ? U.tryAgain2[S.lang] : U.tryAgain[S.lang];
+    $("pFb").className = "fb bad";
+    refreshJump();
+  }
+}
+function resetQuiz(){
+  S.cur = 0; S.score = 0;
+  S.results = Array(10).fill(null); S.tries = Array(10).fill(0);
+  S.seen = Array(10).fill(false); S.answers = Array(10).fill("");
+  S.hintShown = Array(10).fill(false); S.finaleShown = false;
+  $("finale").classList.add("hidden");
+  renderProblem();
+}
+function updateThanks(){
+  const el = $("thanksScore");
+  if(el) el.textContent = tpl(U.yourScore[S.lang], {s: S.score});
+}
+function renderFinale(withRain){
+  const f = $("finale");
+  f.classList.remove("hidden");
+  const s = S.score;
+  const key = s >= 8 ? "finaleHi" : s >= 5 ? "finaleMid" : "finaleKeep";
+  f.textContent = tpl(U[key][S.lang], {n: S.name || "friend", s: s});
+  f.className = "banner" + (s >= 8 ? "" : " mid");
+  if(withRain && s >= 8) rain();
+}
+
+/* ================= CONFETTI ================= */
+const cvs = $("confetti"), cx = cvs.getContext("2d");
+let parts = [], rafId = null;
+const COLORS = ["#22d3ee", "#a78bfa", "#f472b6", "#34d399", "#fbbf24", "#f87171"];
+function sizeCvs(){ cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
+function burstAt(el){
+  const r = el.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2, 90);
+}
+function burst(x, y, n){
+  for(let i = 0; i < n; i++) parts.push({x: x, y: y, vx: (Math.random() - 0.5) * 13, vy: -(3 + Math.random() * 9), g: 0.32, w: 6 + Math.random() * 7, h: 4 + Math.random() * 5, rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.35, c: COLORS[i % COLORS.length], life: 60 + Math.random() * 40});
+  startLoop();
+}
+function rain(){
+  for(let i = 0; i < 180; i++) parts.push({x: Math.random() * cvs.width, y: -(20 + Math.random() * cvs.height * 0.6), vx: (Math.random() - 0.5) * 1.6, vy: 2 + Math.random() * 3.5, g: 0.045, w: 6 + Math.random() * 7, h: 4 + Math.random() * 5, rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.2, c: COLORS[i % COLORS.length], life: 220 + Math.random() * 80});
+  startLoop();
+}
+function startLoop(){ if(rafId === null) rafId = requestAnimationFrame(tick); }
+function tick(){
+  cx.clearRect(0, 0, cvs.width, cvs.height);
+  parts = parts.filter(p => p.life > 0 && p.y < cvs.height + 40);
+  for(const p of parts){
+    p.x += p.vx; p.y += p.vy; p.vy += p.g; p.rot += p.vr; p.life--;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot);
+    cx.globalAlpha = Math.min(1, p.life / 30);
+    cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    cx.restore();
+  }
+  if(parts.length) rafId = requestAnimationFrame(tick);
+  else { rafId = null; cx.clearRect(0, 0, cvs.width, cvs.height); }
+}
+
+/* ================= INIT ================= */
+function init(){
+  const d = $("dots");
+  for(let i = 0; i < N_SLIDES; i++){
+    const b = document.createElement("button");
+    b.className = "dot" + (i === 0 ? " on" : "");
+    b.addEventListener("click", ()=> goTo(i));
+    d.appendChild(b);
+  }
+  buildJump();
+  S.hintShown = Array(10).fill(false);
+  S.finaleShown = false;
+  $("nameErr").style.display = "none";
+
+  $("langBtn").addEventListener("click", ()=>{ S.lang = S.lang === "en" ? "id" : "en"; applyLang(); });
+  $("startBtn").addEventListener("click", startLesson);
+  $("nameInput").addEventListener("keydown", e=>{ if(e.key === "Enter") startLesson(); });
+  $("guessBtn").addEventListener("click", checkGuess);
+  $("guessInput").addEventListener("keydown", e=>{ if(e.key === "Enter") checkGuess(); });
+  $("revealBtn").addEventListener("click", ()=>{
+    $("guessSol").classList.remove("hidden");
+    $("guessSol").scrollIntoView({behavior: "smooth", block: "nearest"});
+  });
+  document.querySelectorAll(".flip").forEach(f=> f.addEventListener("click", ()=> f.classList.toggle("flipped")));
+  document.querySelectorAll(".ratio-cell").forEach(c=> c.addEventListener("click", ()=>{
+    c.classList.add("revealed"); c.textContent = locNum(c.dataset.v);
+  }));
+  document.querySelectorAll(".verdict").forEach(b=> b.addEventListener("click", ()=> verdict(b)));
+  $("kSlider").addEventListener("input", drawGraph);
+  $("xSlider").addEventListener("input", drawGraph);
+  window.addEventListener("resize", ()=>{ sizeCvs(); drawGraph(); });
+  $("mModeF").addEventListener("click", ()=> setMode("F"));
+  $("mModeR").addEventListener("click", ()=> setMode("R"));
+  document.querySelectorAll("#mKRow .kchip").forEach(kb=> kb.addEventListener("click", ()=>{
+    mK = parseFloat(kb.dataset.k);
+    document.querySelectorAll("#mKRow .kchip").forEach(x=> x.classList.toggle("on", x === kb));
+  }));
+  $("mGo").addEventListener("click", computeMachine);
+  $("mInput").addEventListener("keydown", e=>{ if(e.key === "Enter") computeMachine(); });
+  $("pCheck").addEventListener("click", checkAnswer);
+  $("pAns").addEventListener("keydown", e=>{ if(e.key === "Enter") checkAnswer(); });
+  $("pHintBtn").addEventListener("click", ()=>{ S.hintShown[S.cur] = true; $("pHintText").classList.remove("hidden"); });
+  $("pSolBtn").addEventListener("click", ()=> showSolution(true));
+  $("pPrev").addEventListener("click", ()=>{ if(S.cur > 0){ S.cur--; renderProblem(); } });
+  $("pNext").addEventListener("click", ()=>{ if(S.cur < 9){ S.cur++; renderProblem(); } });
+  $("resetBtn").addEventListener("click", resetQuiz);
+  document.querySelectorAll(".rchip").forEach((c, i)=> c.addEventListener("click", ()=>{
+    document.querySelectorAll(".rchip").forEach(x=> x.classList.remove("on"));
+    c.classList.add("on"); S.rating = i + 1;
+    $("rMsg").textContent = U["r" + (i + 1)][S.lang];
+    $("rMsg").className = "fb center good";
+  }));
+  $("restartBtn").addEventListener("click", ()=> location.reload());
+  $("prevBtn").addEventListener("click", ()=> goTo(S.idx - 1));
+  $("nextBtn").addEventListener("click", ()=> goTo(S.idx + 1));
+  document.addEventListener("keydown", keyNav);
+
+  sizeCvs();
+  applyLang();
+  goTo(0);
+}
+init();
+</script>
+</body>
+</html>
